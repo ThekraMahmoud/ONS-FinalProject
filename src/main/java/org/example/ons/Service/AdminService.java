@@ -1,7 +1,7 @@
 package org.example.ons.Service;
 
 import lombok.AllArgsConstructor;
-import org.example.ons.Model.AuthorizedStaff;
+import org.example.ons.Model.User;
 import org.example.ons.Repository.AuthorizedStaffRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class AdminService {
             return;
         }
 
-        AuthorizedStaff admin = new AuthorizedStaff();
+        User admin = new User();
 
         admin.setName("System Admin");
         admin.setEmail("admin@ons.com");

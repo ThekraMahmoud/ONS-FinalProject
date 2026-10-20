@@ -1,6 +1,7 @@
 
 package org.example.ons.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -9,6 +10,8 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -46,4 +49,8 @@ public class Kiosk {
     )
     @Column(nullable = false, length = 20)
     private String status;
+
+    @OneToMany(mappedBy = "kiosk")
+    @JsonIgnore
+    private Set<AssistanceReport> assistanceReports;
 }
