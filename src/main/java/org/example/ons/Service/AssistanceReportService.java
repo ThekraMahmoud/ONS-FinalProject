@@ -4,7 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.example.ons.Api.ApiException;
 import org.example.ons.Enum.ReportStatus;
 import org.example.ons.Model.AssistanceReport;
+import org.example.ons.Model.Campaign;
+import org.example.ons.Model.Kiosk;
+import org.example.ons.Model.Pilgrim;
 import org.example.ons.Repository.AssistanceReportRepository;
+import org.example.ons.Repository.CampaignRepository;
+import org.example.ons.Repository.KioskRepository;
+import org.example.ons.Repository.PilgrimRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,10 +19,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AssistanceReportService {
     private final AssistanceReportRepository assistanceReportRepository;
+    private final PilgrimRepository pilgrimRepository;
+    private final KioskRepository kioskRepository;
+    private final CampaignRepository campaignRepository;
 
-    public AssistanceReport createReport(AssistanceReport report) {
+    public void createReport(AssistanceReport report) {
+        Pilgrim pilgrim = pilgrimRepository.findById(
+                report.getPilgrim().getId()).orElse(null);
+
+        if (pilgrim == null) {
+            throw new ApiException("pilgrim not found");
+        }
+
+        Kiosk kiosk = kioskRepository.findById(
+                report.getKiosk().getId()).orElse(null);
+
+        if (kiosk == null) {
+            throw new ApiException("kiosk not found");
+        }
+
+        Campaign campaign = campaignRepository.findCampaignById(
+                report.getCampaign().getId());
+
+        if (campaign == null) {
+            throw new ApiException("campaign not found");
+        }
+
+        report.setPilgrim(pilgrim);
+        report.setKiosk(kiosk);
+        report.setCampaign(campaign);
         report.setStatus(ReportStatus.OPEN);
-        return assistanceReportRepository.save(report);
+        assistanceReportRepository.save(report);
     }
 
     public List<AssistanceReport> getAllReports() {
@@ -35,21 +68,42 @@ public class AssistanceReportService {
                return assistanceReport;
     }
 
-    public AssistanceReport updateReport(Long id, AssistanceReport updatedReport) {
+    public void updateReport(Long id, AssistanceReport updatedReport) {
         AssistanceReport report = getReportById(id);
 
-        report.setPickupTime(updatedReport.getPickupTime());
-        report.setPilgrim(updatedReport.getPilgrim());
-        report.setKiosk(updatedReport.getKiosk());
-        report.setCampaign(updatedReport.getCampaign());
+        Pilgrim pilgrim = pilgrimRepository.findById(
+                updatedReport.getPilgrim().getId()).orElse(null);
 
-        return assistanceReportRepository.save(report);
+        if (pilgrim == null) {
+            throw new ApiException("pilgrim not found");
+        }
+
+        Kiosk kiosk = kioskRepository.findById(
+                updatedReport.getKiosk().getId()).orElse(null);
+
+        if (kiosk == null) {
+            throw new ApiException("kiosk not found");
+        }
+
+        Campaign campaign = campaignRepository.findCampaignById(
+                updatedReport.getCampaign().getId());
+
+        if (campaign == null) {
+            throw new ApiException("campaign not found");
+        }
+
+        report.setPilgrim(pilgrim);
+        report.setKiosk(kiosk);
+        report.setCampaign(campaign);
+
+        report.setPickupTime(updatedReport.getPickupTime());
+         assistanceReportRepository.save(report);
     }
 
     public void deleteReport(Long id) {
         AssistanceReport report = getReportById(id);
         if(report==null){
-            throw new ApiException("report ot found");
+            throw new ApiException("report not found");
         }
         assistanceReportRepository.delete(report);
     }

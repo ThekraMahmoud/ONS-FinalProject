@@ -16,7 +16,7 @@ public class AuthorizedStaffService {
     private final AuthorizedStaffRepository authorizedStaffRepository;
     private final CampaignRepository campaignRepository;
 
-    public AuthorizedStaff createStaff(AuthorizedStaff staff) {
+    public void createStaff(AuthorizedStaff staff) {
 
         if (authorizedStaffRepository.findAuthorizedStaffByEmail(staff.getEmail()) != null) {
             throw new ApiException("email already exists");
@@ -24,17 +24,17 @@ public class AuthorizedStaffService {
 
         if (staff.getCampaign() != null) {
             Campaign campaign = campaignRepository.findCampaignById(
-                            staff.getCampaign().getCampaignId());
+                            staff.getCampaign().getId());
 
             if(campaign==null){
-                throw new ApiException("campaign not fount");
+                throw new ApiException("campaign not found");
             }
 
 
             staff.setCampaign(campaign);
         }
 
-        return authorizedStaffRepository.save(staff);
+         authorizedStaffRepository.save(staff);
     }
 
     public List<AuthorizedStaff> getAllStaff() {
@@ -52,7 +52,7 @@ public class AuthorizedStaffService {
                 .orElseThrow(() -> new ApiException("staff not found"));
     }
 
-    public AuthorizedStaff updateStaff(Long id, AuthorizedStaff updatedStaff) {
+    public void updateStaff(Long id, AuthorizedStaff updatedStaff) {
 
         AuthorizedStaff staff = getStaffById(id);
 
@@ -65,11 +65,12 @@ public class AuthorizedStaffService {
 
         if (updatedStaff.getCampaign() != null) {
             Campaign campaign = campaignRepository.findCampaignById(
-                    updatedStaff.getCampaign().getCampaignId());
+                    updatedStaff.getCampaign().getId());
 
             if (campaign == null) {
                 throw new ApiException("campaign not found");
             }
+            staff.setCampaign(campaign);
         } else {
             staff.setCampaign(null);
         }
@@ -80,7 +81,7 @@ public class AuthorizedStaffService {
         staff.setRole(updatedStaff.getRole());
         staff.setActive(updatedStaff.isActive());
 
-        return authorizedStaffRepository.save(staff);
+        authorizedStaffRepository.save(staff);
     }
 
     public void deleteStaff(Long id) {

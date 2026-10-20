@@ -14,8 +14,8 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
 
-    public Notification createNotification(Notification notification) {
-        return notificationRepository.save(notification);
+    public void createNotification(Notification notification) {
+         notificationRepository.save(notification);
     }
 
     public List<Notification> getAllNotifications() {
@@ -31,7 +31,7 @@ public class NotificationService {
                 .orElseThrow(() -> new ApiException("Notification not found"));
     }
 
-    public Notification updateNotification(Long id, Notification updatedNotification) {
+    public void updateNotification(Long id, Notification updatedNotification) {
         Notification notification = getNotificationById(id);
 
         notification.setMessage(updatedNotification.getMessage());
@@ -39,7 +39,7 @@ public class NotificationService {
         notification.setReport(updatedNotification.getReport());
         notification.setCampaign(updatedNotification.getCampaign());
 
-        return notificationRepository.save(notification);
+         notificationRepository.save(notification);
     }
 
     public void deleteNotification(Long id) {
