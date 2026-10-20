@@ -17,7 +17,7 @@ public class Accommodation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long accommodationId;
+    private Integer Id;
 
     @NotBlank(message = "Accommodation name is required")
     @Size(max = 100, message = "Accommodation name must not exceed 100 characters")

@@ -15,7 +15,7 @@ public class Pilgrim {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pilgrimId;
+    private Integer Id;
 
     @NotBlank(message = "Pilgrim name is required")
     @Size(max = 120, message = "Name must not exceed 120 characters")

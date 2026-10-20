@@ -16,7 +16,7 @@ public class PilgrimCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer cardId;
+    private Integer Id;
 
     @NotBlank(message = "Card number is required")
     @Size(max = 50, message = "Card number must not exceed 50 characters")

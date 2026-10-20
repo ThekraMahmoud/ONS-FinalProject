@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PilgrimRepository extends JpaRepository<Pilgrim ,Integer> {
+    Pilgrim findPilgrimById (Integer id);
 }

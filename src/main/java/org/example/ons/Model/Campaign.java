@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -14,11 +15,12 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@Check(constraints = "end_date >= start_date")
 public class Campaign {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer campaignId;
+    private Integer Id;
 
     @NotBlank(message = "Campaign name is required")
     @Size(max = 100, message = "Campaign name must not exceed 100 characters")

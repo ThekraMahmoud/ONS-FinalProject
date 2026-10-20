@@ -17,7 +17,7 @@ public class Kiosk {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer kioskId;
+    private Integer Id;
 
     @NotBlank(message = "Kiosk code is required")
     @Size(max = 50, message = "Kiosk code must not exceed 50 characters")
@@ -32,16 +32,16 @@ public class Kiosk {
     @DecimalMin(value = "-90.0", message = "Latitude must be at least -90")
     @DecimalMax(value = "90.0", message = "Latitude must not exceed 90")
     @Column(nullable = false)
-    private double latitude;
+    private Double latitude;
 
     @DecimalMin(value = "-180.0", message = "Longitude must be at least -180")
     @DecimalMax(value = "180.0", message = "Longitude must not exceed 180")
     @Column(nullable = false)
-    private double longitude;
+    private Double longitude;
 
     @NotBlank(message = "Status is required")
     @Pattern(
-            regexp = "ACTIVE|INACTIVE|MAINTENANCE",
+            regexp = "^(ACTIVE|INACTIVE|MAINTENANCE)$",
             message = "Status must be ACTIVE, INACTIVE, or MAINTENANCE"
     )
     @Column(nullable = false, length = 20)
