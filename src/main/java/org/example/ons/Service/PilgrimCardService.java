@@ -2,8 +2,10 @@
 
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiException;
+import org.example.ons.Model.Pilgrim;
 import org.example.ons.Model.PilgrimCard;
 import org.example.ons.Repository.PilgrimCardRepository;
+import org.example.ons.Repository.PilgrimRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,11 +15,26 @@ import java.util.List;
 public class PilgrimCardService {
 
     private final PilgrimCardRepository pilgrimCardRepository;
+    private final PilgrimRepository pilgrimRepository;
 
     // Create Pilgrim Card
-    public void createPilgrimCard(PilgrimCard pilgrimCard) {
+    public void createPilgrimCard(Integer pilgrimId, PilgrimCard pilgrimCard) {
+        Pilgrim pilgrim = pilgrimRepository.findPilgrimById(pilgrimId);
+
+        if (pilgrim == null) {
+            throw new ApiException(
+                    "Pilgrim not found with ID: " + pilgrimId
+            );
+        }
+
+        if (pilgrim.getPilgrimCard() != null) {
+            throw new ApiException("This pilgrim already has a card");
+        }
+
+        pilgrimCard.setPilgrim(pilgrim);
         pilgrimCardRepository.save(pilgrimCard);
     }
+
 
     // Get All Pilgrim Cards
     public List<PilgrimCard> getAllPilgrimCards() {
@@ -45,7 +62,6 @@ public class PilgrimCardService {
         existingPilgrimCard.setCardType(updatedPilgrimCard.getCardType());
         existingPilgrimCard.setStatus(updatedPilgrimCard.getStatus());
         existingPilgrimCard.setImageReference(updatedPilgrimCard.getImageReference());
-        existingPilgrimCard.setPilgrim(updatedPilgrimCard.getPilgrim());
         pilgrimCardRepository.save(existingPilgrimCard);
     }
 

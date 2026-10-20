@@ -16,10 +16,10 @@ public class PilgrimCardController {
     private final PilgrimCardService pilgrimCardService;
 
     // Create Pilgrim Card
-    @PostMapping("/add")
-    public ResponseEntity<?> createPilgrimCard(@Valid @RequestBody PilgrimCard pilgrimCard) {
+    @PostMapping("/add/{pilgrimId}")
+    public ResponseEntity<?> createPilgrimCard(@PathVariable Integer pilgrimId, @Valid @RequestBody PilgrimCard pilgrimCard) {
 
-        pilgrimCardService.createPilgrimCard(pilgrimCard);
+        pilgrimCardService.createPilgrimCard(pilgrimId,pilgrimCard);
 
         return ResponseEntity.status(200).body(new ApiResponse("Pilgrim card created successfully"));
     }

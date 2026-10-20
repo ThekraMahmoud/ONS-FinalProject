@@ -1,0 +1,37 @@
+package org.example.ons.Service;
+
+import lombok.AllArgsConstructor;
+import org.example.ons.Model.AuthorizedStaff;
+import org.example.ons.Repository.AuthorizedStaffRepository;
+import org.springframework.stereotype.Service;
+
+import jakarta.annotation.PostConstruct;
+
+@Service
+@AllArgsConstructor
+public class AdminService {
+
+    private final AuthorizedStaffRepository authorizedStaffRepository;
+
+    @PostConstruct
+    public void init() {
+        createDefaultAdmin();
+    }
+
+    public void createDefaultAdmin() {
+        if (authorizedStaffRepository.findAuthorizedStaffByEmail("admin@ons.com") != null) {
+            return;
+        }
+
+        AuthorizedStaff admin = new AuthorizedStaff();
+
+        admin.setName("System Admin");
+        admin.setEmail("admin@ons.com");
+        admin.setPhoneNumber("0500000000");
+        admin.setRole("ADMIN");
+        admin.setActive(true);
+        admin.setCampaign(null);
+
+        authorizedStaffRepository.save(admin);
+    }
+}

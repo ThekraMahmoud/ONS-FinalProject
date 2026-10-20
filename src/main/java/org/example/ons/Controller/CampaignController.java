@@ -21,7 +21,7 @@ public class CampaignController {
 
     // Create Campaign
     @PostMapping("/add")
-    public ResponseEntity<?> createCampaign(@Valid @RequestBody Campaign campaign) {
+    public ResponseEntity<?> createCampaign(Integer campaignId,@Valid @RequestBody Campaign campaign) {
         campaignService.createCampaign(campaign);
 
         return ResponseEntity.status(200).body(new ApiResponse("Campaign created successfully"));

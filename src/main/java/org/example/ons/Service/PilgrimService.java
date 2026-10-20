@@ -2,7 +2,9 @@
 
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiException;
+import org.example.ons.Model.Campaign;
 import org.example.ons.Model.Pilgrim;
+import org.example.ons.Repository.CampaignRepository;
 import org.example.ons.Repository.PilgrimRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +15,18 @@ import java.util.List;
 public class PilgrimService {
 
     private final PilgrimRepository pilgrimRepository;
+    private final CampaignRepository  campaignRepository;
 
     // Create Pilgrim
-    public void createPilgrim(Pilgrim pilgrim) {
+    public void createPilgrim(Integer campaignId, Pilgrim pilgrim) {
+
+        Campaign campaign = campaignRepository.findCampaignById(campaignId);
+
+        if (campaign == null) {
+            throw new ApiException("Campaign not found with ID: " + campaignId);
+        }
+
+        pilgrim.setCampaign(campaign);
         pilgrimRepository.save(pilgrim);
     }
 
@@ -25,7 +36,6 @@ public class PilgrimService {
     }
 
     // Get Pilgrim By ID
-
     public Pilgrim getPilgrimById(Integer id) {
         Pilgrim pilgrim = pilgrimRepository.findPilgrimById(id);
 

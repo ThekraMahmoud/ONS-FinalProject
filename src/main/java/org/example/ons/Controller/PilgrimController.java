@@ -16,10 +16,10 @@ public class PilgrimController {
     private final PilgrimService pilgrimService;
 
     // Create Pilgrim
-    @PostMapping("/add")
-    public ResponseEntity<?> createPilgrim(@Valid @RequestBody Pilgrim pilgrim) {
+    @PostMapping("/add/{campaignId}")
+    public ResponseEntity<?> createPilgrim(@PathVariable int campaignId ,@Valid @RequestBody Pilgrim pilgrim) {
 
-        pilgrimService.createPilgrim(pilgrim);
+        pilgrimService.createPilgrim(campaignId,pilgrim);
 
         return ResponseEntity.status(200).body(new ApiResponse("Pilgrim created successfully"));
     }
