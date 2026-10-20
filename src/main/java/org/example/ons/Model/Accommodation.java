@@ -1,5 +1,4 @@
-
-package org.example.ons.Model;
+        package org.example.ons.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -20,16 +19,15 @@ public class Accommodation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accommodationId;
 
-    @NotBlank(message = "اسم السكن مطلوب")
-    @Size(max = 100, message = "اسم السكن لا يتجاوز 100 حرف")
+    @NotBlank(message = "Accommodation name is required")
+    @Size(max = 100, message = "Accommodation name must not exceed 100 characters")
     @Column(nullable = false, length = 100)
     private String name;
 
-    @NotBlank(message = "عنوان السكن مطلوب")
-    @Size(max = 255, message = "العنوان لا يتجاوز 255 حرف")
+    @NotBlank(message = "Accommodation address is required")
+    @Size(max = 255, message = "Address must not exceed 255 characters")
     @Column(nullable = false, length = 255)
     private String address;
-
 
     @Pattern(
             regexp = "^(Makkah|Madinah)$",
@@ -38,11 +36,9 @@ public class Accommodation {
     @Column(nullable = false, length = 20)
     private String city;
 
-
     @ManyToOne
     @JoinColumn
     private Campaign campaign;
-
 
     @OneToMany(mappedBy = "accommodation")
     @JsonIgnore

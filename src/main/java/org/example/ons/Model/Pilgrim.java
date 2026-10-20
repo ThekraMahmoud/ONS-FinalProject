@@ -1,4 +1,4 @@
-package org.example.ons.Model;
+        package org.example.ons.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -17,43 +17,37 @@ public class Pilgrim {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer pilgrimId;
 
-    @NotBlank(message = "اسم الحاج مطلوب")
-    @Size(max = 120, message = "الاسم لا يتجاوز 120 حرفاً")
+    @NotBlank(message = "Pilgrim name is required")
+    @Size(max = 120, message = "Name must not exceed 120 characters")
     @Column(nullable = false)
     private String fullName;
 
-    @NotBlank(message = "الجنسية مطلوبة")
-    @Size(max = 60, message = "الجنسية لا تتجاوز 60 حرفاً")
+    @NotBlank(message = "Nationality is required")
+    @Size(max = 60, message = "Nationality must not exceed 60 characters")
     @Column(nullable = false)
     private String nationality;
 
-
-    @Pattern(regexp = "^\\+?[0-9]{8,15}$",
-            message = "رقم الجوال غير صحيح")
+    @Pattern(
+            regexp = "^\\+?[0-9]{8,15}$",
+            message = "Invalid phone number"
+    )
     @Column(nullable = false)
     private String phoneNumber;
 
-
-    @NotBlank(message = "رقم التأشيرة مطلوب")
+    @NotBlank(message = "Visa number is required")
     @Column(unique = true, nullable = false)
     private String visaNumber;
-
-
 
     @ManyToOne
     @JoinColumn(nullable = false)
     @JsonIgnore
     private Campaign campaign;
 
-
     @ManyToOne
     @JoinColumn
     private Accommodation accommodation;
 
-
-
     @OneToOne(mappedBy = "pilgrim")
     @JsonIgnore
     private PilgrimCard pilgrimCard;
-
 }
