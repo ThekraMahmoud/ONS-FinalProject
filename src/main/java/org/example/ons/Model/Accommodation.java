@@ -1,0 +1,50 @@
+
+package org.example.ons.Model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Set;
+
+@Entity
+@Getter
+@Setter
+public class Accommodation {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long accommodationId;
+
+    @NotBlank(message = "اسم السكن مطلوب")
+    @Size(max = 100, message = "اسم السكن لا يتجاوز 100 حرف")
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    @NotBlank(message = "عنوان السكن مطلوب")
+    @Size(max = 255, message = "العنوان لا يتجاوز 255 حرف")
+    @Column(nullable = false, length = 255)
+    private String address;
+
+
+    @Pattern(
+            regexp = "^(Makkah|Madinah)$",
+            message = "City must be either Makkah or Madinah"
+    )
+    @Column(nullable = false, length = 20)
+    private String city;
+
+
+    @ManyToOne
+    @JoinColumn
+    private Campaign campaign;
+
+
+    @OneToMany(mappedBy = "accommodation")
+    @JsonIgnore
+    private Set<Pilgrim> pilgrims;
+}
