@@ -2,6 +2,7 @@ package org.example.ons.Service;
 
 import lombok.AllArgsConstructor;
 import org.example.ons.Model.User;
+import org.example.ons.Repository.AuthRepository;
 import org.example.ons.Repository.AuthorizedStaffRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,7 @@ import jakarta.annotation.PostConstruct;
 @AllArgsConstructor
 public class AdminService {
 
-    private final AuthorizedStaffRepository authorizedStaffRepository;
+   private final AuthRepository authRepository;
 
     @PostConstruct
     public void init() {
@@ -19,7 +20,7 @@ public class AdminService {
     }
 
     public void createDefaultAdmin() {
-        if (authorizedStaffRepository.findAuthorizedStaffByEmail("admin@ons.com") != null) {
+        if (authRepository.findUserByEmail("admin@ons.com") != null) {
             return;
         }
 
@@ -27,11 +28,11 @@ public class AdminService {
 
         admin.setName("System Admin");
         admin.setEmail("admin@ons.com");
+        admin.setPassword("12345678");
         admin.setPhoneNumber("0500000000");
         admin.setRole("ADMIN");
         admin.setActive(true);
-        admin.setCampaign(null);
 
-        authorizedStaffRepository.save(admin);
+        authRepository.save(admin);
     }
 }

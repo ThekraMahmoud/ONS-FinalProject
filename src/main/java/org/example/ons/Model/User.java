@@ -1,5 +1,6 @@
 package org.example.ons.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Id;
+    private Integer id;
 
     @NotBlank(message = "Name is required")
     @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
@@ -44,8 +45,8 @@ public class User {
     private String phoneNumber;
 
     @NotBlank(message = "Role is required")
-    @Pattern(regexp = "ADMIN|SUPERVISOR|FIELD_STAFF",
-            message = "Role must be ADMIN, SUPERVISOR, or FIELD_STAFF")
+    @Pattern(regexp = "ADMIN|AuthorizedStaff|FIELD_STAFF",
+            message = "Role must be ADMIN, AuthorizedStaff, or FIELD_STAFF")
     @Column(nullable = false)
     private String role;
 
@@ -54,6 +55,14 @@ public class User {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private FieldStaff fieldStaff;
+
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private AuthorizedStaff authorizedStaff;
 
     @PrePersist
     protected void onCreate() {
