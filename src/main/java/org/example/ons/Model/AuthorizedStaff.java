@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.ons.Enum.AuthorizedStaffRole;
 
 @Entity
 @Getter
@@ -14,6 +15,10 @@ import lombok.Setter;
 public class AuthorizedStaff {
     @Id
     private Integer id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AuthorizedStaffRole staffRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campaign_id")

@@ -40,6 +40,7 @@ public class AuthorizedStaffService {
                 throw new ApiException("campaign not found");
             }
 
+            staff.setStaffRole(dto.getStaffRole());
             staff.setCampaign(campaign);
 
 
@@ -81,7 +82,7 @@ public class AuthorizedStaffService {
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setActive(dto.isActive());
 
-
+        staff.setStaffRole(dto.getStaffRole());
         authRepository.save(user);
         authorizedStaffRepository.save(staff);
     }
