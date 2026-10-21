@@ -18,7 +18,9 @@ public class CampaignService {
 
     // Create Campaign
     public void createCampaign(Campaign campaign) {
+        campaign.setStatus("PLANNED");
         campaignRepository.save(campaign);
+
     }
 
     // Get All Campaigns

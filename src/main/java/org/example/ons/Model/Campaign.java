@@ -40,7 +40,6 @@ public class Campaign {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @NotBlank(message = "Campaign status is required")
     @Pattern(
             regexp = "PLANNED|ACTIVE|COMPLETED|CANCELLED",
             message = "Invalid campaign status"
