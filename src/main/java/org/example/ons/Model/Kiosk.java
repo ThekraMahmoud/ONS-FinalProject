@@ -11,6 +11,7 @@ import jakarta.validation.constraints.DecimalMin;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -53,4 +54,7 @@ public class Kiosk {
     @OneToMany(mappedBy = "kiosk")
     @JsonIgnore
     private Set<AssistanceReport> assistanceReports;
+
+    @Column
+    private LocalDateTime lastHeartbeat;
 }
