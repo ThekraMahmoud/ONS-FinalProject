@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ons.Api.ApiResponse;
 import org.example.ons.DTO.AuthorizedStaffDTO;
+import org.example.ons.DTO.EmployeeUpdateDTO;
 import org.example.ons.Model.AuthorizedStaff;
 import org.example.ons.Model.User;
 import org.example.ons.Service.AuthorizedStaffService;
@@ -56,4 +57,51 @@ public class AuthorizedStaffController {
 
         return ResponseEntity.status(200).body(new ApiResponse("Authorized staff deleted successfully"));
     }
+
+    @GetMapping("/get/employees/{supervisorId}")
+    public ResponseEntity<?> getEmployees(
+            @PathVariable Integer supervisorId) {
+
+        return ResponseEntity.status(200)
+                .body(authorizedStaffService.getEmployees(supervisorId));
+    }
+
+    @PostMapping("/add/employee/{supervisorId}")
+    public ResponseEntity<?> addEmployee(
+            @PathVariable Integer supervisorId,
+            @RequestBody @Valid AuthorizedStaffDTO dto) {
+
+        authorizedStaffService.addEmployee(supervisorId, dto);
+
+        return ResponseEntity.status(200)
+                .body(new ApiResponse("Employee added successfully"));
+    }
+
+    @PutMapping("/update/employee/{supervisorId}/{employeeId}")
+    public ResponseEntity<?> updateEmployee(
+            @PathVariable Integer supervisorId,
+            @PathVariable Integer employeeId,
+            @RequestBody @Valid EmployeeUpdateDTO dto) {
+
+        authorizedStaffService.updateEmployee(
+                supervisorId,
+                employeeId,
+                dto
+        );
+
+        return ResponseEntity.status(200)
+                .body(new ApiResponse("Employee updated successfully"));
+    }
+
+    @DeleteMapping("/delete/employee/{supervisorId}/{employeeId}")
+    public ResponseEntity<?> deleteEmployee(
+            @PathVariable Integer supervisorId,
+            @PathVariable Integer employeeId) {
+
+        authorizedStaffService.deleteEmployee(supervisorId, employeeId);
+
+        return ResponseEntity.status(200)
+                .body(new ApiResponse("Employee deleted successfully"));
+    }
+
 }

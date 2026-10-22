@@ -3,6 +3,8 @@ package org.example.ons.Service;
 import lombok.RequiredArgsConstructor;
 import org.example.ons.Api.ApiException;
 import org.example.ons.DTO.AuthorizedStaffDTO;
+import org.example.ons.DTO.EmployeeUpdateDTO;
+import org.example.ons.Enum.AuthorizedStaffRole;
 import org.example.ons.Model.AuthorizedStaff;
 import org.example.ons.Model.User;
 import org.example.ons.Model.Campaign;
@@ -94,6 +96,142 @@ public class AuthorizedStaffService {
 
         authorizedStaffRepository.delete(staff);
         authRepository.delete(staff.getUser());
+    }
+    public List<AuthorizedStaff> getEmployees(Integer id) {
+        AuthorizedStaff authorizedStaff =
+                authorizedStaffRepository.findAuthorizedStaffById(id);
+
+        if (authorizedStaff == null) {
+            throw new ApiException("user not found");
+        }
+
+        if (authorizedStaff.getStaffRole() != AuthorizedStaffRole.SUPERVISOR) {
+            throw new ApiException("you are not authorized");
+        }
+
+        Campaign campaign = authorizedStaff.getCampaign();
+
+        if (campaign == null) {
+            throw new ApiException("supervisor has no campaign");
+        }
+
+        List<AuthorizedStaff> employees =
+                authorizedStaffRepository.findAuthorizedStaffByCampaignAndStaffRole(
+                        campaign,
+                        AuthorizedStaffRole.REGULAR_EMPLOYEE
+                );
+
+        if (employees.isEmpty()) {
+            throw new ApiException("there are no employees in the campaign");
+        }
+
+        return employees;
+    }
+
+
+    public void addEmployee(Integer supervisorId, AuthorizedStaffDTO dto) {
+
+        AuthorizedStaff supervisor =
+                authorizedStaffRepository.findAuthorizedStaffById(supervisorId);
+
+        if (supervisor == null) {
+            throw new ApiException("supervisor not found");
+        }
+
+        if (supervisor.getStaffRole() != AuthorizedStaffRole.SUPERVISOR) {
+            throw new ApiException("you are not authorized");
+        }
+
+        Campaign campaign = supervisor.getCampaign();
+
+        if (campaign == null) {
+            throw new ApiException("supervisor has no campaign");
+        }
+
+        dto.setStaffRole(AuthorizedStaffRole.REGULAR_EMPLOYEE);
+
+        createStaff(dto, campaign.getId());
+    }
+
+
+    public void updateEmployee(
+            Integer supervisorId,
+            Integer employeeId,
+            EmployeeUpdateDTO dto) {
+
+        AuthorizedStaff supervisor =
+                authorizedStaffRepository.findAuthorizedStaffById(supervisorId);
+
+        if (supervisor == null) {
+            throw new ApiException("supervisor not found");
+        }
+
+        if (supervisor.getStaffRole() != AuthorizedStaffRole.SUPERVISOR) {
+            throw new ApiException("you are not authorized");
+        }
+
+        AuthorizedStaff employee =
+                authorizedStaffRepository.findAuthorizedStaffById(employeeId);
+
+        if (employee == null) {
+            throw new ApiException("employee not found");
+        }
+
+        if (employee.getStaffRole() != AuthorizedStaffRole.REGULAR_EMPLOYEE) {
+            throw new ApiException("this user is not a regular employee");
+        }
+
+        if (supervisor.getCampaign() == null ||
+                employee.getCampaign() == null ||
+                !supervisor.getCampaign().getId()
+                        .equals(employee.getCampaign().getId())) {
+
+            throw new ApiException("employee does not belong to your campaign");
+        }
+
+        User user = employee.getUser();
+
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setActive(dto.isActive());
+
+        authRepository.save(user);
+    }
+
+    public void deleteEmployee(Integer supervisorId, Integer employeeId) {
+
+        AuthorizedStaff supervisor =
+                authorizedStaffRepository.findAuthorizedStaffById(supervisorId);
+
+        if (supervisor == null) {
+            throw new ApiException("supervisor not found");
+        }
+
+        if (supervisor.getStaffRole() != AuthorizedStaffRole.SUPERVISOR) {
+            throw new ApiException("you are not authorized");
+        }
+
+        AuthorizedStaff employee =
+                authorizedStaffRepository.findAuthorizedStaffById(employeeId);
+
+        if (employee == null) {
+            throw new ApiException("employee not found");
+        }
+
+        if (employee.getStaffRole() != AuthorizedStaffRole.REGULAR_EMPLOYEE) {
+            throw new ApiException("this user is not a regular employee");
+        }
+
+        if (supervisor.getCampaign() == null ||
+                employee.getCampaign() == null ||
+                !supervisor.getCampaign().getId()
+                        .equals(employee.getCampaign().getId())) {
+
+            throw new ApiException("employee does not belong to your campaign");
+        }
+
+        deleteStaff(employeeId);
     }
 
 }

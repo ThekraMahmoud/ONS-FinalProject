@@ -32,7 +32,6 @@ public class AuthorizedStaffDTO {
     )
     private String phoneNumber;
 
-    @NotNull(message = "Staff role is required")
     private AuthorizedStaffRole staffRole;
 
     private boolean active;
