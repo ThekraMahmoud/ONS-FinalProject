@@ -42,7 +42,7 @@ public class AuthorizedStaffService {
                 throw new ApiException("campaign not found");
             }
 
-            staff.setStaffRole(dto.getStaffRole());
+            staff.setStaffRole(AuthorizedStaffRole.SUPERVISOR);
             staff.setCampaign(campaign);
 
 
