@@ -104,4 +104,22 @@ public class AuthorizedStaffController {
                 .body(new ApiResponse("Employee deleted successfully"));
     }
 
+
+
+    // قبول بلاغ حاج ضائع وإسناده للموظف المختص
+    @PutMapping("/{staffId}/pilgrims/{pilgrimId}/reports/{reportId}/accept")
+    public ResponseEntity<?> acceptPilgrim(@PathVariable Integer staffId, @PathVariable Integer pilgrimId, @PathVariable long reportId) {
+        authorizedStaffService.acceptPilgrim(staffId, pilgrimId, reportId);
+        return ResponseEntity.status(200).body(new ApiResponse("Pilgrim accepted successfully"));
+    }
+
+    // الانتقال إلى الحالة التالية للبلاغ
+    @PutMapping("/{staffId}/reports/{reportId}/advance-status")
+    public ResponseEntity<?> advanceReportStatus(@PathVariable Integer staffId, @PathVariable long reportId) {
+        authorizedStaffService.advanceReportStatus(staffId, reportId);
+        return ResponseEntity.status(200).body(new ApiResponse("Report status updated successfully"));
+
+    }
+
+
 }

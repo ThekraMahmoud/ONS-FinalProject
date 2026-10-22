@@ -36,9 +36,9 @@ public class FiledStaffDTO {
         )
         private String phoneNumber;
 
-        @NotBlank(message = "Role is required")
+        //@NotBlank(message = "Role is required")
         @Pattern(
-                regexp = "FIELD_STAFF",
+                regexp = "FIELDـSTAFF",
                 message = "Role must be FIELD_STAFF"
         )
         private String role;

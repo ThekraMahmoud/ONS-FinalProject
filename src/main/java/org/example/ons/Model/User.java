@@ -44,9 +44,9 @@ public class User {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @NotBlank(message = "Role is required")
-    @Pattern(regexp = "ADMIN|AuthorizedStaff|FIELD_STAFF",
-            message = "Role must be ADMIN, AuthorizedStaff, or FIELD_STAFF")
+   @NotBlank(message = "Role is required")
+    @Pattern(regexp = "ADMIN|AuthorizedStaff|FIELDـSTAFF",
+            message = "Role must be ADMIN, AuthorizedStaff, or FIELDـSTAFF")
     @Column(nullable = false)
     private String role;
 

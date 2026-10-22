@@ -5,14 +5,12 @@ import org.example.ons.Api.ApiException;
 import org.example.ons.DTO.AuthorizedStaffDTO;
 import org.example.ons.DTO.EmployeeUpdateDTO;
 import org.example.ons.Enum.AuthorizedStaffRole;
-import org.example.ons.Model.AuthorizedStaff;
-import org.example.ons.Model.User;
-import org.example.ons.Model.Campaign;
-import org.example.ons.Repository.AuthRepository;
-import org.example.ons.Repository.AuthorizedStaffRepository;
-import org.example.ons.Repository.CampaignRepository;
+import org.example.ons.Enum.ReportStatus;
+import org.example.ons.Model.*;
+import org.example.ons.Repository.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +20,8 @@ public class AuthorizedStaffService {
     private final AuthorizedStaffRepository authorizedStaffRepository;
     private final CampaignRepository campaignRepository;
     private final AuthRepository authRepository;
+    private final AssistanceReportRepository assistanceReportRepository;
+    private final ReportStatusHistoryRepository reportStatusHistoryRepository;
 
     public void createStaff(AuthorizedStaffDTO dto,Integer campaignId) {
 
@@ -76,8 +76,6 @@ public class AuthorizedStaffService {
                 .orElseThrow(() -> new ApiException("staff not found"));
 
         User user = staff.getUser();
-
-
 
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
@@ -233,5 +231,111 @@ public class AuthorizedStaffService {
 
         deleteStaff(employeeId);
     }
+
+
+
+
+    // قبول حاج ضائع
+    public void acceptPilgrim(Integer staffId, Integer pilgrimId, long reportId) {
+
+    AuthorizedStaff staff = authorizedStaffRepository.findAuthorizedStaffById(staffId);
+
+        if (staff == null) {
+        throw new ApiException("Authorized staff not found");
+    }
+
+    AssistanceReport report = assistanceReportRepository.findAssistanceReportByReportId(reportId);
+        if (report == null) {
+        throw new ApiException("Assistance report not found");
+    }
+    // التأكد أن التقرير تابع للحاج المطلوب
+        if (report.getPilgrim() == null ||
+                !report.getPilgrim().getId().equals(pilgrimId)) {
+        throw new ApiException("This report does not belong to this pilgrim");
+    }
+
+    // التأكد أن الطلب لم تتم معالجته سابقًا
+        if (report.getStatus() != ReportStatus.OPEN) {
+        throw new ApiException(
+                "This report is no longer available for acceptance"
+        );
+    }
+        report.setStatus(ReportStatus.ASSIGNED);
+        report.setAuthorizedStaff(staff);
+
+        assistanceReportRepository.save(report);
+}
+
+
+
+
+    private void updateReportStatus(AssistanceReport report, ReportStatus newStatus) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        ReportStatusHistory previous = reportStatusHistoryRepository.findTopByReport_ReportIdOrderByChangedAtDesc(report.getReportId());
+
+        long durationMinutes = 0;
+
+        if (previous != null) {
+            durationMinutes = java.time.Duration.between(
+                    previous.getChangedAt(),
+                    now
+            ).toMinutes();
+        }
+
+        ReportStatusHistory history = new ReportStatusHistory();
+        history.setReport(report);
+        history.setOldStatus(report.getStatus());
+        history.setNewStatus(newStatus);
+        history.setChangedAt(now);
+        history.setDurationMinutes(durationMinutes);
+
+        report.setStatus(newStatus);
+
+        assistanceReportRepository.save(report);
+        reportStatusHistoryRepository.save(history);
+    }
+
+
+
+    public void advanceReportStatus(Integer staffId, long reportId) {
+
+        AuthorizedStaff staff = authorizedStaffRepository.findAuthorizedStaffById(staffId);
+
+        if (staff == null) {
+            throw new ApiException("Authorized staff not found");
+        }
+
+        AssistanceReport report = assistanceReportRepository.findAssistanceReportByReportId(reportId);
+
+        if (report == null) {
+            throw new ApiException("Assistance report not found");
+        }
+
+        if (report.getAuthorizedStaff() == null ||
+                !report.getAuthorizedStaff().getId().equals(staffId)) {
+            throw new ApiException(
+                    "This report is not assigned to this staff member");
+        }
+
+        ReportStatus nextStatus;
+
+        switch (report.getStatus()) {
+            case ASSIGNED:
+                nextStatus = ReportStatus.IN_PROGRESS;
+                break;
+
+            case IN_PROGRESS:
+                nextStatus = ReportStatus.RESOLVED;
+                break;
+
+            default:
+                throw new ApiException(
+                        "This report cannot move to the next status");
+        }
+        updateReportStatus(report, nextStatus);
+    }
+
 
 }

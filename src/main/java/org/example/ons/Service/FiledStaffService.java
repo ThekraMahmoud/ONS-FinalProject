@@ -24,7 +24,7 @@ public class FiledStaffService {
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
         user.setPhoneNumber(dto.getPhoneNumber());
-        user.setRole("FIELD_STAFF");
+        user.setRole("FIELDـSTAFF");
         user.setActive(dto.isActive());
 
         authRepository.save(user);

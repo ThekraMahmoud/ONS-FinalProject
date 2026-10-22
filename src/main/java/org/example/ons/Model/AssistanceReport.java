@@ -47,6 +47,12 @@ public class AssistanceReport {
     @JoinColumn(name = "field_staff_id")
     private FieldStaff fieldStaff;
 
+    //هنا انااضفت ذي العلاقه
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "authorized_staff_id")
+    private AuthorizedStaff authorizedStaff;
+
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
