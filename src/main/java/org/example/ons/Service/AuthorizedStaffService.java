@@ -146,9 +146,21 @@ public class AuthorizedStaffService {
             throw new ApiException("supervisor has no campaign");
         }
 
-        dto.setStaffRole(AuthorizedStaffRole.REGULAR_EMPLOYEE);
+        User user = new User();
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setRole("AuthorizedStaff");
+        user.setActive(dto.isActive());
 
-        createStaff(dto, campaign.getId());
+        AuthorizedStaff employee = new AuthorizedStaff();
+        employee.setStaffRole(AuthorizedStaffRole.REGULAR_EMPLOYEE);
+        employee.setCampaign(campaign);
+
+        authRepository.save(user);
+        employee.setUser(user);
+        authorizedStaffRepository.save(employee);
     }
 
 
@@ -337,5 +349,26 @@ public class AuthorizedStaffService {
         updateReportStatus(report, nextStatus);
     }
 
+
+    public List<AssistanceReport> getStaffReports(Integer staff_id){
+        List<AssistanceReport> assistanceReports =
+                assistanceReportRepository.findAssistanceReportByAuthorizedStaff_Id(staff_id);
+
+        if(assistanceReports.isEmpty()){
+            throw  new ApiException("you dont have reports");
+        }
+        return assistanceReports;
+    }
+
+
+    public List<AssistanceReport> getStaffReportsByStatus(Integer staff_id,ReportStatus reportStatus){
+        List<AssistanceReport> assistanceReports =
+                assistanceReportRepository.findAssistanceReportByAuthorizedStaff_IdAndStatus(staff_id,reportStatus);
+
+        if(assistanceReports.isEmpty()){
+            throw  new ApiException("you dont have reports");
+        }
+        return assistanceReports;
+    }
 
 }

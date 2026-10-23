@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.ons.Api.ApiResponse;
 import org.example.ons.DTO.AuthorizedStaffDTO;
 import org.example.ons.DTO.EmployeeUpdateDTO;
+import org.example.ons.Enum.ReportStatus;
 import org.example.ons.Model.AuthorizedStaff;
 import org.example.ons.Model.User;
 import org.example.ons.Service.AuthorizedStaffService;
@@ -119,6 +120,26 @@ public class AuthorizedStaffController {
         authorizedStaffService.advanceReportStatus(staffId, reportId);
         return ResponseEntity.status(200).body(new ApiResponse("Report status updated successfully"));
 
+    }
+
+    @GetMapping("/staff/{staffId}")
+    public ResponseEntity<?> getStaffReports(
+            @PathVariable Integer staffId) {
+
+        return ResponseEntity.status(200)
+                .body(authorizedStaffService.getStaffReports(staffId));
+    }
+
+    @GetMapping("/staff/{staffId}/status/{status}")
+    public ResponseEntity<?> getStaffReportsByStatus(
+            @PathVariable Integer staffId,
+            @PathVariable ReportStatus status) {
+
+        return ResponseEntity.status(200)
+                .body(authorizedStaffService.getStaffReportsByStatus(
+                        staffId,
+                        status
+                ));
     }
 
 
