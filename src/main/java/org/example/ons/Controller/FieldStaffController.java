@@ -3,6 +3,7 @@ package org.example.ons.Controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.ons.Api.ApiResponse;
+import org.example.ons.DTO.EmployeeUpdateDTO;
 import org.example.ons.DTO.FiledStaffDTO;
 import org.example.ons.Model.FieldStaff;
 import org.example.ons.Service.FiledStaffService;
@@ -40,11 +41,12 @@ public class FieldStaffController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateStaff(
             @PathVariable Integer id,
-            @Valid @RequestBody FiledStaffDTO dto) {
+            @Valid @RequestBody EmployeeUpdateDTO dto) {
 
         fieldStaffService.updateStaff(id, dto);
 
-        return ResponseEntity.status(200).body(new ApiResponse("Field staff updated successfully"));
+        return ResponseEntity.status(200)
+                .body(new ApiResponse("Field staff updated successfully"));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -53,6 +55,12 @@ public class FieldStaffController {
         fieldStaffService.deleteStaff(id);
 
         return ResponseEntity.status(200).body(new ApiResponse("Field staff deleted successfully"));
+    }
+
+    @GetMapping("/availability")
+    public ResponseEntity<?> getAvailableFieldStaff() {
+        return ResponseEntity.status(200)
+                .body(fieldStaffService.getAvailableFieldStaff());
     }
 
 }

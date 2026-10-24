@@ -2,7 +2,9 @@ package org.example.ons.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ons.Api.ApiException;
+import org.example.ons.DTO.EmployeeUpdateDTO;
 import org.example.ons.DTO.FiledStaffDTO;
+import org.example.ons.Enum.ReportStatus;
 import org.example.ons.Model.FieldStaff;
 import org.example.ons.Model.User;
 import org.example.ons.Repository.AuthRepository;
@@ -52,7 +54,7 @@ public class FiledStaffService {
                 .orElseThrow(() -> new ApiException("field staff not found"));
     }
 
-    public void updateStaff(Integer id, FiledStaffDTO dto) {
+    public void updateStaff(Integer id, EmployeeUpdateDTO dto) {
 
         FieldStaff staff = fieldStaffRepository.findById(id)
                 .orElseThrow(() -> new ApiException("field staff not found"));
@@ -65,7 +67,6 @@ public class FiledStaffService {
         user.setActive(dto.isActive());
 
         authRepository.save(user);
-        fieldStaffRepository.save(staff);
     }
 
     public void deleteStaff(Integer id) {
@@ -75,6 +76,23 @@ public class FiledStaffService {
 
         fieldStaffRepository.delete(staff);
         authRepository.delete(staff.getUser());
+    }
+
+
+    public List<FieldStaff> getAvailableFieldStaff() {
+        List<FieldStaff> fieldStaffs =
+                fieldStaffRepository.findAvailableStaff(
+                        List.of(
+                                ReportStatus.ASSIGNED,
+                                ReportStatus.IN_PROGRESS
+                        )
+                );
+
+        if (fieldStaffs.isEmpty()) {
+            throw new ApiException("There are no available staff");
+        }
+
+        return fieldStaffs;
     }
 
 }

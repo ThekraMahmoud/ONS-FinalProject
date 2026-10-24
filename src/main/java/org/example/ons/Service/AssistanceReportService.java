@@ -2,18 +2,18 @@ package org.example.ons.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.ons.Api.ApiException;
+import org.example.ons.DTO.MergeReportsDTO;
 import org.example.ons.Enum.ReportStatus;
-import org.example.ons.Model.AssistanceReport;
-import org.example.ons.Model.Campaign;
-import org.example.ons.Model.Kiosk;
-import org.example.ons.Model.Pilgrim;
-import org.example.ons.Repository.AssistanceReportRepository;
-import org.example.ons.Repository.CampaignRepository;
-import org.example.ons.Repository.KioskRepository;
-import org.example.ons.Repository.PilgrimRepository;
+import org.example.ons.Model.*;
+import org.example.ons.Repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +22,7 @@ public class AssistanceReportService {
     private final PilgrimRepository pilgrimRepository;
     private final KioskRepository kioskRepository;
     private final CampaignRepository campaignRepository;
+    private final AuthorizedStaffRepository authorizedStaffRepository;
 
     public void createReport(AssistanceReport report) {
         Pilgrim pilgrim = pilgrimRepository.findById(
@@ -106,6 +107,119 @@ public class AssistanceReportService {
             throw new ApiException("report not found");
         }
         assistanceReportRepository.delete(report);
+    }
+
+
+    public long countReportByStatus(ReportStatus status) {
+        return assistanceReportRepository.countByStatus(status);
+    }
+
+    public long countReportByStatusForCampaign(
+            ReportStatus status,
+            Integer campaignId) {
+
+        return assistanceReportRepository
+                .countByStatusAndCampaign_Id(status, campaignId);
+    }
+
+
+    @Transactional
+    public void mergeReports(Long reportId, MergeReportsDTO dto) {
+
+        AuthorizedStaff staff = authorizedStaffRepository
+                .findAuthorizedStaffById(dto.getStaffId());
+
+        if (staff == null) {
+            throw new ApiException("staff not found");
+        }
+
+        if (!staff.getUser().isActive()) {
+            throw new ApiException("staff account is inactive");
+        }
+
+        if (staff.getCampaign() == null) {
+            throw new ApiException("staff has no campaign");
+        }
+
+        Set<Long> reportIds = new TreeSet<>(dto.getReportIds());
+        reportIds.add(reportId);
+
+        if (reportIds.size() < 2) {
+            throw new ApiException("Select at least two different reports");
+        }
+
+        List<AssistanceReport> reports =
+                assistanceReportRepository.findReportsForUpdate(reportIds);
+
+        if (reports.size() != reportIds.size()) {
+            throw new ApiException("one or more reports were not found");
+        }
+
+        // Validate every report before changing any assignment.
+        for (AssistanceReport report : reports) {
+
+            if (!report.getCampaign().getId()
+                    .equals(staff.getCampaign().getId())) {
+                throw new ApiException(
+                        "all reports must belong to the staff campaign"
+                );
+            }
+
+            if (report.getAuthorizedStaff() != null) {
+                throw new ApiException(
+                        "report " + report.getReportId() + " is already assigned"
+                );
+            }
+
+            if (report.getStatus() != ReportStatus.OPEN) {
+                throw new ApiException(
+                        "report " + report.getReportId() + " is not open"
+                );
+            }
+        }
+
+        for (AssistanceReport report : reports) {
+            report.setAuthorizedStaff(staff);
+            report.setStatus(ReportStatus.ASSIGNED);
+        }
+
+        assistanceReportRepository.saveAll(reports);
+    }
+
+    public List<AssistanceReport> getCampaignOverdueReports(Integer campaign_id){
+        Campaign campaign = campaignRepository.findCampaignById(campaign_id);
+
+        if(campaign==null){
+            throw new ApiException("campaign not found");
+        }
+
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(15);
+
+        return assistanceReportRepository
+                .findByCampaign_IdAndStatusInAndCreatedAtBefore(campaign_id,
+                        List.of(
+                                ReportStatus.OPEN,
+                                ReportStatus.ASSIGNED,
+                                ReportStatus.IN_PROGRESS
+                        ),
+                        cutoff
+                );
+    }
+
+
+    public List<AssistanceReport> getAllOverdueReports() {
+
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(15);
+
+        return assistanceReportRepository
+                .findByStatusInAndCreatedAtBefore(
+                        List.of(
+                                ReportStatus.OPEN,
+                                ReportStatus.ASSIGNED,
+                                ReportStatus.IN_PROGRESS
+                        ),
+                        cutoff
+                );
     }
 
 
