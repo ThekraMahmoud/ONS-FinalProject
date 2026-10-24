@@ -44,11 +44,12 @@ public class AuthorizedStaffController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateStaff(
             @PathVariable Integer id,
-            @Valid @RequestBody AuthorizedStaffDTO dto) {
+            @Valid @RequestBody EmployeeUpdateDTO dto) {
 
         authorizedStaffService.updateStaff(id, dto);
 
-        return ResponseEntity.status(200).body(new ApiResponse("Authorized staff updated successfully"));
+        return ResponseEntity.status(200)
+                .body(new ApiResponse("Authorized staff updated successfully"));
     }
 
     @DeleteMapping("/delete/{id}")

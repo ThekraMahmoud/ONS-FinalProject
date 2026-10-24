@@ -70,7 +70,7 @@ public class AuthorizedStaffService {
         return staff;
     }
 
-    public void updateStaff(Integer id, AuthorizedStaffDTO dto) {
+    public void updateStaff(Integer id, EmployeeUpdateDTO dto) {
 
         AuthorizedStaff staff = authorizedStaffRepository.findById(id)
                 .orElseThrow(() -> new ApiException("staff not found"));
@@ -82,9 +82,7 @@ public class AuthorizedStaffService {
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setActive(dto.isActive());
 
-        staff.setStaffRole(dto.getStaffRole());
         authRepository.save(user);
-        authorizedStaffRepository.save(staff);
     }
 
     public void deleteStaff(Integer id) {
