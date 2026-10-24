@@ -48,20 +48,8 @@ public class Kiosk {
             regexp = "^(ACTIVE|INACTIVE|MAINTENANCE)$",
             message = "Status must be ACTIVE, INACTIVE, or MAINTENANCE"
     )
-
     @Column(nullable = false, length = 20)
     private String status;
-
-
-    @NotBlank(message = "Kiosk direction is required")
-    @Pattern(
-            regexp = "^(NORTH|SOUTH|EAST|WEST)$",
-            message = "Direction must be NORTH, SOUTH, EAST, or WEST"
-    )
-    @Column(nullable = false, length = 10)
-    private String direction;
-
-
 
     @OneToMany(mappedBy = "kiosk")
     @JsonIgnore

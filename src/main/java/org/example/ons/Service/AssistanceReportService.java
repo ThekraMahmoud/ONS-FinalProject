@@ -3,11 +3,14 @@ package org.example.ons.Service;
 import lombok.RequiredArgsConstructor;
 import org.example.ons.Api.ApiException;
 import org.example.ons.DTO.MergeReportsDTO;
+import org.example.ons.Enum.AuthorizedStaffRole;
 import org.example.ons.Enum.ReportStatus;
 import org.example.ons.Model.*;
 import org.example.ons.Repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +26,7 @@ public class AssistanceReportService {
     private final KioskRepository kioskRepository;
     private final CampaignRepository campaignRepository;
     private final AuthorizedStaffRepository authorizedStaffRepository;
+    private final NotificationService notificationService;
 
     public void createReport(AssistanceReport report) {
         Pilgrim pilgrim = pilgrimRepository.findById(
@@ -51,6 +55,21 @@ public class AssistanceReportService {
         report.setCampaign(campaign);
         report.setStatus(ReportStatus.OPEN);
         assistanceReportRepository.save(report);
+        List<AuthorizedStaff> supervisors =
+                authorizedStaffRepository
+                        .findAuthorizedStaffByCampaignAndStaffRole(
+                                campaign,
+                                AuthorizedStaffRole.SUPERVISOR
+                        );
+
+        for (AuthorizedStaff supervisor : supervisors) {
+            if (supervisor.getUser().isActive()) {
+                notificationService.notifyNewReport(
+                        report,
+                        supervisor.getUser().getEmail()
+                );
+            }
+        }
     }
 
     public List<AssistanceReport> getAllReports() {
@@ -184,6 +203,20 @@ public class AssistanceReportService {
         }
 
         assistanceReportRepository.saveAll(reports);
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+
+                        for (AssistanceReport report : reports) {
+                            notificationService.notifyReportAssigned(
+                                    report,
+                                    staff.getUser().getPhoneNumber()
+                            );
+                        }
+                    }
+                }
+        );
     }
 
     public List<AssistanceReport> getCampaignOverdueReports(Integer campaign_id){
