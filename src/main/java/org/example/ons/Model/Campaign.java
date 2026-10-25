@@ -41,6 +41,10 @@ public class Campaign {
     @Column(length = 254,nullable = false,unique = true)
     private String email;
 
+
+
+    private String password;
+
     @Column(nullable = false)
     private LocalDate startDate;
 

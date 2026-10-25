@@ -71,4 +71,9 @@ public interface AssistanceReportRepository
             Campaign campaign,
             ReportStatus status
     );
+
+    List<AssistanceReport> findByStatusAndReminderSubmittedFalseAndCreatedAtLessThanEqual(
+            ReportStatus status,
+            LocalDateTime cutoff
+    );
 }

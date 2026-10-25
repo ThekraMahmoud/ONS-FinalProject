@@ -2,6 +2,7 @@
 
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiException;
+import org.example.ons.DTO.PilgrimResponseDTO;
 import org.example.ons.Model.Campaign;
 import org.example.ons.Model.Pilgrim;
 import org.example.ons.Repository.CampaignRepository;
@@ -72,5 +73,29 @@ public class PilgrimService {
             throw new ApiException("Pilgrim not found with ID: " + id);
         }
         pilgrimRepository.delete(pilgrim);
+    }
+
+    public PilgrimResponseDTO getPilgrimResponseById(Integer id) {
+
+        Pilgrim pilgrim = pilgrimRepository.findPilgrimById(id);
+
+        if (pilgrim == null) {
+            throw new ApiException("Pilgrim not found with ID: " + id);
+        }
+
+        Campaign campaign = pilgrim.getCampaign();
+
+        if (campaign == null) {
+            throw new ApiException("No campaign linked to this pilgrim");
+        }
+
+        return new PilgrimResponseDTO(
+                pilgrim.getFullName(),
+                pilgrim.getNationality(),
+                pilgrim.getPhoneNumber(),
+                pilgrim.getVisaNumber(),
+                campaign.getId(),
+                campaign.getCampaignName()
+        );
     }
 }

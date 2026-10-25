@@ -157,6 +157,7 @@ public class AuthorizedStaffService {
         AuthorizedStaff employee = new AuthorizedStaff();
         employee.setStaffRole(AuthorizedStaffRole.REGULAR_EMPLOYEE);
         employee.setCampaign(campaign);
+        employee.setSupervisor(supervisor);
 
         authRepository.save(user);
         employee.setUser(user);

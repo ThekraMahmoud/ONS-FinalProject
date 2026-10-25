@@ -52,4 +52,13 @@ public class PilgrimController {
         pilgrimService.deletePilgrim(id);
         return ResponseEntity.status(200).body(new ApiResponse("Pilgrim deleted successfully"));
     }
+
+    @GetMapping("/etPilgrimResponse/{id}")
+    public ResponseEntity<?> getPilgrimResponseById(
+            @PathVariable Integer id) {
+
+        return ResponseEntity.ok(
+                pilgrimService.getPilgrimResponseById(id)
+        );
+    }
 }
