@@ -76,4 +76,7 @@ public interface AssistanceReportRepository
             ReportStatus status,
             LocalDateTime cutoff
     );
+
+
+
 }

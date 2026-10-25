@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiException;
 import org.example.ons.Api.ApiResponse;
+import org.example.ons.DTO.CampaignAnalyticsDTO;
 import org.example.ons.Model.Campaign;
 import org.example.ons.Model.CampaignPayment;
 import org.example.ons.Service.CampaignPaymentService;
@@ -87,5 +88,22 @@ public class CampaignController {
 
         campaignService.deleteCampaign(id);
         return ResponseEntity.status(200).body(new ApiResponse("Campaign deleted successfully"));
+    }
+
+
+    @GetMapping("/{campaignId}/analytics")
+    public ResponseEntity<?> getCampaignAnalytics(@PathVariable Integer campaignId) {
+
+        CampaignAnalyticsDTO analytics = campaignService.getCampaignAnalytics(campaignId);
+        return ResponseEntity.ok(analytics);
+    }
+
+
+    @PostMapping("/{campaignId}/analytics/email")
+    public ResponseEntity<?> sendCampaignAnalyticsEmail(@PathVariable Integer campaignId) throws Exception {
+
+        campaignService.sendCampaignAnalyticsEmail(campaignId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Campaign analytics report sent successfully"));
     }
 }
