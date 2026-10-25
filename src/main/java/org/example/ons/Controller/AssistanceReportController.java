@@ -2,19 +2,25 @@ package org.example.ons.Controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.ons.Api.ApiException;
 import org.example.ons.Api.ApiResponse;
 import org.example.ons.DTO.MergeReportsDTO;
 import org.example.ons.DTO.SelfServiceReportDTO;
+import org.example.ons.Enum.AuthorizedStaffRole;
 import org.example.ons.Enum.ReportStatus;
 import org.example.ons.Model.AssistanceReport;
+import org.example.ons.Model.AuthorizedStaff;
+import org.example.ons.Model.User;
 import org.example.ons.Service.AssistanceReportService;
+import org.example.ons.Service.AuthorizedStaffService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,11 +29,14 @@ import java.util.Map;
 public class AssistanceReportController {
 
     private final AssistanceReportService assistanceReportService;
+    private final AuthorizedStaffService authorizedStaffService;
 
-    // 1. POST /api/v1/reports
     @PostMapping
     public ResponseEntity<?> createReport(
+            @AuthenticationPrincipal User user,
             @RequestBody AssistanceReport report) {
+
+        requireAdmin(user);
 
         assistanceReportService.createReport(report);
 
@@ -35,29 +44,37 @@ public class AssistanceReportController {
                 .body(new ApiResponse("Report created successfully"));
     }
 
-    // 2. GET /api/v1/reports
     @GetMapping
-    public ResponseEntity<?> getAllReports() {
+    public ResponseEntity<?> getAllReports(
+            @AuthenticationPrincipal User user) {
+
+        requireAdmin(user);
+
         return ResponseEntity.ok(
                 assistanceReportService.getAllReports()
         );
     }
 
-    // 3. GET /api/v1/reports/{reportId}
     @GetMapping("/{reportId:\\d+}")
     public ResponseEntity<?> getReportById(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
 
-        return ResponseEntity.ok(
-                assistanceReportService.getReportById(reportId)
-        );
+        AssistanceReport report =
+                assistanceReportService.getReportById(reportId);
+
+        requireReportAccess(user, report);
+
+        return ResponseEntity.ok(report);
     }
 
-    // 4. PUT /api/v1/reports/{reportId}
     @PutMapping("/{reportId:\\d+}")
     public ResponseEntity<?> updateReport(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId,
             @RequestBody AssistanceReport updatedReport) {
+
+        requireAdmin(user);
 
         assistanceReportService.updateReport(reportId, updatedReport);
 
@@ -66,18 +83,18 @@ public class AssistanceReportController {
         );
     }
 
-    // 5. PATCH /api/v1/reports/{reportId}/status
     @PatchMapping("/{reportId:\\d+}/status")
     public ResponseEntity<?> updateReportStatus(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId,
             @RequestBody Map<String, String> request) {
+
+        requireAdmin(user);
 
         String statusValue = request.get("status");
 
         if (statusValue == null || statusValue.isBlank()) {
-            throw new org.example.ons.Api.ApiException(
-                    "Status is required"
-            );
+            throw new ApiException("Status is required");
         }
 
         ReportStatus status;
@@ -87,9 +104,7 @@ public class AssistanceReportController {
                     statusValue.trim().toUpperCase()
             );
         } catch (IllegalArgumentException exception) {
-            throw new org.example.ons.Api.ApiException(
-                    "Invalid report status"
-            );
+            throw new ApiException("Invalid report status");
         }
 
         assistanceReportService.updateReportStatus(reportId, status);
@@ -99,18 +114,18 @@ public class AssistanceReportController {
         );
     }
 
-    // 6. POST /api/v1/reports/{reportId}/assign
     @PostMapping("/{reportId:\\d+}/assign")
     public ResponseEntity<?> assignReport(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId,
             @RequestBody Map<String, Integer> request) {
+
+        requireAdmin(user);
 
         Integer fieldStaffId = request.get("fieldStaffId");
 
         if (fieldStaffId == null) {
-            throw new org.example.ons.Api.ApiException(
-                    "Field staff ID is required"
-            );
+            throw new ApiException("Field staff ID is required");
         }
 
         assistanceReportService.assignReport(reportId, fieldStaffId);
@@ -120,18 +135,18 @@ public class AssistanceReportController {
         );
     }
 
-    // 7. POST /api/v1/reports/{reportId}/reassign
     @PostMapping("/{reportId:\\d+}/reassign")
     public ResponseEntity<?> reassignReport(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId,
             @RequestBody Map<String, Integer> request) {
+
+        requireAdmin(user);
 
         Integer fieldStaffId = request.get("fieldStaffId");
 
         if (fieldStaffId == null) {
-            throw new org.example.ons.Api.ApiException(
-                    "Field staff ID is required"
-            );
+            throw new ApiException("Field staff ID is required");
         }
 
         assistanceReportService.reassignReport(reportId, fieldStaffId);
@@ -141,10 +156,15 @@ public class AssistanceReportController {
         );
     }
 
-    // 8. POST /api/v1/reports/{reportId}/accept
     @PostMapping("/{reportId:\\d+}/accept")
     public ResponseEntity<?> acceptReport(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
+
+        requireAssignedStaff(
+                user,
+                assistanceReportService.getReportById(reportId)
+        );
 
         assistanceReportService.acceptReport(reportId);
 
@@ -153,10 +173,15 @@ public class AssistanceReportController {
         );
     }
 
-    // 9. POST /api/v1/reports/{reportId}/start
     @PostMapping("/{reportId:\\d+}/start")
     public ResponseEntity<?> startReport(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
+
+        requireAssignedStaff(
+                user,
+                assistanceReportService.getReportById(reportId)
+        );
 
         assistanceReportService.startReport(reportId);
 
@@ -165,10 +190,15 @@ public class AssistanceReportController {
         );
     }
 
-    // 10. POST /api/v1/reports/{reportId}/resolve
     @PostMapping("/{reportId:\\d+}/resolve")
     public ResponseEntity<?> resolveReport(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
+
+        requireAssignedStaff(
+                user,
+                assistanceReportService.getReportById(reportId)
+        );
 
         assistanceReportService.resolveReport(reportId);
 
@@ -177,10 +207,12 @@ public class AssistanceReportController {
         );
     }
 
-    // 11. POST /api/v1/reports/{reportId}/cancel
     @PostMapping("/{reportId:\\d+}/cancel")
     public ResponseEntity<?> cancelReport(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
+
+        requireAdmin(user);
 
         assistanceReportService.cancelReport(reportId);
 
@@ -189,10 +221,12 @@ public class AssistanceReportController {
         );
     }
 
-    // 12. POST /api/v1/reports/{reportId}/reopen
     @PostMapping("/{reportId:\\d+}/reopen")
     public ResponseEntity<?> reopenReport(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
+
+        requireAdmin(user);
 
         assistanceReportService.reopenReport(reportId);
 
@@ -201,61 +235,80 @@ public class AssistanceReportController {
         );
     }
 
-    // 13. GET /api/v1/reports/{reportId}/history
     @GetMapping("/{reportId:\\d+}/history")
     public ResponseEntity<?> getReportHistory(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
+
+        requireReportAccess(
+                user,
+                assistanceReportService.getReportById(reportId)
+        );
 
         return ResponseEntity.ok(
                 assistanceReportService.getReportHistory(reportId)
         );
     }
 
-    // 14. GET /api/v1/reports/{reportId}/assignees
     @GetMapping("/{reportId:\\d+}/assignees")
     public ResponseEntity<?> getReportAssignees(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
+
+        requireReportAccess(
+                user,
+                assistanceReportService.getReportById(reportId)
+        );
 
         return ResponseEntity.ok(
                 assistanceReportService.getReportAssignees(reportId)
         );
     }
 
-    // 15. GET /api/v1/reports/{reportId}/notifications
     @GetMapping("/{reportId:\\d+}/notifications")
     public ResponseEntity<?> getReportNotifications(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
+
+        requireReportAccess(
+                user,
+                assistanceReportService.getReportById(reportId)
+        );
 
         return ResponseEntity.ok(
                 assistanceReportService.getReportNotifications(reportId)
         );
     }
 
-    // 16. GET /api/v1/reports/summary
     @GetMapping("/summary")
-    public ResponseEntity<?> getReportsSummary() {
+    public ResponseEntity<?> getReportsSummary(
+            @AuthenticationPrincipal User user) {
+
+        requireAdmin(user);
+
         return ResponseEntity.ok(
                 assistanceReportService.getReportsSummary()
         );
     }
 
-    // 17. GET /api/v1/reports/statistics
     @GetMapping("/statistics")
-    public ResponseEntity<?> getReportsStatistics() {
+    public ResponseEntity<?> getReportsStatistics(
+            @AuthenticationPrincipal User user) {
+
+        requireAdmin(user);
+
         return ResponseEntity.ok(
                 assistanceReportService.getReportsStatistics()
         );
     }
 
-    // 18. GET /api/v1/reports/export
-    @GetMapping(
-            value = "/export",
-            produces = "text/csv"
-    )
-    public ResponseEntity<byte[]> exportReports() {
+    @GetMapping(value = "/export", produces = "text/csv")
+    public ResponseEntity<byte[]> exportReports(
+            @AuthenticationPrincipal User user) {
+
+        requireAdmin(user);
 
         String csv = assistanceReportService.exportReports();
-
         byte[] content = csv.getBytes(StandardCharsets.UTF_8);
 
         return ResponseEntity.ok()
@@ -269,7 +322,6 @@ public class AssistanceReportController {
                 .body(content);
     }
 
-    // إنشاء بلاغ الخدمة الذاتية - المسار الحالي
     @PostMapping("/self-service")
     public ResponseEntity<?> createSelfServiceReport(
             @Valid @RequestBody SelfServiceReportDTO dto) {
@@ -287,11 +339,12 @@ public class AssistanceReportController {
         );
     }
 
-    // المسارات القديمة للمحافظة على التوافق
-
     @PostMapping("/add")
     public ResponseEntity<?> createReportLegacy(
+            @AuthenticationPrincipal User user,
             @RequestBody AssistanceReport report) {
+
+        requireAdmin(user);
 
         assistanceReportService.createReport(report);
 
@@ -301,7 +354,11 @@ public class AssistanceReportController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<?> getAllReportsLegacy() {
+    public ResponseEntity<?> getAllReportsLegacy(
+            @AuthenticationPrincipal User user) {
+
+        requireAdmin(user);
+
         return ResponseEntity.ok(
                 assistanceReportService.getAllReports()
         );
@@ -309,17 +366,24 @@ public class AssistanceReportController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getReportByIdLegacy(
+            @AuthenticationPrincipal User user,
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(
-                assistanceReportService.getReportById(id)
-        );
+        AssistanceReport report =
+                assistanceReportService.getReportById(id);
+
+        requireReportAccess(user, report);
+
+        return ResponseEntity.ok(report);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateReportLegacy(
+            @AuthenticationPrincipal User user,
             @PathVariable Long id,
             @RequestBody AssistanceReport updatedReport) {
+
+        requireAdmin(user);
 
         assistanceReportService.updateReport(id, updatedReport);
 
@@ -330,7 +394,10 @@ public class AssistanceReportController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteReportLegacy(
+            @AuthenticationPrincipal User user,
             @PathVariable Long id) {
+
+        requireAdmin(user);
 
         assistanceReportService.deleteReport(id);
 
@@ -341,7 +408,10 @@ public class AssistanceReportController {
 
     @GetMapping("/count/status/{status}")
     public ResponseEntity<?> countReportByStatus(
+            @AuthenticationPrincipal User user,
             @PathVariable ReportStatus status) {
+
+        requireAdmin(user);
 
         return ResponseEntity.ok(
                 assistanceReportService.countReportByStatus(status)
@@ -350,8 +420,11 @@ public class AssistanceReportController {
 
     @GetMapping("/count/campaign/{campaignId}/status/{status}")
     public ResponseEntity<?> countReportByStatusForCampaign(
+            @AuthenticationPrincipal User user,
             @PathVariable Integer campaignId,
             @PathVariable ReportStatus status) {
+
+        requireCampaignAccess(user, campaignId);
 
         return ResponseEntity.ok(
                 assistanceReportService.countReportByStatusForCampaign(
@@ -362,8 +435,42 @@ public class AssistanceReportController {
 
     @PostMapping("/{reportId}/merge")
     public ResponseEntity<?> mergeReports(
+            @AuthenticationPrincipal User user,
             @PathVariable Long reportId,
             @Valid @RequestBody MergeReportsDTO dto) {
+
+        requireActiveUser(user);
+
+        if (!"ADMIN".equals(user.getRole())) {
+
+            if (!"AuthorizedStaff".equals(user.getRole())) {
+                throw new AccessDeniedException("You are not authorized");
+            }
+
+            AuthorizedStaff supervisor =
+                    authorizedStaffService.getStaffById(user.getId());
+
+            if (supervisor.getStaffRole()
+                    != AuthorizedStaffRole.SUPERVISOR) {
+                throw new AccessDeniedException(
+                        "Only supervisors can assign campaign reports"
+                );
+            }
+
+            AuthorizedStaff employee =
+                    authorizedStaffService.getStaffById(dto.getStaffId());
+
+            if (employee.getCampaign() == null) {
+                throw new AccessDeniedException(
+                        "Employee has no campaign"
+                );
+            }
+
+            requireCampaignAccess(
+                    user,
+                    employee.getCampaign().getId()
+            );
+        }
 
         assistanceReportService.mergeReports(reportId, dto);
 
@@ -374,7 +481,10 @@ public class AssistanceReportController {
 
     @GetMapping("/campaign/{campaignId}/overdue")
     public ResponseEntity<?> getOverdueReportsForCampaign(
+            @AuthenticationPrincipal User user,
             @PathVariable Integer campaignId) {
+
+        requireCampaignAccess(user, campaignId);
 
         return ResponseEntity.ok(
                 assistanceReportService.getCampaignOverdueReports(campaignId)
@@ -382,9 +492,132 @@ public class AssistanceReportController {
     }
 
     @GetMapping("/overdue")
-    public ResponseEntity<?> getAllOverdueReports() {
+    public ResponseEntity<?> getAllOverdueReports(
+            @AuthenticationPrincipal User user) {
+
+        requireAdmin(user);
+
         return ResponseEntity.ok(
                 assistanceReportService.getAllOverdueReports()
+        );
+    }
+
+    // Authorization checks only.
+
+    private void requireActiveUser(User user) {
+        if (user == null || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+    }
+
+    private void requireAdmin(User user) {
+        requireActiveUser(user);
+
+        if (!"ADMIN".equals(user.getRole())) {
+            throw new AccessDeniedException(
+                    "Only admins can access this endpoint"
+            );
+        }
+    }
+
+    private void requireCampaignAccess(
+            User user,
+            Integer campaignId) {
+
+        requireActiveUser(user);
+
+        if ("ADMIN".equals(user.getRole())) {
+            return;
+        }
+
+        if (!"AuthorizedStaff".equals(user.getRole())) {
+            throw new AccessDeniedException("You are not authorized");
+        }
+
+        AuthorizedStaff staff =
+                authorizedStaffService.getStaffById(user.getId());
+
+        if (campaignId == null
+                || staff.getCampaign() == null
+                || !campaignId.equals(staff.getCampaign().getId())) {
+
+            throw new AccessDeniedException(
+                    "You cannot access another campaign"
+            );
+        }
+    }
+
+    private void requireReportAccess(
+            User user,
+            AssistanceReport report) {
+
+        requireActiveUser(user);
+
+        if ("ADMIN".equals(user.getRole())) {
+            return;
+        }
+
+        if ("AuthorizedStaff".equals(user.getRole())) {
+
+            if (report.getCampaign() == null) {
+                throw new AccessDeniedException(
+                        "Report has no campaign"
+                );
+            }
+
+            requireCampaignAccess(
+                    user,
+                    report.getCampaign().getId()
+            );
+
+            return;
+        }
+
+        if ("FIELDـSTAFF".equals(user.getRole())
+                && report.getFieldStaff() != null
+                && user.getId().equals(
+                report.getFieldStaff().getId()
+        )) {
+            return;
+        }
+
+        throw new AccessDeniedException(
+                "You cannot access this report"
+        );
+    }
+
+    private void requireAssignedStaff(
+            User user,
+            AssistanceReport report) {
+
+        requireActiveUser(user);
+
+        if ("ADMIN".equals(user.getRole())) {
+            return;
+        }
+
+        if ("FIELDـSTAFF".equals(user.getRole())
+                && report.getFieldStaff() != null
+                && user.getId().equals(
+                report.getFieldStaff().getId()
+        )) {
+            return;
+        }
+
+        if ("AuthorizedStaff".equals(user.getRole())
+                && report.getAuthorizedStaff() != null
+                && user.getId().equals(
+                report.getAuthorizedStaff().getId()
+        )) {
+
+            requireReportAccess(user, report);
+            return;
+        }
+
+        throw new AccessDeniedException(
+                "This report is not assigned to you"
         );
     }
 }

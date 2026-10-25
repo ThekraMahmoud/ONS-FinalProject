@@ -1,6 +1,7 @@
 package org.example.ons.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.ons.Api.ApiException;
 import org.example.ons.DTO.MoyasarInvoiceDTO;
 import org.example.ons.Enum.CampaignPaymentStatus;
@@ -11,10 +12,13 @@ import org.example.ons.Repository.CampaignRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CampaignPaymentService {
@@ -22,6 +26,7 @@ public class CampaignPaymentService {
     private final CampaignRepository campaignRepository;
     private final CampaignPaymentRepository campaignPaymentRepository;
     private final MoyasarService moyasarService;
+    private final NotificationService notificationService;
 
     @Value("${moyasar.registration-fee-halalas}")
     private Long registrationFee;
@@ -178,6 +183,11 @@ public class CampaignPaymentService {
                 );
         }
 
+
+        boolean firstSuccessfulVerification =
+                status == CampaignPaymentStatus.PAID
+                        && payment.getPaidAt() == null;
+
         payment.setStatus(status);
 
         if (status == CampaignPaymentStatus.PAID) {
@@ -192,6 +202,32 @@ public class CampaignPaymentService {
             }
         }
 
-        return campaignPaymentRepository.save(payment);
+        CampaignPayment savedPayment =
+                campaignPaymentRepository.save(payment);
+
+        if (firstSuccessfulVerification) {
+
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+
+                        @Override
+                        public void afterCommit() {
+                            try {
+                                notificationService.notifyPaymentSuccessful(
+                                        savedPayment
+                                );
+                            } catch (RuntimeException exception) {
+                                log.error(
+                                        "Payment {} was confirmed, but invoice email submission failed",
+                                        savedPayment.getId(),
+                                        exception
+                                );
+                            }
+                        }
+                    }
+            );
+        }
+
+        return savedPayment;
     }
 }

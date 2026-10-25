@@ -9,6 +9,7 @@ import org.example.ons.Enum.AuthorizedStaffRole;
 import org.example.ons.Enum.ReportStatus;
 import org.example.ons.Model.*;
 import org.example.ons.Repository.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,10 +30,12 @@ public class AuthorizedStaffService {
 
         AuthorizedStaff staff = new AuthorizedStaff();
 
+        String hash = new BCryptPasswordEncoder().encode(dto.getPassword());
+
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        user.setPassword(hash);
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setRole("AuthorizedStaff");
         user.setActive(dto.isActive());
@@ -146,10 +149,12 @@ public class AuthorizedStaffService {
             throw new ApiException("supervisor has no campaign");
         }
 
+        String hash = new BCryptPasswordEncoder().encode(dto.getPassword());
+
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        user.setPassword(hash);
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setRole("AuthorizedStaff");
         user.setActive(dto.isActive());

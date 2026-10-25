@@ -1,6 +1,7 @@
 package org.example.ons.Config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -33,25 +34,59 @@ public class Configuration {
                 .authorizeHttpRequests(auth -> auth
 
 
-                         .requestMatchers("").permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/reports/self-service",
+                                "/report/self-service",
+                                "/api/v1/campaigns/add",
+                                "/api/v1/payments/campaign/{campaignId}",
+                                "/api/v1/payments/campaign/{campaignId}/{paymentId}/verify"
+                        ).permitAll()
 
-                         .requestMatchers("").hasAuthority("ADMIN")
+                        .requestMatchers(
+                                "/api/v1/authorized-staff/create/{campaignId}",
+                                "/api/v1/authorized-staff/get-all",
+                                "/api/v1/authorized-staff/get/{id:\\d+}",
+                                "/api/v1/authorized-staff/update/{id:\\d+}",
+                                "/api/v1/authorized-staff/delete/{id:\\d+}",
+                                "/notification/add",
+                                "/notification/get",
+                                "/notification/get/{id}",
+                                "/notification/update/{id}",
+                                "/notification/delete/{id}"
+                        ).hasAuthority("ADMIN")
 
-                         .requestMatchers("").hasAuthority("AuthorizedStaff")
+                        .requestMatchers(
+                                "/api/v1/authorized-staff/**"
+                        ).hasAuthority("AuthorizedStaff")
 
-                         .requestMatchers("").hasAuthority("FIELDـSTAFF")
+//                        .requestMatchers("").hasAuthority("FIELDـSTAFF")
+//
+//                        .requestMatchers("").hasAnyAuthority(
+//                                "ADMIN", "AuthorizedStaff"
+//                        )
+//
+//                        .requestMatchers("").hasAnyAuthority(
+//                                "ADMIN", "FIELDـSTAFF"
+//                        )
+//
+//                        .requestMatchers("").hasAnyAuthority(
+//                                "ADMIN", "AuthorizedStaff", "FIELDـSTAFF"
+//                        )
 
-                         .requestMatchers("").hasAnyAuthority(
-                                 "ADMIN", "AuthorizedStaff"
-                         )
-
-                         .requestMatchers("").hasAnyAuthority(
-                                 "ADMIN", "FIELDـSTAFF"
-                         )
-
-                         .requestMatchers("").hasAnyAuthority(
-                                 "ADMIN", "AuthorizedStaff", "FIELDـSTAFF"
-                         )
+                        .requestMatchers(
+                                "/api/v1/reports",
+                                "/api/v1/reports/**",
+                                "/report",
+                                "/report/**","/api/v1/map/markers",
+                                "/api/v1/map/nearest-kiosk",
+                                "/api/v1/map/route",
+                                "/api/v1/map/kiosks/{kioskId}/nearest-place"
+                        ).hasAnyAuthority(
+                                "ADMIN",
+                                "AuthorizedStaff",
+                                "FIELDـSTAFF"
+                        )
 
                         .anyRequest().authenticated()
                 )

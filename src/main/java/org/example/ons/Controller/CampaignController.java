@@ -1,5 +1,7 @@
         package org.example.ons.Controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiException;
@@ -27,10 +29,21 @@ public class CampaignController {
 
     @PostMapping("/add")
     public ResponseEntity<?> createCampaign(
-            @Valid @RequestBody Campaign campaign) {
+            @Valid @RequestBody Campaign campaign,
+            HttpServletRequest request) {
 
         Campaign savedCampaign =
                 campaignService.createCampaign(campaign);
+        HttpSession session = request.getSession();
+
+        request.changeSessionId();
+
+        session.setAttribute(
+                "registrationCampaignId",
+                savedCampaign.getId()
+        );
+
+        session.setMaxInactiveInterval(30 * 60);
 
         try {
             CampaignPayment payment =
