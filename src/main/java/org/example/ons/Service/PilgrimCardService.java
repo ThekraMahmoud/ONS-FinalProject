@@ -1,4 +1,4 @@
-        package org.example.ons.Service;
+package org.example.ons.Service;
 
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiException;
@@ -7,6 +7,7 @@ import org.example.ons.Model.PilgrimCard;
 import org.example.ons.Repository.PilgrimCardRepository;
 import org.example.ons.Repository.PilgrimRepository;
 import org.springframework.stereotype.Service;
+import org.example.ons.DTO.VerifyPilgrimDTO;
 
 import java.util.List;
 
@@ -35,7 +36,6 @@ public class PilgrimCardService {
         pilgrimCardRepository.save(pilgrimCard);
     }
 
-
     // Get All Pilgrim Cards
     public List<PilgrimCard> getAllPilgrimCards() {
         return pilgrimCardRepository.findAll();
@@ -47,21 +47,65 @@ public class PilgrimCardService {
                 pilgrimCardRepository.findPilgrimCardById(id);
 
         if (pilgrimCard == null) {
-            throw new ApiException("Pilgrim card not found with ID: " + id
+            throw new ApiException(
+                    "Pilgrim card not found with ID: " + id
             );
         }
 
         return pilgrimCard;
     }
 
-    public void updatePilgrimCard(Integer id, PilgrimCard updatedPilgrimCard) {
+    // Identify Pilgrim using the card number extracted from QR
+    public Pilgrim identifyPilgrimByCardNumber(String cardNumber) {
 
+        if (cardNumber == null || cardNumber.isBlank()) {
+            throw new ApiException("Card number is required");
+        }
+
+        PilgrimCard pilgrimCard =
+                pilgrimCardRepository.findPilgrimCardByCardNumber(
+                        cardNumber.trim()
+                );
+
+        if (pilgrimCard == null) {
+            throw new ApiException("Pilgrim card not found");
+        }
+
+        if (!"ACTIVE".equals(pilgrimCard.getStatus())) {
+            throw new ApiException("Pilgrim card is not active");
+        }
+
+        Pilgrim pilgrim = pilgrimCard.getPilgrim();
+
+        if (pilgrim == null) {
+            throw new ApiException(
+                    "No pilgrim is associated with this card"
+            );
+        }
+
+        return pilgrim;
+    }
+
+    // Update Pilgrim Card
+    public void updatePilgrimCard(
+            Integer id,
+            PilgrimCard updatedPilgrimCard
+    ) {
         PilgrimCard existingPilgrimCard = getPilgrimCardById(id);
 
-        existingPilgrimCard.setCardNumber(updatedPilgrimCard.getCardNumber());
-        existingPilgrimCard.setCardType(updatedPilgrimCard.getCardType());
-        existingPilgrimCard.setStatus(updatedPilgrimCard.getStatus());
-        existingPilgrimCard.setImageReference(updatedPilgrimCard.getImageReference());
+        existingPilgrimCard.setCardNumber(
+                updatedPilgrimCard.getCardNumber()
+        );
+        existingPilgrimCard.setCardType(
+                updatedPilgrimCard.getCardType()
+        );
+        existingPilgrimCard.setStatus(
+                updatedPilgrimCard.getStatus()
+        );
+        existingPilgrimCard.setImageReference(
+                updatedPilgrimCard.getImageReference()
+        );
+
         pilgrimCardRepository.save(existingPilgrimCard);
     }
 
@@ -70,4 +114,48 @@ public class PilgrimCardService {
         PilgrimCard pilgrimCard = getPilgrimCardById(id);
         pilgrimCardRepository.delete(pilgrimCard);
     }
+
+    public Pilgrim verifyPilgrimIdentity(VerifyPilgrimDTO dto) {
+
+        if (dto == null
+                || dto.getVisaNumber() == null
+                || dto.getVisaNumber().isBlank()
+                || dto.getCardNumber() == null
+                || dto.getCardNumber().isBlank()) {
+            throw new ApiException(
+                    "Visa number and card number are required"
+            );
+        }
+
+        PilgrimCard card =
+                pilgrimCardRepository.findPilgrimCardByCardNumber(
+                        dto.getCardNumber().trim()
+                );
+
+        if (card == null) {
+            throw new ApiException("Pilgrim card not found");
+        }
+
+        if (!"ACTIVE".equals(card.getStatus())) {
+            throw new ApiException("Pilgrim card is not active");
+        }
+
+        Pilgrim pilgrim = card.getPilgrim();
+
+        if (pilgrim == null) {
+            throw new ApiException(
+                    "No pilgrim is associated with this card"
+            );
+        }
+
+        if (!pilgrim.getVisaNumber().equals(
+                dto.getVisaNumber().trim())) {
+            throw new ApiException(
+                    "Visa number does not match the card holder"
+            );
+        }
+
+        return pilgrim;
+    }
+
 }
