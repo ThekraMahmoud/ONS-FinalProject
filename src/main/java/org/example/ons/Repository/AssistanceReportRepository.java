@@ -26,6 +26,9 @@ public interface AssistanceReportRepository
 
     List<AssistanceReport> findAssistanceReportByKiosk(Kiosk kiosk);
 
+    List<AssistanceReport> findByPilgrim_Id(Integer pilgrimId);
+
+
     long countByKiosk(Kiosk kiosk);
 
     List<AssistanceReport> findAssistanceReportByAuthorizedStaff_IdAndStatus(
@@ -71,4 +74,6 @@ public interface AssistanceReportRepository
             Campaign campaign,
             ReportStatus status
     );
+
+    List<AssistanceReport> findByCampaign_Id(Integer campaignId);
 }

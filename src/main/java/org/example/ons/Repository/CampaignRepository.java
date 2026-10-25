@@ -9,5 +9,4 @@ public interface CampaignRepository extends JpaRepository<Campaign, Integer> {
 
     Campaign findCampaignById(Integer campaignId);
 
-
 }
