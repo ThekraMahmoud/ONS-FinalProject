@@ -15,11 +15,17 @@ import java.util.List;
 public class CampaignService {
 
     private final CampaignRepository campaignRepository;
+    private final NotificationService notificationService;
 
     // Create Campaign
     public void createCampaign(Campaign campaign) {
         campaign.setStatus("PLANNED");
         campaignRepository.save(campaign);
+
+        notificationService.notifyCampaignAdded(
+                campaign,
+                campaign.getEmail()
+        );
 
     }
 
@@ -52,6 +58,7 @@ public class CampaignService {
         existingCampaign.setStartDate(updatedCampaign.getStartDate());
         existingCampaign.setEndDate(updatedCampaign.getEndDate());
         existingCampaign.setStatus(updatedCampaign.getStatus());
+        existingCampaign.setEmail(updatedCampaign.getEmail());
 
         campaignRepository.save(existingCampaign);
     }

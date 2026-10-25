@@ -2,6 +2,7 @@
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -33,6 +34,12 @@ public class Campaign {
     )
     @Column(length = 16)
     private String contactNumber;
+
+    @NotBlank(message = "Campaign email is required")
+    @Email(message = "Campaign email must be valid")
+    @Size(max = 254, message = "Campaign email must not exceed 254 characters")
+    @Column(length = 254,nullable = false,unique = true)
+    private String email;
 
     @Column(nullable = false)
     private LocalDate startDate;
