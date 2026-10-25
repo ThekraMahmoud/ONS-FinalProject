@@ -157,6 +157,7 @@ public class AuthorizedStaffService {
         AuthorizedStaff employee = new AuthorizedStaff();
         employee.setStaffRole(AuthorizedStaffRole.REGULAR_EMPLOYEE);
         employee.setCampaign(campaign);
+        employee.setSupervisor(supervisor);
 
         authRepository.save(user);
         employee.setUser(user);
@@ -256,6 +257,10 @@ public class AuthorizedStaffService {
         throw new ApiException("Authorized staff not found");
     }
 
+        if(!staff.getUser().isActive()){
+            throw new ApiException("the authorized staff not active");
+        }
+
     AssistanceReport report = assistanceReportRepository.findAssistanceReportByReportId(reportId);
         if (report == null) {
         throw new ApiException("Assistance report not found");
@@ -272,6 +277,20 @@ public class AuthorizedStaffService {
                 "This report is no longer available for acceptance"
         );
     }
+
+        if (staff.getCampaign() == null ||
+                report.getCampaign() == null ||
+                !staff.getCampaign().getId()
+                        .equals(report.getCampaign().getId())) {
+
+            throw new ApiException(
+                    "This report does not belong to your campaign"
+            );
+        }
+
+        if (report.getAuthorizedStaff() != null) {
+            throw new ApiException("This report is already assigned");
+        }
         report.setStatus(ReportStatus.ASSIGNED);
         report.setAuthorizedStaff(staff);
 

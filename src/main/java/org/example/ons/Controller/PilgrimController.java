@@ -175,4 +175,13 @@ public class PilgrimController {
                 )
         );
     }
+
+    @GetMapping("/etPilgrimResponse/{id}")
+    public ResponseEntity<?> getPilgrimResponseById(
+            @PathVariable Integer id) {
+
+        return ResponseEntity.ok(
+                pilgrimService.getPilgrimResponseById(id)
+        );
+    }
 }

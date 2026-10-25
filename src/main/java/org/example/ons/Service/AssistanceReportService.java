@@ -1,11 +1,13 @@
 package org.example.ons.Service;
 import org.example.ons.Enum.NotificationStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.example.ons.Model.Notification;
 import org.example.ons.Model.ReportStatusHistory;
 import org.example.ons.Repository.NotificationRepository;
 import org.example.ons.Repository.ReportStatusHistoryRepository;
 import org.example.ons.Repository.FieldStaffRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.ons.Api.ApiException;
 import org.example.ons.DTO.MergeReportsDTO;
 import org.example.ons.DTO.SelfServiceReportDTO;
@@ -13,6 +15,7 @@ import org.example.ons.Enum.AuthorizedStaffRole;
 import org.example.ons.Enum.ReportStatus;
 import org.example.ons.Model.*;
 import org.example.ons.Repository.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -28,6 +31,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AssistanceReportService {
@@ -85,6 +89,10 @@ public class AssistanceReportService {
 
         if (campaign == null) {
             throw new ApiException("Campaign not found");
+        }
+
+        if (report.getReminderSubmitted() == null) {
+            report.setReminderSubmitted(false);
         }
 
         report.setPilgrim(pilgrim);
@@ -460,13 +468,65 @@ public class AssistanceReportService {
 
     @Transactional
     public void updateReportStatus(Long reportId, ReportStatus newStatus) {
-
         if (newStatus == null) {
             throw new ApiException("Report status is required");
         }
 
         AssistanceReport report = getReportById(reportId);
         changeReportStatus(report, newStatus);
+    }
+
+    @Scheduled(fixedDelay = 60_000)
+    @Transactional
+    public void sendOpenReportReminders() {
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(7);
+
+        List<AssistanceReport> reports =
+                assistanceReportRepository
+                        .findByStatusAndReminderSubmittedFalseAndCreatedAtLessThanEqual(
+                                ReportStatus.OPEN,
+                                cutoff
+                        );
+
+        for (AssistanceReport report : reports) {
+            try {
+                List<AuthorizedStaff> supervisors =
+                        authorizedStaffRepository
+                                .findAuthorizedStaffByCampaignAndStaffRole(
+                                        report.getCampaign(),
+                                        AuthorizedStaffRole.SUPERVISOR
+                                );
+
+                boolean submitted = false;
+
+                for (AuthorizedStaff supervisor : supervisors) {
+                    if (supervisor.getUser() != null
+                            && supervisor.getUser().isActive()
+                            && supervisor.getUser().getEmail() != null
+                            && !supervisor.getUser().getEmail().isBlank()) {
+
+                        notificationService.notifyOpenReportReminder(
+                                report,
+                                supervisor.getUser().getEmail()
+                        );
+
+                        submitted = true;
+                    }
+                }
+
+                if (submitted) {
+                    report.setReminderSubmitted(true);
+                    assistanceReportRepository.save(report);
+                }
+
+            } catch (ApiException e) {
+                log.warn(
+                        "Could not submit reminder for report {}: {}",
+                        report.getReportId(),
+                        e.getMessage()
+                );
+            }
+        }
     }
 
 

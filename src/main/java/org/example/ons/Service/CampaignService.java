@@ -31,11 +31,20 @@ public class CampaignService {
     private final AccommodationRepository accommodationRepository;
     private final AuthorizedStaffRepository authorizedStaffRepository;
     private final AuthorizedStaffService authorizedStaffService;
+    private final NotificationService notificationService;
 
     // Create campaign
-    public void createCampaign(Campaign campaign) {
+    public Campaign createCampaign(Campaign campaign) {
         campaign.setStatus("PLANNED");
-        campaignRepository.save(campaign);
+
+        Campaign savedCampaign = campaignRepository.save(campaign);
+
+        notificationService.notifyCampaignAdded(
+                savedCampaign,
+                savedCampaign.getEmail()
+        );
+
+        return savedCampaign;
     }
 
     // Get all campaigns
@@ -56,11 +65,13 @@ public class CampaignService {
         existingCampaign.setContactNumber(updatedCampaign.getContactNumber());
         existingCampaign.setStartDate(updatedCampaign.getStartDate());
         existingCampaign.setEndDate(updatedCampaign.getEndDate());
+        existingCampaign.setStatus(updatedCampaign.getStatus());
+        existingCampaign.setEmail(updatedCampaign.getEmail());
 
         campaignRepository.save(existingCampaign);
     }
 
-    // Delete campaign - existing functionality
+    // Delete campaign
     public void deleteCampaign(Integer id) {
         Campaign campaign = getRequiredCampaign(id);
         campaignRepository.delete(campaign);
@@ -102,7 +113,7 @@ public class CampaignService {
         return authorizedStaffRepository.findByCampaign_Id(campaignId);
     }
 
-    // Add a supervisor to a campaign using the existing service
+    // Add a supervisor to a campaign
     public void addStaffToCampaign(
             Integer campaignId,
             AuthorizedStaffDTO staffDTO
