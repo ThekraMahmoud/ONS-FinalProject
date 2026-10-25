@@ -30,7 +30,7 @@ public class AssistanceReport {
     private LocalDateTime createdAt;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean reminderSubmitted = false;
+    private Boolean reminderSubmitted = false;
 
     private LocalDateTime pickupTime;
 

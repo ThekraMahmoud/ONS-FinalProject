@@ -53,6 +53,10 @@ public class AssistanceReportService {
             throw new ApiException("campaign not found");
         }
 
+        if (report.getReminderSubmitted() == null) {
+            report.setReminderSubmitted(false);
+        }
+
         report.setPilgrim(pilgrim);
         report.setKiosk(kiosk);
         report.setCampaign(campaign);
