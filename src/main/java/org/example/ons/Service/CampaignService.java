@@ -18,15 +18,18 @@ public class CampaignService {
     private final NotificationService notificationService;
 
     // Create Campaign
-    public void createCampaign(Campaign campaign) {
+    public Campaign createCampaign(Campaign campaign) {
+
         campaign.setStatus("PLANNED");
-        campaignRepository.save(campaign);
+
+        Campaign savedCampaign = campaignRepository.save(campaign);
 
         notificationService.notifyCampaignAdded(
-                campaign,
-                campaign.getEmail()
+                savedCampaign,
+                savedCampaign.getEmail()
         );
 
+        return savedCampaign;
     }
 
     // Get All Campaigns
