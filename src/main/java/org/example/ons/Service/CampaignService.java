@@ -41,6 +41,7 @@ public class CampaignService {
 
     // Create Campaign
     public Campaign createCampaign(Campaign campaign) {
+        campaign.setId(null);
         campaign.setStatus("PLANNED");
 
         Campaign savedCampaign = campaignRepository.save(campaign);

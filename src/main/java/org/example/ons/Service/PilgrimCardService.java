@@ -1,26 +1,46 @@
 package org.example.ons.Service;
 
-import lombok.AllArgsConstructor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import org.example.ons.Api.ApiException;
+import org.example.ons.DTO.VerifyPilgrimDTO;
+import org.example.ons.Enum.AuthorizedStaffRole;
+import org.example.ons.Model.AuthorizedStaff;
 import org.example.ons.Model.Pilgrim;
 import org.example.ons.Model.PilgrimCard;
+import org.example.ons.Model.User;
+import org.example.ons.Repository.AuthorizedStaffRepository;
 import org.example.ons.Repository.PilgrimCardRepository;
 import org.example.ons.Repository.PilgrimRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.example.ons.DTO.VerifyPilgrimDTO;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PilgrimCardService {
 
     private final PilgrimCardRepository pilgrimCardRepository;
     private final PilgrimRepository pilgrimRepository;
+    private final AuthorizedStaffRepository authorizedStaffRepository;
 
-    // Create Pilgrim Card
-    public void createPilgrimCard(Integer pilgrimId, PilgrimCard pilgrimCard) {
-        Pilgrim pilgrim = pilgrimRepository.findPilgrimById(pilgrimId);
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Transactional
+    public void createPilgrimCard(
+            User user,
+            Integer pilgrimId,
+            PilgrimCard pilgrimCard) {
+
+        requireActiveUser(user);
+
+        Pilgrim pilgrim =
+                pilgrimRepository.findPilgrimById(pilgrimId);
 
         if (pilgrim == null) {
             throw new ApiException(
@@ -28,128 +48,163 @@ public class PilgrimCardService {
             );
         }
 
+        requireCampaignAccess(user, pilgrim, true);
+
         if (pilgrim.getPilgrimCard() != null) {
-            throw new ApiException("This pilgrim already has a card");
-        }
-
-        pilgrimCard.setPilgrim(pilgrim);
-        pilgrimCardRepository.save(pilgrimCard);
-    }
-
-    // Get All Pilgrim Cards
-    public List<PilgrimCard> getAllPilgrimCards() {
-        return pilgrimCardRepository.findAll();
-    }
-
-    // Get Pilgrim Card By ID
-    public PilgrimCard getPilgrimCardById(Integer id) {
-        PilgrimCard pilgrimCard =
-                pilgrimCardRepository.findPilgrimCardById(id);
-
-        if (pilgrimCard == null) {
             throw new ApiException(
-                    "Pilgrim card not found with ID: " + id
+                    "This pilgrim already has a card"
             );
         }
 
-        return pilgrimCard;
-    }
-
-    // Identify Pilgrim using the card number extracted from QR
-    public Pilgrim identifyPilgrimByCardNumber(String cardNumber) {
-
-        if (cardNumber == null || cardNumber.isBlank()) {
-            throw new ApiException("Card number is required");
+        if (pilgrimCard.getId() == null
+                || pilgrimCard.getId() <= 0) {
+            throw new ApiException(
+                    "A positive card ID is required"
+            );
         }
 
-        PilgrimCard pilgrimCard =
+        if (pilgrimCardRepository.existsById(
+                pilgrimCard.getId()
+        )) {
+            throw new ApiException(
+                    "This card ID already exists"
+            );
+        }
+
+        pilgrimCard.setPilgrim(pilgrim);
+
+        // Insert a new card; never merge over an existing card.
+        entityManager.persist(pilgrimCard);
+    }
+
+    public List<PilgrimCard> getAllPilgrimCards(User user) {
+
+        requireActiveUser(user);
+
+        if (!"ADMIN".equals(user.getRole())) {
+            throw new AccessDeniedException(
+                    "Only admins can view all pilgrim cards"
+            );
+        }
+
+        return pilgrimCardRepository.findAll();
+    }
+
+    public PilgrimCard getPilgrimCardById(
+            User user,
+            Integer cardId) {
+
+        requireActiveUser(user);
+
+        PilgrimCard card = getRequiredCard(cardId);
+
+        requireCampaignAccess(
+                user,
+                card.getPilgrim(),
+                false
+        );
+
+        return card;
+    }
+
+    @Transactional
+    public void updatePilgrimCard(
+            User user,
+            Integer cardId,
+            PilgrimCard updatedCard) {
+
+        requireActiveUser(user);
+
+        PilgrimCard card = getRequiredCard(cardId);
+
+        requireCampaignAccess(
+                user,
+                card.getPilgrim(),
+                true
+        );
+
+        card.setCardNumber(updatedCard.getCardNumber());
+        card.setCardType(updatedCard.getCardType());
+        card.setStatus(updatedCard.getStatus());
+        card.setImageReference(updatedCard.getImageReference());
+
+        pilgrimCardRepository.save(card);
+    }
+
+    @Transactional
+    public void deletePilgrimCard(
+            User user,
+            Integer cardId) {
+
+        requireActiveUser(user);
+
+        PilgrimCard card = getRequiredCard(cardId);
+
+        requireCampaignAccess(
+                user,
+                card.getPilgrim(),
+                true
+        );
+
+        pilgrimCardRepository.delete(card);
+    }
+
+    public Pilgrim identifyPilgrimByCardNumber(
+            String cardNumber) {
+
+        if (cardNumber == null || cardNumber.isBlank()) {
+            throw new ApiException(
+                    "Card number is required"
+            );
+        }
+
+        PilgrimCard card =
                 pilgrimCardRepository.findPilgrimCardByCardNumber(
                         cardNumber.trim()
                 );
 
-        if (pilgrimCard == null) {
-            throw new ApiException("Pilgrim card not found");
+        if (card == null) {
+            throw new ApiException(
+                    "Pilgrim card not found"
+            );
         }
 
-        if (!"ACTIVE".equals(pilgrimCard.getStatus())) {
-            throw new ApiException("Pilgrim card is not active");
+        if (!"ACTIVE".equals(card.getStatus())) {
+            throw new ApiException(
+                    "Pilgrim card is not active"
+            );
         }
 
-        Pilgrim pilgrim = pilgrimCard.getPilgrim();
-
-        if (pilgrim == null) {
+        if (card.getPilgrim() == null) {
             throw new ApiException(
                     "No pilgrim is associated with this card"
             );
         }
 
-        return pilgrim;
+        return card.getPilgrim();
     }
 
-    // Update Pilgrim Card
-    public void updatePilgrimCard(
-            Integer id,
-            PilgrimCard updatedPilgrimCard
-    ) {
-        PilgrimCard existingPilgrimCard = getPilgrimCardById(id);
-
-        existingPilgrimCard.setCardNumber(
-                updatedPilgrimCard.getCardNumber()
-        );
-        existingPilgrimCard.setCardType(
-                updatedPilgrimCard.getCardType()
-        );
-        existingPilgrimCard.setStatus(
-                updatedPilgrimCard.getStatus()
-        );
-        existingPilgrimCard.setImageReference(
-                updatedPilgrimCard.getImageReference()
-        );
-
-        pilgrimCardRepository.save(existingPilgrimCard);
-    }
-
-    // Delete Pilgrim Card
-    public void deletePilgrimCard(Integer id) {
-        PilgrimCard pilgrimCard = getPilgrimCardById(id);
-        pilgrimCardRepository.delete(pilgrimCard);
-    }
-
-    public Pilgrim verifyPilgrimIdentity(VerifyPilgrimDTO dto) {
+    public Pilgrim verifyPilgrimIdentity(
+            VerifyPilgrimDTO dto) {
 
         if (dto == null
                 || dto.getVisaNumber() == null
                 || dto.getVisaNumber().isBlank()
                 || dto.getCardNumber() == null
                 || dto.getCardNumber().isBlank()) {
+
             throw new ApiException(
                     "Visa number and card number are required"
             );
         }
 
-        PilgrimCard card =
-                pilgrimCardRepository.findPilgrimCardByCardNumber(
-                        dto.getCardNumber().trim()
-                );
-
-        if (card == null) {
-            throw new ApiException("Pilgrim card not found");
-        }
-
-        if (!"ACTIVE".equals(card.getStatus())) {
-            throw new ApiException("Pilgrim card is not active");
-        }
-
-        Pilgrim pilgrim = card.getPilgrim();
-
-        if (pilgrim == null) {
-            throw new ApiException(
-                    "No pilgrim is associated with this card"
-            );
-        }
+        Pilgrim pilgrim = identifyPilgrimByCardNumber(
+                dto.getCardNumber()
+        );
 
         if (!pilgrim.getVisaNumber().equals(
-                dto.getVisaNumber().trim())) {
+                dto.getVisaNumber().trim()
+        )) {
             throw new ApiException(
                     "Visa number does not match the card holder"
             );
@@ -158,4 +213,75 @@ public class PilgrimCardService {
         return pilgrim;
     }
 
+    private PilgrimCard getRequiredCard(Integer cardId) {
+
+        PilgrimCard card =
+                pilgrimCardRepository.findPilgrimCardById(
+                        cardId
+                );
+
+        if (card == null) {
+            throw new ApiException(
+                    "Pilgrim card not found with ID: " + cardId
+            );
+        }
+
+        return card;
+    }
+
+    private void requireActiveUser(User user) {
+
+        if (user == null || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+    }
+
+    private void requireCampaignAccess(
+            User user,
+            Pilgrim pilgrim,
+            boolean writing) {
+
+        requireActiveUser(user);
+
+        if (!writing && "ADMIN".equals(user.getRole())) {
+            return;
+        }
+
+        if (!"AuthorizedStaff".equals(user.getRole())) {
+            throw new AccessDeniedException(
+                    "Only campaign staff can access this card"
+            );
+        }
+
+        AuthorizedStaff staff = authorizedStaffRepository
+                .findById(user.getId())
+                .orElseThrow(
+                        () -> new AccessDeniedException(
+                                "Campaign staff account not found"
+                        )
+                );
+
+        if (writing
+                && staff.getStaffRole()
+                != AuthorizedStaffRole.SUPERVISOR) {
+
+            throw new AccessDeniedException(
+                    "Only supervisors can manage pilgrim cards"
+            );
+        }
+
+        if (staff.getCampaign() == null
+                || pilgrim == null
+                || pilgrim.getCampaign() == null
+                || !staff.getCampaign().getId().equals(
+                pilgrim.getCampaign().getId()
+        )) {
+
+            throw new AccessDeniedException(
+                    "This pilgrim does not belong to your campaign"
+            );
+        }
+    }
 }

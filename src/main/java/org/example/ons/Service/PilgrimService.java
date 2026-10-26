@@ -3,172 +3,259 @@ package org.example.ons.Service;
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiException;
 import org.example.ons.DTO.PilgrimResponseDTO;
+import org.example.ons.DTO.VerifyPilgrimDTO;
+import org.example.ons.Enum.AuthorizedStaffRole;
 import org.example.ons.Model.Accommodation;
 import org.example.ons.Model.AssistanceReport;
+import org.example.ons.Model.AuthorizedStaff;
 import org.example.ons.Model.Campaign;
 import org.example.ons.Model.Pilgrim;
+import org.example.ons.Model.User;
+import org.example.ons.Repository.AccommodationRepository;
 import org.example.ons.Repository.AssistanceReportRepository;
 import org.example.ons.Repository.CampaignRepository;
 import org.example.ons.Repository.PilgrimRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class PilgrimService {
 
     private final PilgrimRepository pilgrimRepository;
     private final CampaignRepository campaignRepository;
     private final AssistanceReportRepository assistanceReportRepository;
+    private final AccommodationRepository accommodationRepository;
+    private final AuthorizedStaffService authorizedStaffService;
+    private final PilgrimCardService pilgrimCardService;
 
-    // Create Pilgrim
-    public void createPilgrim(Integer campaignId, Pilgrim pilgrim) {
-        Campaign campaign = campaignRepository.findCampaignById(campaignId);
+    @Transactional
+    public void createPilgrim(User user, Pilgrim pilgrim) {
 
-        if (campaign == null) {
-            throw new ApiException("Campaign not found with ID: " + campaignId);
-        }
+        Campaign campaign = getSupervisorCampaign(user);
 
+        Accommodation accommodation = getCampaignAccommodation(
+                campaign.getId(),
+                pilgrim.getAccommodation()
+        );
+
+        pilgrim.setId(null);
         pilgrim.setCampaign(campaign);
+        pilgrim.setAccommodation(accommodation);
+
         pilgrimRepository.save(pilgrim);
     }
 
-    // Get All Pilgrims
-    public List<Pilgrim> getAllPilgrims() {
+    public List<Pilgrim> getAllPilgrims(User user) {
+
+        requireActiveUser(user);
+
+        if (!"ADMIN".equals(user.getRole())) {
+            throw new AccessDeniedException(
+                    "Only admins can view all pilgrims"
+            );
+        }
+
         return pilgrimRepository.findAll();
     }
 
-    // Get Pilgrim By ID
-    public Pilgrim getPilgrimById(Integer id) {
-        Pilgrim pilgrim = pilgrimRepository.findPilgrimById(id);
+    public Pilgrim getPilgrimById(
+            User user,
+            Integer pilgrimId) {
 
-        if (pilgrim == null) {
-            throw new ApiException("Pilgrim not found with ID: " + id);
-        }
-
-        return pilgrim;
+        return getAccessiblePilgrim(user, pilgrimId);
     }
 
-    // Get Campaign By Pilgrim ID
-    public Campaign getPilgrimCampaign(Integer pilgrimId) {
-        Pilgrim pilgrim = pilgrimRepository.findPilgrimById(pilgrimId);
+    public Campaign getPilgrimCampaign(
+            User user,
+            Integer pilgrimId) {
 
-        if (pilgrim == null) {
-            throw new ApiException("Pilgrim not found with ID: " + pilgrimId);
-        }
+        Pilgrim pilgrim = getAccessiblePilgrim(user, pilgrimId);
 
         if (pilgrim.getCampaign() == null) {
-            throw new ApiException("No campaign associated with this pilgrim");
+            throw new ApiException(
+                    "No campaign associated with this pilgrim"
+            );
         }
 
         return pilgrim.getCampaign();
     }
 
-    // Get Accommodation By Pilgrim ID
-    public Accommodation getPilgrimAccommodation(Integer pilgrimId) {
-        Pilgrim pilgrim = pilgrimRepository.findPilgrimById(pilgrimId);
+    public Accommodation getPilgrimAccommodation(
+            User user,
+            Integer pilgrimId) {
 
-        if (pilgrim == null) {
-            throw new ApiException("Pilgrim not found with ID: " + pilgrimId);
-        }
+        Pilgrim pilgrim = getAccessiblePilgrim(user, pilgrimId);
 
         if (pilgrim.getAccommodation() == null) {
-            throw new ApiException("No accommodation associated with this pilgrim");
+            throw new ApiException(
+                    "No accommodation associated with this pilgrim"
+            );
         }
 
         return pilgrim.getAccommodation();
     }
 
-    // Get Reports By Pilgrim ID
-    public List<AssistanceReport> getPilgrimReports(Integer pilgrimId) {
-        Pilgrim pilgrim = pilgrimRepository.findPilgrimById(pilgrimId);
+    public List<AssistanceReport> getPilgrimReports(
+            User user,
+            Integer pilgrimId) {
 
-        if (pilgrim == null) {
-            throw new ApiException("Pilgrim not found with ID: " + pilgrimId);
+        getAccessiblePilgrim(user, pilgrimId);
+
+        List<AssistanceReport> reports =
+                assistanceReportRepository.findByPilgrim_Id(pilgrimId);
+
+        if ("FIELDـSTAFF".equals(user.getRole())) {
+
+            return reports.stream()
+                    .filter(report ->
+                            report.getFieldStaff() != null
+                                    && user.getId().equals(
+                                    report.getFieldStaff().getId()
+                            )
+                    )
+                    .toList();
         }
 
-        return assistanceReportRepository.findByPilgrim_Id(pilgrimId);
+        if ("AuthorizedStaff".equals(user.getRole())) {
+
+            Integer campaignId =
+                    getCampaignStaff(user).getCampaign().getId();
+
+            return reports.stream()
+                    .filter(report ->
+                            report.getCampaign() != null
+                                    && campaignId.equals(
+                                    report.getCampaign().getId()
+                            )
+                    )
+                    .toList();
+        }
+
+        return reports;
     }
 
-    // Update Pilgrim
-    public void updatePilgrim(Integer campaignId,Integer id, Pilgrim updatedPilgrim) {
-        Campaign campaign=campaignRepository.findCampaignById(campaignId);
-        if (campaign==null){
-            throw new ApiException("campaign not found ");
-        }
-        Pilgrim existingPilgrim = pilgrimRepository.findPilgrimById(id);
+    @Transactional
+    public void updatePilgrim(
+            User user,
+            Integer pilgrimId,
+            Pilgrim updatedPilgrim) {
 
-        if (existingPilgrim == null) {
-            throw new ApiException("Pilgrim not found with ID: " + id);
-        }
+        Campaign campaign = getSupervisorCampaign(user);
+
+        Pilgrim existingPilgrim = getRequiredPilgrim(pilgrimId);
+
+        requirePilgrimCampaign(
+                campaign.getId(),
+                existingPilgrim
+        );
+
+        Accommodation accommodation = getCampaignAccommodation(
+                campaign.getId(),
+                updatedPilgrim.getAccommodation()
+        );
 
         existingPilgrim.setFullName(updatedPilgrim.getFullName());
         existingPilgrim.setNationality(updatedPilgrim.getNationality());
         existingPilgrim.setPhoneNumber(updatedPilgrim.getPhoneNumber());
         existingPilgrim.setVisaNumber(updatedPilgrim.getVisaNumber());
-        existingPilgrim.setCampaign(updatedPilgrim.getCampaign());
-        existingPilgrim.setAccommodation(updatedPilgrim.getAccommodation());
+        existingPilgrim.setCampaign(campaign);
+        existingPilgrim.setAccommodation(accommodation);
 
         pilgrimRepository.save(existingPilgrim);
     }
 
-    // Delete Pilgrim
-    public void deletePilgrim(Integer campaignId,Integer id) {
+    @Transactional
+    public void deletePilgrim(
+            User user,
+            Integer pilgrimId) {
 
-        Campaign campaign=campaignRepository.findCampaignById(campaignId);
-        if (campaign==null){
-            throw new ApiException("campaign not found ");
-        }
-        Pilgrim pilgrim = pilgrimRepository.findPilgrimById(id);
+        Campaign campaign = getSupervisorCampaign(user);
 
-        if (pilgrim == null) {
-            throw new ApiException("Pilgrim not found with ID: " + id);
-        }
+        Pilgrim pilgrim = getRequiredPilgrim(pilgrimId);
+
+        requirePilgrimCampaign(campaign.getId(), pilgrim);
 
         pilgrimRepository.delete(pilgrim);
     }
 
-    // Search Pilgrim by Visa Number
-    public Pilgrim searchPilgrimByVisaNumber(String visaNumber) {
-        if (visaNumber == null || visaNumber.isBlank()) {
-            throw new ApiException("Visa number is required");
+    public Object searchPilgrim(
+            User user,
+            String visaNumber,
+            String fullName) {
+
+        requireActiveUser(user);
+
+        Integer campaignId = null;
+
+        if (!"ADMIN".equals(user.getRole())) {
+            campaignId = getCampaignStaff(user)
+                    .getCampaign().getId();
         }
 
-        Pilgrim pilgrim = pilgrimRepository.findPilgrimByVisaNumber(
-                visaNumber.trim()
+        if (visaNumber != null && !visaNumber.isBlank()) {
+
+            Pilgrim pilgrim =
+                    pilgrimRepository.findPilgrimByVisaNumber(
+                            visaNumber.trim()
+                    );
+
+            if (pilgrim == null) {
+                throw new ApiException("Pilgrim not found");
+            }
+
+            if (campaignId != null) {
+                requirePilgrimCampaign(campaignId, pilgrim);
+            }
+
+            return pilgrim;
+        }
+
+        if (fullName != null && !fullName.isBlank()) {
+
+            List<Pilgrim> pilgrims =
+                    pilgrimRepository.findByFullNameContainingIgnoreCase(
+                            fullName.trim()
+                    );
+
+            if (campaignId == null) {
+                return pilgrims;
+            }
+
+            Integer staffCampaignId = campaignId;
+
+            return pilgrims.stream()
+                    .filter(pilgrim ->
+                            pilgrim.getCampaign() != null
+                                    && staffCampaignId.equals(
+                                    pilgrim.getCampaign().getId()
+                            )
+                    )
+                    .toList();
+        }
+
+        throw new ApiException(
+                "Provide visaNumber or fullName to search"
         );
-
-        if (pilgrim == null) {
-            throw new ApiException("Pilgrim not found");
-        }
-
-        return pilgrim;
     }
 
-    // Search Pilgrims by Full Name
-    public List<Pilgrim> searchPilgrimsByName(String fullName) {
-        if (fullName == null || fullName.isBlank()) {
-            throw new ApiException("Pilgrim name is required");
-        }
+    public PilgrimResponseDTO getPilgrimResponseById(
+            User user,
+            Integer pilgrimId) {
 
-        return pilgrimRepository.findByFullNameContainingIgnoreCase(
-                fullName.trim()
-        );
-    }
-
-    // Get Pilgrim Response DTO
-    public PilgrimResponseDTO getPilgrimResponseById(Integer id) {
-        Pilgrim pilgrim = pilgrimRepository.findPilgrimById(id);
-
-        if (pilgrim == null) {
-            throw new ApiException("Pilgrim not found with ID: " + id);
-        }
+        Pilgrim pilgrim = getAccessiblePilgrim(user, pilgrimId);
 
         Campaign campaign = pilgrim.getCampaign();
 
         if (campaign == null) {
-            throw new ApiException("No campaign linked to this pilgrim");
+            throw new ApiException(
+                    "No campaign linked to this pilgrim"
+            );
         }
 
         return new PilgrimResponseDTO(
@@ -179,5 +266,183 @@ public class PilgrimService {
                 campaign.getId(),
                 campaign.getCampaignName()
         );
+    }
+
+    public Pilgrim identifyPilgrim(String cardNumber) {
+
+        return pilgrimCardService.identifyPilgrimByCardNumber(
+                cardNumber
+        );
+    }
+
+    public Map<String, Object> verifyPilgrimIdentity(
+            VerifyPilgrimDTO dto) {
+
+        Pilgrim pilgrim =
+                pilgrimCardService.verifyPilgrimIdentity(dto);
+
+        return Map.of(
+                "message", "Pilgrim identity verified successfully",
+                "pilgrimId", pilgrim.getId(),
+                "fullName", pilgrim.getFullName(),
+                "visaNumber", pilgrim.getVisaNumber()
+        );
+    }
+
+    private void requireActiveUser(User user) {
+
+        if (user == null || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+    }
+
+    private AuthorizedStaff getCampaignStaff(User user) {
+
+        requireActiveUser(user);
+
+        if (!"AuthorizedStaff".equals(user.getRole())) {
+            throw new AccessDeniedException(
+                    "Only campaign staff can access this endpoint"
+            );
+        }
+
+        AuthorizedStaff staff =
+                authorizedStaffService.getStaffById(user.getId());
+
+        if (staff.getCampaign() == null) {
+            throw new AccessDeniedException(
+                    "You are not linked to a campaign"
+            );
+        }
+
+        return staff;
+    }
+
+    private Campaign getSupervisorCampaign(User user) {
+
+        AuthorizedStaff staff = getCampaignStaff(user);
+
+        if (staff.getStaffRole() != AuthorizedStaffRole.SUPERVISOR) {
+            throw new AccessDeniedException(
+                    "Only supervisors can manage pilgrims"
+            );
+        }
+
+        Integer campaignId = staff.getCampaign().getId();
+
+        Campaign campaign =
+                campaignRepository.findCampaignById(campaignId);
+
+        if (campaign == null) {
+            throw new ApiException("Campaign not found");
+        }
+
+        return campaign;
+    }
+
+    private Pilgrim getRequiredPilgrim(Integer pilgrimId) {
+
+        Pilgrim pilgrim =
+                pilgrimRepository.findPilgrimById(pilgrimId);
+
+        if (pilgrim == null) {
+            throw new ApiException(
+                    "Pilgrim not found with ID: " + pilgrimId
+            );
+        }
+
+        return pilgrim;
+    }
+
+    private void requirePilgrimCampaign(
+            Integer campaignId,
+            Pilgrim pilgrim) {
+
+        if (pilgrim.getCampaign() == null
+                || !campaignId.equals(
+                pilgrim.getCampaign().getId()
+        )) {
+
+            throw new AccessDeniedException(
+                    "This pilgrim does not belong to your campaign"
+            );
+        }
+    }
+
+    private Pilgrim getAccessiblePilgrim(
+            User user,
+            Integer pilgrimId) {
+
+        requireActiveUser(user);
+
+        Pilgrim pilgrim = getRequiredPilgrim(pilgrimId);
+
+        if ("ADMIN".equals(user.getRole())) {
+            return pilgrim;
+        }
+
+        if ("AuthorizedStaff".equals(user.getRole())) {
+
+            Integer campaignId =
+                    getCampaignStaff(user).getCampaign().getId();
+
+            requirePilgrimCampaign(campaignId, pilgrim);
+
+            return pilgrim;
+        }
+
+        if ("FIELDـSTAFF".equals(user.getRole())) {
+
+            boolean assigned = assistanceReportRepository
+                    .findByPilgrim_Id(pilgrimId)
+                    .stream()
+                    .anyMatch(report ->
+                            report.getFieldStaff() != null
+                                    && user.getId().equals(
+                                    report.getFieldStaff().getId()
+                            )
+                    );
+
+            if (assigned) {
+                return pilgrim;
+            }
+        }
+
+        throw new AccessDeniedException(
+                "You cannot access this pilgrim"
+        );
+    }
+
+    private Accommodation getCampaignAccommodation(
+            Integer campaignId,
+            Accommodation requestedAccommodation) {
+
+        if (requestedAccommodation == null) {
+            return null;
+        }
+
+        if (requestedAccommodation.getId() == null) {
+            throw new ApiException("Accommodation ID is required");
+        }
+
+        Accommodation accommodation = accommodationRepository
+                .findById(requestedAccommodation.getId())
+                .orElseThrow(
+                        () -> new ApiException("Accommodation not found")
+                );
+
+        if (accommodation.getCampaign() == null
+                || !campaignId.equals(
+                accommodation.getCampaign().getId()
+        )) {
+
+            throw new AccessDeniedException(
+                    "This accommodation does not belong to your campaign"
+            );
+        }
+
+        return accommodation;
     }
 }

@@ -1,5 +1,4 @@
-
-        package org.example.ons.Controller;
+package org.example.ons.Controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -9,16 +8,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.ons.Api.ApiResponse;
-import org.example.ons.Model.*;
+import org.example.ons.Enum.AuthorizedStaffRole;
+import org.example.ons.Model.Accommodation;
+import org.example.ons.Model.AuthorizedStaff;
+import org.example.ons.Model.User;
 import org.example.ons.Service.AccommodationService;
+import org.example.ons.Service.AuthorizedStaffService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/accommodations")
@@ -27,16 +27,19 @@ import java.util.Map;
 public class AccommodationController {
 
     private final AccommodationService accommodationService;
+    private final AuthorizedStaffService authorizedStaffService;
 
-    // 1. Create Accommodation
-    @PreAuthorize("hasAuthority('CAMPAIGN')")
     @PostMapping("/add")
     public ResponseEntity<?> addAccommodation(
-            @AuthenticationPrincipal Campaign campaign,
+            @AuthenticationPrincipal User user,
             @Valid @RequestBody Accommodation accommodation) {
 
+        Integer campaignId = getSupervisorCampaignId(user);
+
+        accommodation.setId(null);
+
         accommodationService.createAccommodation(
-                campaign.getId(),
+                campaignId,
                 accommodation
         );
 
@@ -45,9 +48,6 @@ public class AccommodationController {
         );
     }
 
-
-    // 2. Get All Accommodations - ADMIN Only
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/get")
     public ResponseEntity<?> getAllAccommodations(
             @AuthenticationPrincipal User user) {
@@ -57,27 +57,27 @@ public class AccommodationController {
         );
     }
 
-
-    // 3. Get Accommodation By ID - ADMIN Only
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAccommodationById(@PathVariable Integer id) {
+    public ResponseEntity<?> getAccommodationById(
+            @PathVariable Integer id) {
+
         return ResponseEntity.status(200).body(
                 accommodationService.getAccommodationById(id)
         );
     }
 
-
-    // 4. Update Accommodation
-    @PreAuthorize("hasAuthority('CAMPAIGN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateAccommodation(
-            @AuthenticationPrincipal Campaign campaign,
+            @AuthenticationPrincipal User user,
             @PathVariable Integer id,
             @Valid @RequestBody Accommodation accommodation) {
 
+        Integer campaignId = getSupervisorCampaignId(user);
+
+        requireAccommodationOwnership(campaignId, id);
+
         accommodationService.updateAccommodation(
-                campaign.getId(),
+                campaignId,
                 id,
                 accommodation
         );
@@ -87,29 +87,29 @@ public class AccommodationController {
         );
     }
 
-
-    // 5. Update Accommodation Status
-    @PreAuthorize("hasAuthority('CAMPAIGN')")
     @PatchMapping("/{accommodationId}/status")
     public ResponseEntity<?> updateAccommodationStatus(
-            @AuthenticationPrincipal Campaign campaign,
+            @AuthenticationPrincipal User user,
             @PathVariable Integer accommodationId,
             @Valid @RequestBody AccommodationStatusRequest request) {
 
+        Integer campaignId = getSupervisorCampaignId(user);
+
+        requireAccommodationOwnership(campaignId, accommodationId);
+
         accommodationService.updateAccommodationStatus(
-                campaign.getId(),
+                campaignId,
                 accommodationId,
                 request.getStatus()
         );
 
         return ResponseEntity.status(200).body(
-                new ApiResponse("Accommodation status updated successfully")
+                new ApiResponse(
+                        "Accommodation status updated successfully"
+                )
         );
     }
 
-
-    // 6. Get Pilgrims in Accommodation - ADMIN Only
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{accommodationId}/pilgrims")
     public ResponseEntity<?> getAccommodationPilgrims(
             @PathVariable Integer accommodationId) {
@@ -121,9 +121,6 @@ public class AccommodationController {
         );
     }
 
-
-    // 7. Get Reports for Accommodation - ADMIN Only
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{accommodationId}/reports")
     public ResponseEntity<?> getAccommodationReports(
             @PathVariable Integer accommodationId) {
@@ -135,24 +132,20 @@ public class AccommodationController {
         );
     }
 
-
-    // 8. Get All Accommodations with Pilgrims and Reports for Campaign
-    @PreAuthorize("hasAuthority('CAMPAIGN')")
     @GetMapping("/my-campaign")
     public ResponseEntity<?> getCampaignAccommodationsWithPilgrimsAndReports(
-            @AuthenticationPrincipal Campaign campaign) {
+            @AuthenticationPrincipal User user) {
 
-        return ResponseEntity.status(200).body(
+        Integer campaignId = getStaffCampaignId(user);
+
+        return ResponseEntity.ok(
                 accommodationService
                         .getCampaignAccommodationsWithPilgrimsAndReports(
-                                campaign.getId()
+                                campaignId
                         )
         );
     }
 
-
-    // 9. Get Accommodation Location - ADMIN Only
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{accommodationId}/location")
     public ResponseEntity<?> getAccommodationLocation(
             @PathVariable Integer accommodationId) {
@@ -164,16 +157,17 @@ public class AccommodationController {
         );
     }
 
-
-    // 10. Delete Accommodation
-    @PreAuthorize("hasAuthority('CAMPAIGN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteAccommodation(
-            @AuthenticationPrincipal Campaign campaign,
+            @AuthenticationPrincipal User user,
             @PathVariable Integer id) {
 
+        Integer campaignId = getSupervisorCampaignId(user);
+
+        requireAccommodationOwnership(campaignId, id);
+
         accommodationService.deleteAccommodation(
-                campaign.getId(),
+                campaignId,
                 id
         );
 
@@ -182,8 +176,74 @@ public class AccommodationController {
         );
     }
 
+    private Integer getSupervisorCampaignId(User user) {
 
-    // Request body for status update
+        if (user == null
+                || !user.isActive()
+                || !"AuthorizedStaff".equals(user.getRole())) {
+
+            throw new AccessDeniedException(
+                    "Only campaign supervisors can access this endpoint"
+            );
+        }
+
+        AuthorizedStaff staff =
+                authorizedStaffService.getStaffById(user.getId());
+
+        if (staff.getStaffRole() != AuthorizedStaffRole.SUPERVISOR
+                || staff.getCampaign() == null) {
+
+            throw new AccessDeniedException(
+                    "You must be a supervisor linked to a campaign"
+            );
+        }
+
+        return staff.getCampaign().getId();
+    }
+
+    private void requireAccommodationOwnership(
+            Integer campaignId,
+            Integer accommodationId) {
+
+        Accommodation accommodation =
+                accommodationService.getAccommodationById(
+                        accommodationId
+                );
+
+        if (accommodation.getCampaign() == null
+                || !campaignId.equals(
+                accommodation.getCampaign().getId()
+        )) {
+
+            throw new AccessDeniedException(
+                    "This accommodation does not belong to your campaign"
+            );
+        }
+
+    }
+
+    private Integer getStaffCampaignId(User user) {
+
+        if (user == null
+                || !user.isActive()
+                || !"AuthorizedStaff".equals(user.getRole())) {
+
+            throw new AccessDeniedException(
+                    "Only campaign staff can access this endpoint"
+            );
+        }
+
+        AuthorizedStaff staff =
+                authorizedStaffService.getStaffById(user.getId());
+
+        if (staff.getCampaign() == null) {
+            throw new AccessDeniedException(
+                    "You are not linked to a campaign"
+            );
+        }
+
+        return staff.getCampaign().getId();
+    }
     @Getter
     @Setter
     @NoArgsConstructor
