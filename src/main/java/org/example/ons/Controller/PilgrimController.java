@@ -3,9 +3,11 @@ package org.example.ons.Controller;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiResponse;
+import org.example.ons.Model.Campaign;
 import org.example.ons.Model.Pilgrim;
 import org.example.ons.Service.PilgrimService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.example.ons.Service.PilgrimCardService;
 import org.example.ons.DTO.VerifyPilgrimDTO;
@@ -19,15 +21,12 @@ public class PilgrimController {
     private final PilgrimCardService pilgrimCardService;
 
     // Create Pilgrim
-    @PostMapping("/add/{campaignId}")
+    @PostMapping("/add")
     public ResponseEntity<?> createPilgrim(
-            @PathVariable Integer campaignId,
+            @AuthenticationPrincipal Campaign campaign,
             @Valid @RequestBody Pilgrim pilgrim) {
-
-        pilgrimService.createPilgrim(campaignId, pilgrim);
-
-        return ResponseEntity.ok(
-                new ApiResponse("Pilgrim created successfully")
+        pilgrimService.createPilgrim(campaign.getId(), pilgrim);
+        return ResponseEntity.ok(new ApiResponse("Pilgrim created successfully")
         );
     }
 
@@ -38,58 +37,55 @@ public class PilgrimController {
     }
 
     // Get Pilgrim By ID - existing endpoint
-    @GetMapping("/get/{id}")
-    public ResponseEntity<?> getPilgrimById(@PathVariable Integer id) {
-        return ResponseEntity.ok(pilgrimService.getPilgrimById(id));
+    @GetMapping("/me")
+    public ResponseEntity<?> getPilgrimById(@AuthenticationPrincipal Pilgrim pilgrim) {
+        return ResponseEntity.ok(pilgrimService.getPilgrimById(pilgrim.getId()));
     }
+
+
 
     // Identify Pilgrim Using QR Card Number
     @PostMapping("/identify")
     public ResponseEntity<?> identifyPilgrim(
             @RequestBody java.util.Map<String, String> request) {
-
         String cardNumber = request.get("cardNumber");
-
-        Pilgrim pilgrim =
-                pilgrimCardService.identifyPilgrimByCardNumber(cardNumber);
-
+        Pilgrim pilgrim = pilgrimCardService.identifyPilgrimByCardNumber(cardNumber);
         return ResponseEntity.ok(pilgrim);
     }
 
+
+    //مادري ما عرفت لها وخفت اجيب العيد
     // Get Pilgrim By ID - required endpoint
     @GetMapping("/{pilgrimId:\\d+}")
-    public ResponseEntity<?> getPilgrimByRequiredId(
-            @PathVariable Integer pilgrimId) {
-
-        return ResponseEntity.ok(
-                pilgrimService.getPilgrimById(pilgrimId)
+    public ResponseEntity<?> getPilgrimByRequiredId(@AuthenticationPrincipal Pilgrim pilgrim) {
+        return ResponseEntity.ok(pilgrimService.getPilgrimById(pilgrim.getId())
         );
     }
 
+    //مادري ما عرفت لها وخفت اجيب العيد
     // Get Campaign By Pilgrim ID
     @GetMapping("/{pilgrimId:\\d+}/campaign")
     public ResponseEntity<?> getPilgrimCampaign(
-            @PathVariable Integer pilgrimId) {
-
-        return ResponseEntity.ok(
-                pilgrimService.getPilgrimCampaign(pilgrimId)
-        );
+            @AuthenticationPrincipal Pilgrim pilgrim) {
+        return ResponseEntity.ok(pilgrimService.getPilgrimCampaign(pilgrim.getId()));
     }
 
+
+
+    //مادري ما عرفت لها وخفت اجيب العيد
     // Get Accommodation By Pilgrim ID
     @GetMapping("/{pilgrimId:\\d+}/accommodation")
     public ResponseEntity<?> getPilgrimAccommodation(
-            @PathVariable Integer pilgrimId) {
-
-        return ResponseEntity.ok(
-                pilgrimService.getPilgrimAccommodation(pilgrimId)
+            @AuthenticationPrincipal Pilgrim pilgrim) {
+        return ResponseEntity.ok(pilgrimService.getPilgrimAccommodation(pilgrim.getId())
         );
     }
 
+    //مادري ما عرفت لها وخفت اجيب العيد
     // Get Reports By Pilgrim ID
     @GetMapping("/{pilgrimId:\\d+}/reports")
     public ResponseEntity<?> getPilgrimReports(
-            @PathVariable Integer pilgrimId) {
+            @AuthenticationPrincipal Integer pilgrimId) {
 
         return ResponseEntity.ok(
                 pilgrimService.getPilgrimReports(pilgrimId)
@@ -98,24 +94,19 @@ public class PilgrimController {
 
     // Update Pilgrim
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updatePilgrim(
+    public ResponseEntity<?> updatePilgrim(@AuthenticationPrincipal Campaign campaign,
             @PathVariable Integer id,
             @Valid @RequestBody Pilgrim pilgrim) {
 
-        pilgrimService.updatePilgrim(id, pilgrim);
-
-        return ResponseEntity.ok(
-                new ApiResponse("Pilgrim updated successfully")
-        );
+        pilgrimService.updatePilgrim(campaign.getId(),id, pilgrim);
+        return ResponseEntity.ok(new ApiResponse("Pilgrim updated successfully"));
     }
 
     // Delete Pilgrim
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deletePilgrim(@PathVariable Integer id) {
-        pilgrimService.deletePilgrim(id);
-
-        return ResponseEntity.ok(
-                new ApiResponse("Pilgrim deleted successfully")
+    public ResponseEntity<?> deletePilgrim(@AuthenticationPrincipal Campaign campaign,@PathVariable Integer id) {
+        pilgrimService.deletePilgrim(campaign.getId(),id);
+        return ResponseEntity.ok(new ApiResponse("Pilgrim deleted successfully")
         );
     }
 
@@ -123,8 +114,7 @@ public class PilgrimController {
     public ResponseEntity<?> verifyPilgrimIdentity(
             @Valid @RequestBody VerifyPilgrimDTO dto) {
 
-        Pilgrim pilgrim =
-                pilgrimCardService.verifyPilgrimIdentity(dto);
+        Pilgrim pilgrim = pilgrimCardService.verifyPilgrimIdentity(dto);
 
         return ResponseEntity.ok(
                 java.util.Map.of(

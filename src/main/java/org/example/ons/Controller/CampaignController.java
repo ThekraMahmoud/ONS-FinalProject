@@ -13,6 +13,7 @@ import org.example.ons.Service.CampaignPaymentService;
 import org.example.ons.Service.CampaignService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,10 +28,9 @@ public class CampaignController {
     private final CampaignPaymentService campaignPaymentService;
     // Create Campaign
 
-    @PostMapping("/add")
+    @PostMapping("/register")
     public ResponseEntity<?> createCampaign(
-            @Valid @RequestBody Campaign campaign,
-            HttpServletRequest request) {
+            @Valid @RequestBody Campaign campaign, HttpServletRequest request) {
 
         Campaign savedCampaign =
                 campaignService.createCampaign(campaign);
@@ -81,41 +81,40 @@ public class CampaignController {
     }
 
     // Get Campaign By ID
-    @GetMapping("/get/{id}")
-    public ResponseEntity<?> getCampaignById(@PathVariable Integer id) {
-        return ResponseEntity.status(200).body(campaignService.getCampaignById(id));
+    @GetMapping("/me")
+    public ResponseEntity<?> getCampaignById(@AuthenticationPrincipal Campaign campaign) {
+        return ResponseEntity.status(200).body(campaignService.getCampaignById(campaign.getId()));
     }
 
     // Update Campaign
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateCampaign(@PathVariable Integer id, @Valid @RequestBody Campaign campaign) {
+    @PutMapping("/update")
+    public ResponseEntity<?> updateCampaign(@AuthenticationPrincipal Campaign campaign, @Valid @RequestBody Campaign campaignUpdate) {
 
-        campaignService.updateCampaign(id, campaign);
+        campaignService.updateCampaign(campaign.getId(), campaignUpdate);
 
         return ResponseEntity.status(200).body(new ApiResponse( "Campaign updated successfully"));
     }
 
     // Delete Campaign
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteCampaign(@PathVariable Integer id) {
-
-        campaignService.deleteCampaign(id);
+    public ResponseEntity<?> deleteCampaign(@AuthenticationPrincipal Campaign campaign) {
+        campaignService.deleteCampaign(campaign.getId());
         return ResponseEntity.status(200).body(new ApiResponse("Campaign deleted successfully"));
     }
 
 
-    @GetMapping("/{campaignId}/analytics")
-    public ResponseEntity<?> getCampaignAnalytics(@PathVariable Integer campaignId) {
+    @GetMapping("/analytics")
+    public ResponseEntity<?> getCampaignAnalytics(@AuthenticationPrincipal Campaign campaign) {
 
-        CampaignAnalyticsDTO analytics = campaignService.getCampaignAnalytics(campaignId);
+        CampaignAnalyticsDTO analytics = campaignService.getCampaignAnalytics(campaign.getId());
         return ResponseEntity.ok(analytics);
     }
 
 
-    @PostMapping("/{campaignId}/analytics/email")
-    public ResponseEntity<?> sendCampaignAnalyticsEmail(@PathVariable Integer campaignId) throws Exception {
+    @PostMapping("/analytics/email")
+    public ResponseEntity<?> sendCampaignAnalyticsEmail(@AuthenticationPrincipal Campaign campaign) throws Exception {
 
-        campaignService.sendCampaignAnalyticsEmail(campaignId);
+        campaignService.sendCampaignAnalyticsEmail(campaign.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Campaign analytics report sent successfully"));
     }
