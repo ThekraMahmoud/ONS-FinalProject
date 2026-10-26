@@ -53,7 +53,8 @@ public class Configuration {
                                 "/api/v1/identification/validate",
                                 "/api/v1/pilgrims/identify",
                                 "/api/v1/pilgrims/verify",
-                                "/api/v1/pilgrims/manual-identification"
+                                "/api/v1/pilgrims/manual-identification",
+                                "/api/v1/identification/scan"
                         ).permitAll()
                                 .requestMatchers(
                                         HttpMethod.GET,
