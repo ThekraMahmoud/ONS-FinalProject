@@ -1,5 +1,6 @@
 package org.example.ons.Config;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +24,17 @@ public class Configuration {
             HttpSecurity http) throws Exception {
 
         return http
+
+
+
+
+                .cors(cors -> {})
+
+
+
+
+
+
                 .csrf(csrf -> csrf.disable())
 
                 .sessionManagement(sm ->
@@ -184,4 +196,13 @@ public class Configuration {
 
                 .build();
     }
+
+
+
+
+
+
+
+
 }
+
