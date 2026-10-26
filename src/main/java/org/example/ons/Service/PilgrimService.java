@@ -92,7 +92,11 @@ public class PilgrimService {
     }
 
     // Update Pilgrim
-    public void updatePilgrim(Integer id, Pilgrim updatedPilgrim) {
+    public void updatePilgrim(Integer campaignId,Integer id, Pilgrim updatedPilgrim) {
+        Campaign campaign=campaignRepository.findCampaignById(campaignId);
+        if (campaign==null){
+            throw new ApiException("campaign not found ");
+        }
         Pilgrim existingPilgrim = pilgrimRepository.findPilgrimById(id);
 
         if (existingPilgrim == null) {
@@ -110,7 +114,12 @@ public class PilgrimService {
     }
 
     // Delete Pilgrim
-    public void deletePilgrim(Integer id) {
+    public void deletePilgrim(Integer campaignId,Integer id) {
+
+        Campaign campaign=campaignRepository.findCampaignById(campaignId);
+        if (campaign==null){
+            throw new ApiException("campaign not found ");
+        }
         Pilgrim pilgrim = pilgrimRepository.findPilgrimById(id);
 
         if (pilgrim == null) {
