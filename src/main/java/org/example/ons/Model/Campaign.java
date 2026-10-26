@@ -1,6 +1,7 @@
         package org.example.ons.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -42,7 +43,7 @@ public class Campaign {
     private String email;
 
 
-
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)

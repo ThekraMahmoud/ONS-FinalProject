@@ -3,6 +3,7 @@ package org.example.ons.Service;
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiException;
 import org.example.ons.DTO.AuthorizedStaffDTO;
+import org.example.ons.DTO.CampaignAnalyticsDTO;
 import org.example.ons.Enum.ReportStatus;
 import org.example.ons.Model.Accommodation;
 import org.example.ons.Model.AssistanceReport;
@@ -17,24 +18,30 @@ import org.example.ons.Repository.PilgrimRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
 public class CampaignService {
 
     private final CampaignRepository campaignRepository;
+    private final NotificationService notificationService;
     private final PilgrimRepository pilgrimRepository;
     private final AssistanceReportRepository assistanceReportRepository;
+    private final EmailService emailService;
+
+    // Dependencies added from the other branch
     private final AccommodationRepository accommodationRepository;
     private final AuthorizedStaffRepository authorizedStaffRepository;
     private final AuthorizedStaffService authorizedStaffService;
-    private final NotificationService notificationService;
 
-    // Create campaign
+    // Create Campaign
     public Campaign createCampaign(Campaign campaign) {
+        campaign.setId(null);
         campaign.setStatus("PLANNED");
 
         Campaign savedCampaign = campaignRepository.save(campaign);
@@ -47,17 +54,17 @@ public class CampaignService {
         return savedCampaign;
     }
 
-    // Get all campaigns
+    // Get All Campaigns
     public List<Campaign> getAllCampaigns() {
         return campaignRepository.findAll();
     }
 
-    // Get campaign by ID
+    // Get Campaign By ID
     public Campaign getCampaignById(Integer id) {
-        return campaignRepository.findCampaignById(id);
+        return getRequiredCampaign(id);
     }
 
-    // Update campaign
+    // Update Campaign
     public void updateCampaign(Integer id, Campaign updatedCampaign) {
         Campaign existingCampaign = getRequiredCampaign(id);
 
@@ -71,7 +78,7 @@ public class CampaignService {
         campaignRepository.save(existingCampaign);
     }
 
-    // Delete campaign
+    // Delete Campaign
     public void deleteCampaign(Integer id) {
         Campaign campaign = getRequiredCampaign(id);
         campaignRepository.delete(campaign);
@@ -114,19 +121,13 @@ public class CampaignService {
     }
 
     // Add a supervisor to a campaign
-    public void addStaffToCampaign(
-            Integer campaignId,
-            AuthorizedStaffDTO staffDTO
-    ) {
+    public void addStaffToCampaign(Integer campaignId, AuthorizedStaffDTO staffDTO) {
         getRequiredCampaign(campaignId);
         authorizedStaffService.createStaff(staffDTO, campaignId);
     }
 
     // Remove authorized staff from a campaign
-    public void removeStaffFromCampaign(
-            Integer campaignId,
-            Integer userId
-    ) {
+    public void removeStaffFromCampaign(Integer campaignId, Integer userId) {
         getRequiredCampaign(campaignId);
 
         AuthorizedStaff staff =
@@ -136,8 +137,8 @@ public class CampaignService {
             throw new ApiException("Authorized staff not found with ID: " + userId);
         }
 
-        if (staff.getCampaign() == null
-                || !campaignId.equals(staff.getCampaign().getId())) {
+        if (staff.getCampaign() == null ||
+                !campaignId.equals(staff.getCampaign().getId())) {
             throw new ApiException(
                     "The authorized staff member does not belong to this campaign"
             );
@@ -151,20 +152,15 @@ public class CampaignService {
     public Map<String, Object> getCampaignStatistics(Integer campaignId) {
         getRequiredCampaign(campaignId);
 
-        List<Pilgrim> pilgrims =
-                pilgrimRepository.findByCampaign_Id(campaignId);
-
+        List<Pilgrim> pilgrims = pilgrimRepository.findByCampaign_Id(campaignId);
         List<AssistanceReport> reports =
                 assistanceReportRepository.findByCampaign_Id(campaignId);
-
         List<AuthorizedStaff> staff =
                 authorizedStaffRepository.findByCampaign_Id(campaignId);
-
         List<Accommodation> accommodations =
                 accommodationRepository.findByCampaign_Id(campaignId);
 
         Map<String, Object> statistics = new HashMap<>();
-
         statistics.put("campaignId", campaignId);
         statistics.put("totalPilgrims", pilgrims.size());
         statistics.put("totalReports", reports.size());
@@ -177,21 +173,18 @@ public class CampaignService {
                         ReportStatus.OPEN, campaignId
                 )
         );
-
         statistics.put(
                 "assignedReports",
                 assistanceReportRepository.countByStatusAndCampaign_Id(
                         ReportStatus.ASSIGNED, campaignId
                 )
         );
-
         statistics.put(
                 "inProgressReports",
                 assistanceReportRepository.countByStatusAndCampaign_Id(
                         ReportStatus.IN_PROGRESS, campaignId
                 )
         );
-
         statistics.put(
                 "resolvedReports",
                 assistanceReportRepository.countByStatusAndCampaign_Id(
@@ -209,14 +202,195 @@ public class CampaignService {
         return accommodationRepository.findByCampaign_Id(campaignId);
     }
 
+    // Detailed campaign analytics report (kept from your version)
+    @Transactional(readOnly = true)
+    public CampaignAnalyticsDTO getCampaignAnalytics(Integer campaignId) {
+        Campaign campaign = getRequiredCampaign(campaignId);
+
+        List<Pilgrim> pilgrims = pilgrimRepository.findByCampaign_Id(campaignId);
+        List<AssistanceReport> reports =
+                assistanceReportRepository.findByCampaign_Id(campaignId);
+
+        long totalPilgrims = pilgrims.size();
+        long totalReports = reports.size();
+
+        long pilgrimsWithReports = reports.stream()
+                .filter(r -> r.getPilgrim() != null)
+                .map(r -> r.getPilgrim().getId())
+                .filter(Objects::nonNull)
+                .distinct()
+                .count();
+
+        double reportRate = totalPilgrims == 0
+                ? 0
+                : (double) pilgrimsWithReports / totalPilgrims * 100;
+
+        long openReports = reports.stream()
+                .filter(r -> r.getStatus() == ReportStatus.OPEN)
+                .count();
+        long assignedReports = reports.stream()
+                .filter(r -> r.getStatus() == ReportStatus.ASSIGNED)
+                .count();
+        long inProgressReports = reports.stream()
+                .filter(r -> r.getStatus() == ReportStatus.IN_PROGRESS)
+                .count();
+        long resolvedReports = reports.stream()
+                .filter(r -> r.getStatus() == ReportStatus.RESOLVED)
+                .count();
+        long cancelledReports = reports.stream()
+                .filter(r -> r.getStatus() == ReportStatus.CANCELLED)
+                .count();
+
+        double resolutionRate = totalReports == 0
+                ? 0
+                : (double) resolvedReports / totalReports * 100;
+
+        List<String> recommendations = new ArrayList<>();
+
+        if (openReports > 0) {
+            recommendations.add("There are " + openReports
+                    + " open reports that require follow-up.");
+        }
+        if (assignedReports > 0) {
+            recommendations.add("There are " + assignedReports
+                    + " assigned reports awaiting follow-up.");
+        }
+        if (inProgressReports > 0) {
+            recommendations.add("There are " + inProgressReports
+                    + " reports currently in progress.");
+        }
+        if (cancelledReports > 0) {
+            recommendations.add("There are " + cancelledReports
+                    + " cancelled reports.");
+        }
+        if (totalReports > 0 && resolutionRate < 70) {
+            recommendations.add("The report resolution rate is low. "
+                    + "Improve report follow-up and resource allocation.");
+        }
+        if (totalPilgrims > 0 && reportRate >= 20) {
+            recommendations.add("The percentage of pilgrims with reports is high. "
+                    + "Review the campaign's needs and available resources.");
+        }
+        if (recommendations.isEmpty()) {
+            recommendations.add(
+                    "No additional recommendations based on the current statistics."
+            );
+        }
+
+        return new CampaignAnalyticsDTO(
+                campaign.getId(),
+                campaign.getCampaignName(),
+                totalPilgrims,
+                pilgrimsWithReports,
+                Math.round(reportRate * 100.0) / 100.0,
+                totalReports,
+                openReports,
+                assignedReports,
+                inProgressReports,
+                resolvedReports,
+                cancelledReports,
+                Math.round(resolutionRate * 100.0) / 100.0,
+                recommendations
+        );
+    }
+
+    // Send the campaign analytics report by email (kept from your version)
+    public void sendCampaignAnalyticsEmail(Integer campaignId) throws Exception {
+        Campaign campaign = getRequiredCampaign(campaignId);
+
+        String email = campaign.getEmail();
+        if (email == null || email.isBlank()) {
+            throw new ApiException("Campaign email not found");
+        }
+
+        CampaignAnalyticsDTO dto = getCampaignAnalytics(campaignId);
+        String subject = "تقرير حملة أُنس - " + dto.getCampaignName();
+
+        String recommendations = dto.getRecommendations() == null
+                || dto.getRecommendations().isEmpty()
+                ? "لا توجد توصيات إضافية."
+                : String.join("\n", dto.getRecommendations());
+
+        String html = """
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>تقرير الحملة</title>
+                </head>
+                <body style="margin:0;padding:24px;background:#f5f7fa;
+                             font-family:Arial,sans-serif;color:#263238;direction:rtl;">
+                    <div style="max-width:700px;margin:auto;background:#ffffff;
+                                padding:30px;border-radius:12px;">
+                        <h2 style="color:#087e75;text-align:center;">
+                            تقرير إحصائيات الحملة
+                        </h2>
+                        <h3 style="color:#087e75;">معلومات الحملة</h3>
+                        <p><strong>اسم الحملة:</strong> %s</p>
+                        <p><strong>رقم الحملة:</strong> %d</p>
+                        <hr style="border:0;border-top:1px solid #e0e0e0;">
+                        <h3 style="color:#087e75;">إحصائيات الحجاج</h3>
+                        <p>إجمالي الحجاج: %d</p>
+                        <p>الحجاج الذين لديهم بلاغات: %d</p>
+                        <p>نسبة الحجاج الذين لديهم بلاغات: %.2f%%</p>
+                        <hr style="border:0;border-top:1px solid #e0e0e0;">
+                        <h3 style="color:#087e75;">إحصائيات البلاغات</h3>
+                        <p>إجمالي البلاغات: %d</p>
+                        <p>البلاغات المفتوحة: %d</p>
+                        <p>البلاغات المسندة: %d</p>
+                        <p>البلاغات قيد المعالجة: %d</p>
+                        <p>البلاغات المحلولة: %d</p>
+                        <p>البلاغات الملغاة: %d</p>
+                        <div style="background:#e8f5f3;padding:15px;border-radius:8px;">
+                            <strong>نسبة حل البلاغات: %.2f%%</strong>
+                        </div>
+                        <h3 style="color:#087e75;">التوصيات</h3>
+                        <div style="white-space:pre-line;line-height:1.8;">%s</div>
+                        <hr style="border:0;border-top:1px solid #e0e0e0;">
+                        <p style="text-align:center;color:#78909c;font-size:12px;">
+                            أُنس | في ضيافة الرحمن
+                        </p>
+                    </div>
+                </body>
+                </html>
+                """.formatted(
+                escapeHtml(dto.getCampaignName()),
+                dto.getCampaignId(),
+                dto.getTotalPilgrims(),
+                dto.getPilgrimsWithReports(),
+                dto.getReportRate(),
+                dto.getTotalReports(),
+                dto.getOpenReports(),
+                dto.getAssignedReports(),
+                dto.getInProgressReports(),
+                dto.getResolvedReports(),
+                dto.getCancelledReports(),
+                dto.getResolutionRate(),
+                escapeHtml(recommendations)
+        );
+
+        emailService.sendHtmlEmail(email, subject, html);
+    }
+
+    private String escapeHtml(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
+    }
+
     // Validate campaign existence
     private Campaign getRequiredCampaign(Integer campaignId) {
         Campaign campaign = campaignRepository.findCampaignById(campaignId);
 
         if (campaign == null) {
-            throw new ApiException(
-                    "Campaign not found with ID: " + campaignId
-            );
+            throw new ApiException("Campaign not found with ID: " + campaignId);
         }
 
         return campaign;
