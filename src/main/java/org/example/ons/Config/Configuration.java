@@ -42,7 +42,7 @@ public class Configuration {
                                 HttpMethod.POST,
                                 "/api/v1/reports/self-service",
                                 "/report/self-service",
-                                "/api/v1/campaigns/add",
+                                "/api/v1/campaigns/register",
                                 "/api/v1/payments/campaign/{campaignId}",
                                 "/api/v1/payments/campaign/{campaignId}/{paymentId}/verify"
                         ).permitAll()
