@@ -33,6 +33,10 @@ public class Configuration {
 
                 .authorizeHttpRequests(auth -> auth
 
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/api/v1/map/kiosks/{kioskId}/nearest-place"
+                                ).permitAll()
 
                         .requestMatchers(
                                 HttpMethod.POST,
@@ -80,8 +84,7 @@ public class Configuration {
                                 "/report",
                                 "/report/**","/api/v1/map/markers",
                                 "/api/v1/map/nearest-kiosk",
-                                "/api/v1/map/route",
-                                "/api/v1/map/kiosks/{kioskId}/nearest-place"
+                                "/api/v1/map/route"
                         ).hasAnyAuthority(
                                 "ADMIN",
                                 "AuthorizedStaff",
