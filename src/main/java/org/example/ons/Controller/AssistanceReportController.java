@@ -60,12 +60,9 @@ public class AssistanceReportController {
             @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
 
-        AssistanceReport report =
-                assistanceReportService.getReportById(reportId);
-
-        requireReportAccess(user, report);
-
-        return ResponseEntity.ok(report);
+        return ResponseEntity.ok(
+                assistanceReportService.getReportById(user, reportId)
+        );
     }
 
     @PutMapping("/{reportId:\\d+}")
@@ -240,13 +237,8 @@ public class AssistanceReportController {
             @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
 
-        requireReportAccess(
-                user,
-                assistanceReportService.getReportById(reportId)
-        );
-
         return ResponseEntity.ok(
-                assistanceReportService.getReportHistory(reportId)
+                assistanceReportService.getReportHistory(user, reportId)
         );
     }
 
@@ -255,13 +247,8 @@ public class AssistanceReportController {
             @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
 
-        requireReportAccess(
-                user,
-                assistanceReportService.getReportById(reportId)
-        );
-
         return ResponseEntity.ok(
-                assistanceReportService.getReportAssignees(reportId)
+                assistanceReportService.getReportAssignees(user, reportId)
         );
     }
 
@@ -270,13 +257,8 @@ public class AssistanceReportController {
             @AuthenticationPrincipal User user,
             @PathVariable Long reportId) {
 
-        requireReportAccess(
-                user,
-                assistanceReportService.getReportById(reportId)
-        );
-
         return ResponseEntity.ok(
-                assistanceReportService.getReportNotifications(reportId)
+                assistanceReportService.getReportNotifications(user, reportId)
         );
     }
 
@@ -369,12 +351,9 @@ public class AssistanceReportController {
             @AuthenticationPrincipal User user,
             @PathVariable Long id) {
 
-        AssistanceReport report =
-                assistanceReportService.getReportById(id);
-
-        requireReportAccess(user, report);
-
-        return ResponseEntity.ok(report);
+        return ResponseEntity.ok(
+                assistanceReportService.getReportById(user, id)
+        );
     }
 
     @PutMapping("/update/{id}")
@@ -424,11 +403,11 @@ public class AssistanceReportController {
             @PathVariable Integer campaignId,
             @PathVariable ReportStatus status) {
 
-        requireCampaignAccess(user, campaignId);
-
         return ResponseEntity.ok(
                 assistanceReportService.countReportByStatusForCampaign(
-                        status, campaignId
+                        user,
+                        status,
+                        campaignId
                 )
         );
     }
@@ -439,40 +418,7 @@ public class AssistanceReportController {
             @PathVariable Long reportId,
             @Valid @RequestBody MergeReportsDTO dto) {
 
-        requireActiveUser(user);
-
-        if (!"ADMIN".equals(user.getRole())) {
-
-            if (!"AuthorizedStaff".equals(user.getRole())) {
-                throw new AccessDeniedException("You are not authorized");
-            }
-
-            AuthorizedStaff supervisor =
-                    authorizedStaffService.getStaffById(user.getId());
-
-            if (supervisor.getStaffRole()
-                    != AuthorizedStaffRole.SUPERVISOR) {
-                throw new AccessDeniedException(
-                        "Only supervisors can assign campaign reports"
-                );
-            }
-
-            AuthorizedStaff employee =
-                    authorizedStaffService.getStaffById(dto.getStaffId());
-
-            if (employee.getCampaign() == null) {
-                throw new AccessDeniedException(
-                        "Employee has no campaign"
-                );
-            }
-
-            requireCampaignAccess(
-                    user,
-                    employee.getCampaign().getId()
-            );
-        }
-
-        assistanceReportService.mergeReports(reportId, dto);
+        assistanceReportService.mergeReports(user, reportId, dto);
 
         return ResponseEntity.ok(
                 new ApiResponse("Reports merged and assigned successfully")
@@ -484,10 +430,11 @@ public class AssistanceReportController {
             @AuthenticationPrincipal User user,
             @PathVariable Integer campaignId) {
 
-        requireCampaignAccess(user, campaignId);
-
         return ResponseEntity.ok(
-                assistanceReportService.getCampaignOverdueReports(campaignId)
+                assistanceReportService.getCampaignOverdueReports(
+                        user,
+                        campaignId
+                )
         );
     }
 

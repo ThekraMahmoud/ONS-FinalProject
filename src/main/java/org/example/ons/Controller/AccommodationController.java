@@ -51,10 +51,11 @@ public class AccommodationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getAccommodationById(
+            @AuthenticationPrincipal User user,
             @PathVariable Integer id) {
 
-        return ResponseEntity.status(200).body(
-                accommodationService.getAccommodationById(id)
+        return ResponseEntity.ok(
+                accommodationService.getAccommodationById(user, id)
         );
     }
 
@@ -114,13 +115,9 @@ public class AccommodationController {
     public ResponseEntity<?> getCampaignAccommodationsWithPilgrimsAndReports(
             @AuthenticationPrincipal User user) {
 
-        Integer campaignId = getStaffCampaignId(user);
-
         return ResponseEntity.ok(
                 accommodationService
-                        .getCampaignAccommodationsWithPilgrimsAndReports(
-                                campaignId
-                        )
+                        .getCampaignAccommodationsWithPilgrimsAndReports(user)
         );
     }
 

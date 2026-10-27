@@ -79,16 +79,35 @@ public class CampaignService {
     }
 
     // Update Campaign
-    public void updateCampaign(Integer id, Campaign updatedCampaign) {
+    @Transactional
+    public void updateCampaign(
+            Integer id,
+            Campaign updatedCampaign) {
+
         Campaign existingCampaign = getRequiredCampaign(id);
 
-        existingCampaign.getUser().setName(updatedCampaign.getUser().getName());
-        existingCampaign.getUser().setPhoneNumber(updatedCampaign.getUser().getPhoneNumber());
+        if (updatedCampaign.getUser() == null) {
+            throw new ApiException(
+                    "Campaign owner details are required"
+            );
+        }
+
+        User owner = existingCampaign.getUser();
+
+        owner.setName(updatedCampaign.getUser().getName());
+        owner.setPhoneNumber(
+                updatedCampaign.getUser().getPhoneNumber()
+        );
+        owner.setEmail(updatedCampaign.getUser().getEmail());
+
+        existingCampaign.setCampaignName(
+                updatedCampaign.getCampaignName()
+        );
         existingCampaign.setStartDate(updatedCampaign.getStartDate());
         existingCampaign.setEndDate(updatedCampaign.getEndDate());
         existingCampaign.setStatus(updatedCampaign.getStatus());
-        existingCampaign.getUser().setEmail(updatedCampaign.getUser().getEmail());
 
+        authRepository.save(owner);
         campaignRepository.save(existingCampaign);
     }
 
@@ -305,7 +324,7 @@ public class CampaignService {
 
         return new CampaignAnalyticsDTO(
                 campaign.getId(),
-                campaign.getUser().getName(),
+                campaign.getCampaignName(),
                 totalPilgrims,
                 pilgrimsWithReports,
                 Math.round(reportRate * 100.0) / 100.0,

@@ -16,6 +16,7 @@ import org.example.ons.Enum.ReportStatus;
 import org.example.ons.Model.*;
 import org.example.ons.Repository.*;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -244,15 +245,73 @@ public class AssistanceReportService {
     // جلب بلاغ بواسطة المعرّف
     public AssistanceReport getReportById(Long id) {
 
-        AssistanceReport report =
-                assistanceReportRepository
-                        .findAssistanceReportByReportId(id);
+        AssistanceReport report = assistanceReportRepository
+                .findAssistanceReportByReportId(id);
 
         if (report == null) {
             throw new ApiException("Report not found");
         }
 
         return report;
+    }
+    @Transactional(readOnly = true)
+    public AssistanceReport getReportById(User user, Long id) {
+
+        if (user == null
+                || user.getId() == null
+                || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+
+        AssistanceReport report = getReportById(id);
+
+        if ("ADMIN".equals(user.getRole())) {
+            return report;
+        }
+
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            if (report.getCampaign() == null
+                    || report.getCampaign().getUser() == null
+                    || !user.getId().equals(
+                    report.getCampaign().getUser().getId())) {
+                throw new AccessDeniedException(
+                        "This report does not belong to your campaign"
+                );
+            }
+
+            return report;
+        }
+
+        if ("AuthorizedStaff".equals(user.getRole())) {
+
+            AuthorizedStaff staff = authorizedStaffRepository
+                    .findAuthorizedStaffById(user.getId());
+
+            if (staff == null
+                    || staff.getCampaign() == null
+                    || report.getCampaign() == null
+                    || !staff.getCampaign().getId().equals(
+                    report.getCampaign().getId())) {
+                throw new AccessDeniedException(
+                        "This report does not belong to your campaign"
+                );
+            }
+
+            return report;
+        }
+
+        if ("FIELDـSTAFF".equals(user.getRole())
+                && report.getFieldStaff() != null
+                && user.getId().equals(report.getFieldStaff().getId())) {
+            return report;
+        }
+
+        throw new AccessDeniedException(
+                "You cannot access this report"
+        );
     }
 
     // تحديث البلاغ
@@ -320,9 +379,49 @@ public class AssistanceReportService {
     }
 
     // عدد بلاغات حملة معينة حسب الحالة
+    @Transactional(readOnly = true)
     public long countReportByStatusForCampaign(
+            User user,
             ReportStatus status,
             Integer campaignId) {
+
+        if (user == null
+                || user.getId() == null
+                || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            Campaign campaign = campaignRepository
+                    .findCampaignById(campaignId);
+
+            if (campaign == null
+                    || campaign.getUser() == null
+                    || !user.getId().equals(campaign.getUser().getId())) {
+                throw new AccessDeniedException(
+                        "You cannot access another campaign"
+                );
+            }
+
+        } else if ("AuthorizedStaff".equals(user.getRole())) {
+
+            AuthorizedStaff staff = authorizedStaffRepository
+                    .findAuthorizedStaffById(user.getId());
+
+            if (staff == null
+                    || staff.getCampaign() == null
+                    || !staff.getCampaign().getId().equals(campaignId)) {
+                throw new AccessDeniedException(
+                        "You cannot access another campaign"
+                );
+            }
+
+        } else if (!"ADMIN".equals(user.getRole())) {
+            throw new AccessDeniedException("You are not authorized");
+        }
 
         return assistanceReportRepository
                 .countByStatusAndCampaign_Id(status, campaignId);
@@ -330,18 +429,37 @@ public class AssistanceReportService {
 
     // دمج البلاغات وإسنادها إلى الموظف المخول
     @Transactional
-    public void mergeReports(Long reportId, MergeReportsDTO dto) {
+    public void mergeReports(
+            User user,
+            Long reportId,
+            MergeReportsDTO dto) {
 
-        if (dto == null || dto.getStaffId() == null
+        if (user == null
+                || user.getId() == null
+                || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+
+        if (!"ADMIN".equals(user.getRole())
+                && !"CAMPAIGN_OWNER".equals(user.getRole())
+                && !"AuthorizedStaff".equals(user.getRole())) {
+            throw new AccessDeniedException(
+                    "You are not authorized to assign campaign reports"
+            );
+        }
+
+        if (dto == null
+                || dto.getStaffId() == null
                 || dto.getReportIds() == null) {
             throw new ApiException(
                     "Staff ID and report IDs are required"
             );
         }
 
-        AuthorizedStaff staff =
-                authorizedStaffRepository
-                        .findAuthorizedStaffById(dto.getStaffId());
+        AuthorizedStaff staff = authorizedStaffRepository
+                .findAuthorizedStaffById(dto.getStaffId());
 
         if (staff == null) {
             throw new ApiException("Staff not found");
@@ -356,6 +474,38 @@ public class AssistanceReportService {
             throw new ApiException("Staff has no campaign");
         }
 
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            if (staff.getCampaign().getUser() == null
+                    || !user.getId().equals(
+                    staff.getCampaign().getUser().getId())) {
+                throw new AccessDeniedException(
+                        "You can only assign reports within your own campaign"
+                );
+            }
+
+        } else if ("AuthorizedStaff".equals(user.getRole())) {
+
+            AuthorizedStaff supervisor = authorizedStaffRepository
+                    .findAuthorizedStaffById(user.getId());
+
+            if (supervisor == null
+                    || supervisor.getStaffRole()
+                    != AuthorizedStaffRole.SUPERVISOR
+                    || supervisor.getCampaign() == null) {
+                throw new AccessDeniedException(
+                        "Only supervisors can assign campaign reports"
+                );
+            }
+
+            if (!supervisor.getCampaign().getId().equals(
+                    staff.getCampaign().getId())) {
+                throw new AccessDeniedException(
+                        "You can only assign reports within your own campaign"
+                );
+            }
+        }
+
         Set<Long> reportIds = new TreeSet<>(dto.getReportIds());
         reportIds.add(reportId);
 
@@ -365,9 +515,8 @@ public class AssistanceReportService {
             );
         }
 
-        List<AssistanceReport> reports =
-                assistanceReportRepository
-                        .findReportsForUpdate(reportIds);
+        List<AssistanceReport> reports = assistanceReportRepository
+                .findReportsForUpdate(reportIds);
 
         if (reports.size() != reportIds.size()) {
             throw new ApiException(
@@ -375,11 +524,11 @@ public class AssistanceReportService {
             );
         }
 
-        // التحقق من جميع البلاغات قبل تعديل أي بلاغ
         for (AssistanceReport report : reports) {
 
-            if (!report.getCampaign().getId()
-                    .equals(staff.getCampaign().getId())) {
+            if (report.getCampaign() == null
+                    || !report.getCampaign().getId().equals(
+                    staff.getCampaign().getId())) {
                 throw new ApiException(
                         "All reports must belong to the staff campaign"
                 );
@@ -409,6 +558,7 @@ public class AssistanceReportService {
 
         TransactionSynchronizationManager.registerSynchronization(
                 new TransactionSynchronization() {
+
                     @Override
                     public void afterCommit() {
 
@@ -424,18 +574,52 @@ public class AssistanceReportService {
     }
 
     // البلاغات المتأخرة لحملة معينة
+    @Transactional(readOnly = true)
     public List<AssistanceReport> getCampaignOverdueReports(
+            User user,
             Integer campaignId) {
 
-        Campaign campaign =
-                campaignRepository.findCampaignById(campaignId);
+        if (user == null
+                || user.getId() == null
+                || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+
+        Campaign campaign = campaignRepository.findCampaignById(campaignId);
 
         if (campaign == null) {
             throw new ApiException("Campaign not found");
         }
 
-        LocalDateTime cutoff =
-                LocalDateTime.now().minusMinutes(15);
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            if (campaign.getUser() == null
+                    || !user.getId().equals(campaign.getUser().getId())) {
+                throw new AccessDeniedException(
+                        "You cannot access another campaign"
+                );
+            }
+
+        } else if ("AuthorizedStaff".equals(user.getRole())) {
+
+            AuthorizedStaff staff = authorizedStaffRepository
+                    .findAuthorizedStaffById(user.getId());
+
+            if (staff == null
+                    || staff.getCampaign() == null
+                    || !staff.getCampaign().getId().equals(campaignId)) {
+                throw new AccessDeniedException(
+                        "You cannot access another campaign"
+                );
+            }
+
+        } else if (!"ADMIN".equals(user.getRole())) {
+            throw new AccessDeniedException("You are not authorized");
+        }
+
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(15);
 
         return assistanceReportRepository
                 .findByCampaign_IdAndStatusInAndCreatedAtBefore(
@@ -785,9 +969,11 @@ public class AssistanceReportService {
 
 
     @Transactional(readOnly = true)
-    public List<ReportStatusHistory> getReportHistory(Long reportId) {
+    public List<ReportStatusHistory> getReportHistory(
+            User user,
+            Long reportId) {
 
-        getReportById(reportId);
+        getReportById(user, reportId);
 
         return reportStatusHistoryRepository
                 .findByReport_ReportIdOrderByChangedAtDesc(reportId);
@@ -795,9 +981,11 @@ public class AssistanceReportService {
 
 
     @Transactional(readOnly = true)
-    public Map<String, Object> getReportAssignees(Long reportId) {
+    public Map<String, Object> getReportAssignees(
+            User user,
+            Long reportId) {
 
-        AssistanceReport report = getReportById(reportId);
+        AssistanceReport report = getReportById(user, reportId);
 
         Map<String, Object> result = new LinkedHashMap<>();
 
@@ -806,6 +994,7 @@ public class AssistanceReportService {
         if (fieldStaff != null && fieldStaff.getUser() != null) {
 
             Map<String, Object> staffInfo = new LinkedHashMap<>();
+
             staffInfo.put("id", fieldStaff.getId());
             staffInfo.put("name", fieldStaff.getUser().getName());
             staffInfo.put("email", fieldStaff.getUser().getEmail());
@@ -822,9 +1011,11 @@ public class AssistanceReportService {
 
         AuthorizedStaff authorizedStaff = report.getAuthorizedStaff();
 
-        if (authorizedStaff != null && authorizedStaff.getUser() != null) {
+        if (authorizedStaff != null
+                && authorizedStaff.getUser() != null) {
 
             Map<String, Object> staffInfo = new LinkedHashMap<>();
+
             staffInfo.put("id", authorizedStaff.getId());
             staffInfo.put("name", authorizedStaff.getUser().getName());
             staffInfo.put("email", authorizedStaff.getUser().getEmail());
@@ -844,9 +1035,11 @@ public class AssistanceReportService {
 
 
     @Transactional(readOnly = true)
-    public List<Notification> getReportNotifications(Long reportId) {
+    public List<Notification> getReportNotifications(
+            User user,
+            Long reportId) {
 
-        getReportById(reportId);
+        getReportById(user, reportId);
 
         return notificationRepository
                 .findByReport_ReportIdOrderBySentAtDesc(reportId);

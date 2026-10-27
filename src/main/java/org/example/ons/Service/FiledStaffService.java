@@ -11,6 +11,7 @@ import org.example.ons.Repository.AuthRepository;
 import org.example.ons.Repository.FieldStaffRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -72,13 +73,22 @@ public class FiledStaffService {
         authRepository.save(user);
     }
 
+    @Transactional
     public void deleteStaff(Integer id) {
 
         FieldStaff staff = fieldStaffRepository.findById(id)
-                .orElseThrow(() -> new ApiException("field staff not found"));
+                .orElseThrow(
+                        () -> new ApiException("field staff not found")
+                );
+
+        User user = staff.getUser();
+        user.setFieldStaff(null);
 
         fieldStaffRepository.delete(staff);
-        authRepository.delete(staff.getUser());
+        fieldStaffRepository.flush();
+
+        authRepository.delete(user);
+        authRepository.flush();
     }
 
 

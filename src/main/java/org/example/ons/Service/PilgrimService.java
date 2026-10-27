@@ -122,10 +122,20 @@ public class PilgrimService {
                     .toList();
         }
 
-        if ("AuthorizedStaff".equals(user.getRole())) {
+        if ("AuthorizedStaff".equals(user.getRole())
+                || "CAMPAIGN_OWNER".equals(user.getRole())) {
 
-            Integer campaignId =
-                    getCampaignStaff(user).getCampaign().getId();
+            Integer campaignId;
+
+            if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+                campaignId = getSupervisorCampaign(user).getId();
+
+            } else {
+
+                campaignId = getCampaignStaff(user)
+                        .getCampaign().getId();
+            }
 
             return reports.stream()
                     .filter(report ->
@@ -193,7 +203,12 @@ public class PilgrimService {
 
         Integer campaignId = null;
 
-        if (!"ADMIN".equals(user.getRole())) {
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            campaignId = getSupervisorCampaign(user).getId();
+
+        } else if (!"ADMIN".equals(user.getRole())) {
+
             campaignId = getCampaignStaff(user)
                     .getCampaign().getId();
         }
@@ -399,6 +414,15 @@ public class PilgrimService {
         Pilgrim pilgrim = getRequiredPilgrim(pilgrimId);
 
         if ("ADMIN".equals(user.getRole())) {
+            return pilgrim;
+        }
+
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            Campaign campaign = getSupervisorCampaign(user);
+
+            requirePilgrimCampaign(campaign.getId(), pilgrim);
+
             return pilgrim;
         }
 

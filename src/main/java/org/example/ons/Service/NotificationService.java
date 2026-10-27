@@ -183,7 +183,7 @@ public class NotificationService {
 
                 يرجى متابعة البلاغ وتكليف أحد موظفي الحملة بالتعامل معه.
                 """.formatted(
-                report.getCampaign().getUser().getName(),
+                report.getCampaign().getCampaignName(),
                 report.getCaseNumber(),
                 report.getPilgrim().getFullName(),
                 report.getKiosk().getLocationName(),
@@ -199,7 +199,7 @@ public class NotificationService {
             String email) {
 
         String subject = "تم تسجيل الحملة — "
-                + campaign.getUser().getName();
+                + campaign.getCampaignName();
 
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -213,7 +213,7 @@ public class NotificationService {
 
                 نسعد بخدمتكم ورعاية حجاج حملتكم.
                 """.formatted(
-                campaign.getUser().getName(),
+                campaign.getCampaignName(),
                 campaign.getStartDate().format(formatter),
                 campaign.getEndDate().format(formatter)
         );
@@ -308,7 +308,7 @@ public class NotificationService {
 
                 يرجى تكليف أحد موظفي الحملة بمتابعة البلاغ.
                 """.formatted(
-                report.getCampaign().getUser().getName(),
+                report.getCampaign().getCampaignName(),
                 report.getCaseNumber(),
                 report.getPilgrim().getFullName(),
                 report.getKiosk().getLocationName()

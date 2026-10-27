@@ -139,14 +139,14 @@ public class PilgrimCardService {
         requireActiveUser(user);
 
         PilgrimCard card = getRequiredCard(cardId);
+        Pilgrim pilgrim = card.getPilgrim();
 
-        requireCampaignAccess(
-                user,
-                card.getPilgrim(),
-                true
-        );
+        requireCampaignAccess(user, pilgrim, true);
+
+        pilgrim.setPilgrimCard(null);
 
         pilgrimCardRepository.delete(card);
+        pilgrimCardRepository.flush();
     }
 
     public Pilgrim identifyPilgrimByCardNumber(

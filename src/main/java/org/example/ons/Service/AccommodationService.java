@@ -65,8 +65,54 @@ public class AccommodationService {
     }
 
     // Get Accommodation By ID
-    public Accommodation getAccommodationById(Integer id) {
-        return getRequiredAccommodation(id);
+    @Transactional(readOnly = true)
+    public Accommodation getAccommodationById(
+            User user,
+            Integer id) {
+
+        if (user == null
+                || user.getId() == null
+                || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+
+        Accommodation accommodation = getRequiredAccommodation(id);
+
+        if ("ADMIN".equals(user.getRole())) {
+            return accommodation;
+        }
+
+        Campaign campaign = accommodation.getCampaign();
+
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            if (campaign != null
+                    && campaign.getUser() != null
+                    && user.getId().equals(
+                    campaign.getUser().getId())) {
+                return accommodation;
+            }
+        }
+
+        if ("AuthorizedStaff".equals(user.getRole())) {
+
+            AuthorizedStaff staff = authorizedStaffRepository
+                    .findAuthorizedStaffById(user.getId());
+
+            if (staff != null
+                    && staff.getCampaign() != null
+                    && campaign != null
+                    && staff.getCampaign().getId().equals(
+                    campaign.getId())) {
+                return accommodation;
+            }
+        }
+
+        throw new AccessDeniedException(
+                "This accommodation does not belong to your campaign"
+        );
     }
 
     // Update Accommodation
@@ -182,10 +228,44 @@ public class AccommodationService {
 
     //ترجع بيانات الحجاج للحمله
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> getCampaignAccommodationsWithPilgrimsAndReports(
-            Integer campaignId) {
+    public List<Map<String, Object>>
+    getCampaignAccommodationsWithPilgrimsAndReports(User user) {
 
-        Campaign campaign = campaignRepository.findCampaignById(campaignId);
+        if (user == null
+                || user.getId() == null
+                || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+
+        Integer campaignId;
+
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            campaignId = getSupervisorCampaignId(user);
+
+        } else if ("AuthorizedStaff".equals(user.getRole())) {
+
+            AuthorizedStaff staff = authorizedStaffRepository
+                    .findAuthorizedStaffById(user.getId());
+
+            if (staff == null || staff.getCampaign() == null) {
+                throw new AccessDeniedException(
+                        "You are not linked to a campaign"
+                );
+            }
+
+            campaignId = staff.getCampaign().getId();
+
+        } else {
+            throw new AccessDeniedException(
+                    "Only campaign owners and staff can access this endpoint"
+            );
+        }
+
+        Campaign campaign =
+                campaignRepository.findCampaignById(campaignId);
 
         if (campaign == null) {
             throw new ApiException("Campaign not found");
@@ -199,14 +279,19 @@ public class AccommodationService {
         for (Accommodation accommodation : accommodations) {
 
             List<Pilgrim> pilgrims =
-                    pilgrimRepository.findByAccommodation_Id(accommodation.getId());
+                    pilgrimRepository.findByAccommodation_Id(
+                            accommodation.getId()
+                    );
 
-            List<Map<String, Object>> pilgrimsData = new ArrayList<>();
+            List<Map<String, Object>> pilgrimsData =
+                    new ArrayList<>();
 
             for (Pilgrim pilgrim : pilgrims) {
 
                 List<AssistanceReport> reports =
-                        assistanceReportRepository.findByPilgrim_Id(pilgrim.getId());
+                        assistanceReportRepository.findByPilgrim_Id(
+                                pilgrim.getId()
+                        );
 
                 Map<String, Object> pilgrimData = new HashMap<>();
                 pilgrimData.put("pilgrimId", pilgrim.getId());
@@ -216,8 +301,12 @@ public class AccommodationService {
             }
 
             Map<String, Object> accommodationData = new HashMap<>();
-            accommodationData.put("accommodationId", accommodation.getId());
-            accommodationData.put("accommodationName", accommodation.getName());
+            accommodationData.put(
+                    "accommodationId", accommodation.getId()
+            );
+            accommodationData.put(
+                    "accommodationName", accommodation.getName()
+            );
             accommodationData.put("address", accommodation.getAddress());
             accommodationData.put("city", accommodation.getCity());
             accommodationData.put("pilgrims", pilgrimsData);
