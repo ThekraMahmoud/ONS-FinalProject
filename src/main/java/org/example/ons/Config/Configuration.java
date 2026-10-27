@@ -54,6 +54,11 @@ public class Configuration {
                         ).permitAll()
 
                         .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/v1/campaigns/update"
+                        ).hasAuthority("CAMPAIGN_OWNER")
+
+                        .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/authorized-staff/get/employees",
                                 "/api/v1/accommodations/my-campaign"
@@ -67,13 +72,11 @@ public class Configuration {
                         .requestMatchers(
                                 "/api/v1/authorized-staff/create/{campaignId}",
                                 "/api/v1/authorized-staff/get-all",
-                                "/api/v1/authorized-staff/get/{id}",
                                 "/api/v1/authorized-staff/update/{id}",
                                 "/api/v1/authorized-staff/delete/{id}"
                         ).hasAnyAuthority("ADMIN", "CAMPAIGN_OWNER")
 
                         .requestMatchers(
-                                "/api/v1/accommodations/{id}",
                                 "/api/v1/accommodations/update/{id}",
                                 "/api/v1/accommodations/{accommodationId}/status",
                                 "/api/v1/accommodations/delete/{id}",
@@ -123,22 +126,27 @@ public class Configuration {
                                 "/api/v1/accommodations/{accommodationId}/reports",
                                 "/api/v1/accommodations/{accommodationId}/location",
                                 "/api/v1/pilgrims/get",
-                                "/api/v1/pilgrim-cards/get"
+                                "/api/v1/pilgrim-cards/get",
+                                "/api/ai-test/qr",
+                                "/api/ai-test/ocr",
+                                "/api/v1/authorized-staff/get/{id}"
                         ).hasAuthority("ADMIN")
 
                         .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/accommodations/{id}"
+                        ).hasAnyAuthority(
+                                "ADMIN",
+                                "AuthorizedStaff",
+                                "CAMPAIGN_OWNER"
+                        )
+
+                        .requestMatchers(
                                 "/api/v1/campaigns/me",
-                                "/api/v1/campaigns/update",
                                 "/api/v1/campaigns/analytics",
                                 "/api/v1/campaigns/analytics/email",
                                 "/api/v1/authorized-staff/**",
-                                "/api/v1/accommodations/**",
-                                "/api/v1/pilgrims/add",
-                                "/api/v1/pilgrims/update/{id}",
-                                "/api/v1/pilgrims/delete/{id}",
-                                "/api/v1/pilgrim-cards/add",
-                                "/api/v1/pilgrim-cards/update",
-                                "/api/v1/pilgrim-cards/delete"
+                                "/api/v1/accommodations/**"
                         ).hasAnyAuthority("AuthorizedStaff", "CAMPAIGN_OWNER")
 
                         .requestMatchers(
@@ -149,7 +157,7 @@ public class Configuration {
                         ).hasAnyAuthority("ADMIN", "AuthorizedStaff", "CAMPAIGN_OWNER")
 
                         .requestMatchers("/api/v1/routes")
-                        .hasAnyAuthority("ADMIN", "AuthorizedStaff", "FIELDـSTAFF")
+                        .hasAnyAuthority("ADMIN", "AuthorizedStaff", "FIELDـSTAFF","CAMPAIGN_OWNER")
 
                         .requestMatchers(
                                 "/api/v1/reports",
