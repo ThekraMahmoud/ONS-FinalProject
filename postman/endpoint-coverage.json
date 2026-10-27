@@ -1,0 +1,3023 @@
+{
+  "controller_count": 15,
+  "controller_method_count": 123,
+  "path_method_mapping_count": 152,
+  "collection_request_count": 356,
+  "optional_request_count": 20,
+  "runtime_executed": false,
+  "missing_mappings": [],
+  "endpoints": [
+    {
+      "controller": "AccommodationController",
+      "handler": "addAccommodation",
+      "method": "POST",
+      "paths": [
+        "/api/v1/accommodations/add"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/add",
+          "request_names": [
+            "03 — Create accommodation A",
+            "03 — Create accommodation B",
+            "03 — Create accommodation Spare",
+            "10 — Employee cannot create accommodation",
+            "16 — Anonymous denied: POST /api/v1/accommodations/add"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Create accommodation A",
+            "03 — Create accommodation B",
+            "03 — Create accommodation Spare"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAllAccommodations",
+      "method": "GET",
+      "paths": [
+        "/api/v1/accommodations/get"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/get",
+          "request_names": [
+            "03 — Admin lists accommodations and captures IDs",
+            "16 — Anonymous denied: GET /api/v1/accommodations/get"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Admin lists accommodations and captures IDs"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAccommodationById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/accommodations/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/{id}",
+          "request_names": [
+            "03 — Admin lists accommodations and captures IDs",
+            "03 — Employee views own campaign accommodations",
+            "03 — Admin reads accommodation A",
+            "10 — Field staff cannot use signed accommodation ID",
+            "11 — Disabled account cannot authenticate",
+            "11 — Reactivated account can authenticate",
+            "11 — New password authenticates",
+            "16 — Anonymous denied: GET /api/v1/accommodations/get",
+            "16 — Anonymous denied: GET /api/v1/accommodations/{id}",
+            "16 — Anonymous denied: GET /api/v1/accommodations/my-campaign"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Admin lists accommodations and captures IDs",
+            "03 — Employee views own campaign accommodations",
+            "03 — Admin reads accommodation A",
+            "11 — Reactivated account can authenticate",
+            "11 — New password authenticates"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "updateAccommodation",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/accommodations/update/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/update/{id}",
+          "request_names": [
+            "03 — Supervisor updates own accommodation",
+            "10 — Supervisor A cannot update accommodation B",
+            "16 — Anonymous denied: PUT /api/v1/accommodations/update/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Supervisor updates own accommodation"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "updateAccommodationStatus",
+      "method": "PATCH",
+      "paths": [
+        "/api/v1/accommodations/{accommodationId}/status"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/{accommodationId}/status",
+          "request_names": [
+            "03 — Supervisor changes accommodation status",
+            "16 — Anonymous denied: PATCH /api/v1/accommodations/{accommodationId}/status"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Supervisor changes accommodation status"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAccommodationPilgrims",
+      "method": "GET",
+      "paths": [
+        "/api/v1/accommodations/{accommodationId}/pilgrims"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/{accommodationId}/pilgrims",
+          "request_names": [
+            "04 — Admin reads accommodation pilgrims",
+            "16 — Anonymous denied: GET /api/v1/accommodations/{accommodationId}/pilgrims"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Admin reads accommodation pilgrims"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAccommodationReports",
+      "method": "GET",
+      "paths": [
+        "/api/v1/accommodations/{accommodationId}/reports"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/{accommodationId}/reports",
+          "request_names": [
+            "04 — Admin reads accommodation reports",
+            "16 — Anonymous denied: GET /api/v1/accommodations/{accommodationId}/reports"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Admin reads accommodation reports"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getCampaignAccommodationsWithPilgrimsAndReports",
+      "method": "GET",
+      "paths": [
+        "/api/v1/accommodations/my-campaign"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/my-campaign",
+          "request_names": [
+            "03 — Employee views own campaign accommodations",
+            "11 — Disabled account cannot authenticate",
+            "11 — Reactivated account can authenticate",
+            "11 — New password authenticates",
+            "16 — Anonymous denied: GET /api/v1/accommodations/my-campaign"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Employee views own campaign accommodations",
+            "11 — Reactivated account can authenticate",
+            "11 — New password authenticates"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAccommodationLocation",
+      "method": "GET",
+      "paths": [
+        "/api/v1/accommodations/{accommodationId}/location"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/{accommodationId}/location",
+          "request_names": [
+            "03 — Admin reads accommodation location",
+            "16 — Anonymous denied: GET /api/v1/accommodations/{accommodationId}/location"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Admin reads accommodation location"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "deleteAccommodation",
+      "method": "DELETE",
+      "paths": [
+        "/api/v1/accommodations/delete/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/accommodations/delete/{id}",
+          "request_names": [
+            "10 — Supervisor A cannot delete accommodation B",
+            "14 — Delete spare accommodation",
+            "16 — Anonymous denied: DELETE /api/v1/accommodations/delete/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete spare accommodation"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "createReport",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports",
+        "/report"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports",
+          "request_names": [
+            "06 — Create FIELD report",
+            "06 — Create MERGE1 report",
+            "06 — Create MERGE2 report",
+            "16 — Anonymous denied: POST /api/v1/reports"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — Create FIELD report",
+            "06 — Create MERGE1 report",
+            "06 — Create MERGE2 report"
+          ]
+        },
+        {
+          "path": "/report",
+          "request_names": [
+            "16 — Anonymous denied: POST /report"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getAllReports",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports",
+        "/report"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports",
+          "request_names": [
+            "06 — List reports and capture fixture IDs",
+            "16 — Anonymous denied: GET /api/v1/reports"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — List reports and capture fixture IDs"
+          ]
+        },
+        {
+          "path": "/report",
+          "request_names": [
+            "16 — Anonymous denied: GET /report"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}",
+        "/report/{reportId:\\d+}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}",
+          "request_names": [
+            "06 — Employee reads own campaign report",
+            "07 — Verify resolved employee report",
+            "08 — Former assignee field A cannot read report",
+            "08 — Verify RESOLVED report",
+            "10 — Employee A cannot read report B",
+            "12 — Wait for reminder and overdue age",
+            "12 — Recheck reminder does not change report status",
+            "16 — Anonymous denied: GET /api/v1/reports/{reportId:\\d+}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — Employee reads own campaign report",
+            "07 — Verify resolved employee report",
+            "08 — Verify RESOLVED report",
+            "12 — Wait for reminder and overdue age",
+            "12 — Recheck reminder does not change report status"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/{reportId:\\d+}"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "updateReport",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}",
+        "/report/{reportId:\\d+}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}",
+          "request_names": [
+            "06 — Admin updates canonical report",
+            "16 — Anonymous denied: PUT /api/v1/reports/{reportId:\\d+}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — Admin updates canonical report"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}",
+          "request_names": [
+            "16 — Anonymous denied: PUT /report/{reportId:\\d+}"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "updateReportStatus",
+      "method": "PATCH",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/status",
+        "/report/{reportId:\\d+}/status"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/status",
+          "request_names": [
+            "08 — Admin patches OPEN to CANCELLED",
+            "16 — Anonymous denied: PATCH /api/v1/reports/{reportId:\\d+}/status"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Admin patches OPEN to CANCELLED"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/status",
+          "request_names": [
+            "16 — Anonymous denied: PATCH /report/{reportId:\\d+}/status"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "assignReport",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/assign",
+        "/report/{reportId:\\d+}/assign"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/assign",
+          "request_names": [
+            "08 — Admin assigns report to field A",
+            "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/assign"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Admin assigns report to field A"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/assign",
+          "request_names": [
+            "16 — Anonymous denied: POST /report/{reportId:\\d+}/assign"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "reassignReport",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/reassign",
+        "/report/{reportId:\\d+}/reassign"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/reassign",
+          "request_names": [
+            "08 — Admin reassigns to field B",
+            "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/reassign"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Admin reassigns to field B"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/reassign",
+          "request_names": [
+            "16 — Anonymous denied: POST /report/{reportId:\\d+}/reassign"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "acceptReport",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/accept",
+        "/report/{reportId:\\d+}/accept"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/accept",
+          "request_names": [
+            "08 — Field B accepts report",
+            "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/accept"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Field B accepts report"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/accept",
+          "request_names": [
+            "16 — Anonymous denied: POST /report/{reportId:\\d+}/accept"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "startReport",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/start",
+        "/report/{reportId:\\d+}/start"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/start",
+          "request_names": [
+            "08 — Field B starts report",
+            "10 — Field A cannot start campaign B report",
+            "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/start"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Field B starts report"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/start",
+          "request_names": [
+            "16 — Anonymous denied: POST /report/{reportId:\\d+}/start"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "resolveReport",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/resolve",
+        "/report/{reportId:\\d+}/resolve"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/resolve",
+          "request_names": [
+            "08 — Field B resolves report",
+            "10 — Field A cannot resolve campaign B report",
+            "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/resolve"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Field B resolves report"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/resolve",
+          "request_names": [
+            "16 — Anonymous denied: POST /report/{reportId:\\d+}/resolve"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "cancelReport",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/cancel",
+        "/report/{reportId:\\d+}/cancel"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/cancel",
+          "request_names": [
+            "08 — Admin cancels OPEN report",
+            "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/cancel"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Admin cancels OPEN report"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/cancel",
+          "request_names": [
+            "16 — Anonymous denied: POST /report/{reportId:\\d+}/cancel"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "reopenReport",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/reopen",
+        "/report/{reportId:\\d+}/reopen"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/reopen",
+          "request_names": [
+            "08 — Admin reopens resolved report",
+            "08 — Admin reopens cancelled report",
+            "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/reopen"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Admin reopens resolved report",
+            "08 — Admin reopens cancelled report"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/reopen",
+          "request_names": [
+            "16 — Anonymous denied: POST /report/{reportId:\\d+}/reopen"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportHistory",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/history",
+        "/report/{reportId:\\d+}/history"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/history",
+          "request_names": [
+            "08 — Read report history",
+            "16 — Anonymous denied: GET /api/v1/reports/{reportId:\\d+}/history"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Read report history"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/history",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/{reportId:\\d+}/history"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportAssignees",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/assignees",
+        "/report/{reportId:\\d+}/assignees"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/assignees",
+          "request_names": [
+            "08 — Read report assignees",
+            "16 — Anonymous denied: GET /api/v1/reports/{reportId:\\d+}/assignees"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Read report assignees"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/assignees",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/{reportId:\\d+}/assignees"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportNotifications",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/{reportId:\\d+}/notifications",
+        "/report/{reportId:\\d+}/notifications"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId:\\d+}/notifications",
+          "request_names": [
+            "08 — Read report notifications",
+            "16 — Anonymous denied: GET /api/v1/reports/{reportId:\\d+}/notifications"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "08 — Read report notifications"
+          ]
+        },
+        {
+          "path": "/report/{reportId:\\d+}/notifications",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/{reportId:\\d+}/notifications"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportsSummary",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/summary",
+        "/report/summary"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/summary",
+          "request_names": [
+            "09 — Reports summary",
+            "16 — Anonymous denied: GET /api/v1/reports/summary"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Reports summary"
+          ]
+        },
+        {
+          "path": "/report/summary",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/summary"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportsStatistics",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/statistics",
+        "/report/statistics"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/statistics",
+          "request_names": [
+            "09 — Reports statistics",
+            "16 — Anonymous denied: GET /api/v1/reports/statistics"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Reports statistics"
+          ]
+        },
+        {
+          "path": "/report/statistics",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/statistics"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "exportReports",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/export",
+        "/report/export"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/export",
+          "request_names": [
+            "09 — Export reports CSV",
+            "16 — Anonymous denied: GET /api/v1/reports/export"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Export reports CSV"
+          ]
+        },
+        {
+          "path": "/report/export",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/export"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "createSelfServiceReport",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/self-service",
+        "/report/self-service"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/self-service",
+          "request_names": [
+            "06 — Public self-service report for employee acceptance",
+            "06 — Public self-service report reserved for reminder"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — Public self-service report for employee acceptance",
+            "06 — Public self-service report reserved for reminder"
+          ]
+        },
+        {
+          "path": "/report/self-service",
+          "request_names": [
+            "16 — Legacy public self-service alias validates input"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "createReportLegacy",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/add",
+        "/report/add"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/add",
+          "request_names": [
+            "06 — Create B report",
+            "06 — Create TRASH report",
+            "16 — Anonymous denied: POST /api/v1/reports/add"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — Create B report",
+            "06 — Create TRASH report"
+          ]
+        },
+        {
+          "path": "/report/add",
+          "request_names": [
+            "16 — Anonymous denied: POST /report/add"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getAllReportsLegacy",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/get",
+        "/report/get"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/get",
+          "request_names": [
+            "06 — Legacy list route",
+            "16 — Anonymous denied: GET /api/v1/reports/get"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — Legacy list route"
+          ]
+        },
+        {
+          "path": "/report/get",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/get"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportByIdLegacy",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/get/{id}",
+        "/report/get/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/get/{id}",
+          "request_names": [
+            "06 — Legacy read route",
+            "16 — Anonymous denied: GET /api/v1/reports/get/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — Legacy read route"
+          ]
+        },
+        {
+          "path": "/report/get/{id}",
+          "request_names": [
+            "10 — Employee A cannot read report B via legacy alias",
+            "16 — Anonymous denied: GET /report/get/{id}"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "updateReportLegacy",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/reports/update/{id}",
+        "/report/update/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/update/{id}",
+          "request_names": [
+            "06 — Admin updates legacy report",
+            "16 — Anonymous denied: PUT /api/v1/reports/update/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — Admin updates legacy report"
+          ]
+        },
+        {
+          "path": "/report/update/{id}",
+          "request_names": [
+            "16 — Anonymous denied: PUT /report/update/{id}"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "deleteReportLegacy",
+      "method": "DELETE",
+      "paths": [
+        "/api/v1/reports/delete/{id}",
+        "/report/delete/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/delete/{id}",
+          "request_names": [
+            "14 — Delete unassigned legacy report",
+            "16 — Anonymous denied: DELETE /api/v1/reports/delete/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete unassigned legacy report"
+          ]
+        },
+        {
+          "path": "/report/delete/{id}",
+          "request_names": [
+            "16 — Anonymous denied: DELETE /report/delete/{id}"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "countReportByStatus",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/count/status/{status}",
+        "/report/count/status/{status}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/count/status/{status}",
+          "request_names": [
+            "09 — Reports count/status/OPEN",
+            "16 — Anonymous denied: GET /api/v1/reports/count/status/{status}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Reports count/status/OPEN"
+          ]
+        },
+        {
+          "path": "/report/count/status/{status}",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/count/status/{status}"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "countReportByStatusForCampaign",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/count/campaign/{campaignId}/status/{status}",
+        "/report/count/campaign/{campaignId}/status/{status}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/count/campaign/{campaignId}/status/{status}",
+          "request_names": [
+            "09 — Reports count/campaign/{{campaignAId}}/status/OPEN",
+            "10 — Employee A cannot count campaign B reports",
+            "16 — Anonymous denied: GET /api/v1/reports/count/campaign/{campaignId}/status/{status}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Reports count/campaign/{{campaignAId}}/status/OPEN"
+          ]
+        },
+        {
+          "path": "/report/count/campaign/{campaignId}/status/{status}",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/count/campaign/{campaignId}/status/{status}"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "mergeReports",
+      "method": "POST",
+      "paths": [
+        "/api/v1/reports/{reportId}/merge",
+        "/report/{reportId}/merge"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/{reportId}/merge",
+          "request_names": [
+            "07 — Supervisor batch-assigns two OPEN reports",
+            "10 — Employee cannot merge reports",
+            "16 — Anonymous denied: POST /api/v1/reports/{reportId}/merge"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "07 — Supervisor batch-assigns two OPEN reports"
+          ]
+        },
+        {
+          "path": "/report/{reportId}/merge",
+          "request_names": [
+            "16 — Anonymous denied: POST /report/{reportId}/merge"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getOverdueReportsForCampaign",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/campaign/{campaignId}/overdue",
+        "/report/campaign/{campaignId}/overdue"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/campaign/{campaignId}/overdue",
+          "request_names": [
+            "09 — Reports campaign/{{campaignAId}}/overdue",
+            "10 — Employee A cannot read campaign B overdue reports",
+            "12 — Old OPEN report appears overdue",
+            "16 — Anonymous denied: GET /api/v1/reports/campaign/{campaignId}/overdue"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Reports campaign/{{campaignAId}}/overdue",
+            "12 — Old OPEN report appears overdue"
+          ]
+        },
+        {
+          "path": "/report/campaign/{campaignId}/overdue",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/campaign/{campaignId}/overdue"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getAllOverdueReports",
+      "method": "GET",
+      "paths": [
+        "/api/v1/reports/overdue",
+        "/report/overdue"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/reports/overdue",
+          "request_names": [
+            "09 — Reports overdue",
+            "16 — Anonymous denied: GET /api/v1/reports/overdue"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Reports overdue"
+          ]
+        },
+        {
+          "path": "/report/overdue",
+          "request_names": [
+            "16 — Anonymous denied: GET /report/overdue"
+          ],
+          "represented": true,
+          "positive_requests": []
+        }
+      ]
+    },
+    {
+      "controller": "AuthController",
+      "handler": "getAllUsers",
+      "method": "GET",
+      "paths": [
+        "/api/v1/auth/get/all"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/auth/get/all",
+          "request_names": [
+            "00.01 — Admin login and initialize test run",
+            "02 — Capture supervisor and field-staff user IDs",
+            "02 — Capture employee IDs",
+            "10 — Employee cannot list all users",
+            "16 — Anonymous denied: GET /api/v1/auth/get/all"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "00.01 — Admin login and initialize test run",
+            "02 — Capture supervisor and field-staff user IDs",
+            "02 — Capture employee IDs"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthController",
+      "handler": "getUserById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/auth/get/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/auth/get/{id}",
+          "request_names": [
+            "00.01 — Admin login and initialize test run",
+            "02 — Capture supervisor and field-staff user IDs",
+            "02 — Capture employee IDs",
+            "10 — Employee cannot list all users",
+            "11 — Admin reads employee user account",
+            "13 — User JSON does not disclose password",
+            "16 — Anonymous denied: GET /api/v1/auth/get/all",
+            "16 — Anonymous denied: GET /api/v1/auth/get/{id}",
+            "17 — Final admin authentication check"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "00.01 — Admin login and initialize test run",
+            "02 — Capture supervisor and field-staff user IDs",
+            "02 — Capture employee IDs",
+            "11 — Admin reads employee user account",
+            "13 — User JSON does not disclose password",
+            "17 — Final admin authentication check"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthController",
+      "handler": "activateUser",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/auth/activate/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/auth/activate/{id}",
+          "request_names": [
+            "10 — Employee cannot activate another account",
+            "11 — Admin reactivates spare employee",
+            "16 — Anonymous denied: PUT /api/v1/auth/activate/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "11 — Admin reactivates spare employee"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthController",
+      "handler": "deactivateUser",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/auth/deactivate/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/auth/deactivate/{id}",
+          "request_names": [
+            "10 — Employee cannot deactivate another account",
+            "11 — Admin deactivates spare employee",
+            "16 — Anonymous denied: PUT /api/v1/auth/deactivate/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "11 — Admin deactivates spare employee"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthController",
+      "handler": "changePassword",
+      "method": "POST",
+      "paths": [
+        "/api/v1/auth/change-password/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/auth/change-password/{id}",
+          "request_names": [
+            "10 — Employee cannot change another account password",
+            "11 — Wrong current password is rejected",
+            "11 — Change spare employee own password",
+            "16 — Anonymous denied: POST /api/v1/auth/change-password/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "11 — Change spare employee own password"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "createStaff",
+      "method": "POST",
+      "paths": [
+        "/api/v1/authorized-staff/create/{campaignId}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/create/{campaignId}",
+          "request_names": [
+            "02 — Create supervisorA",
+            "02 — Create supervisorB",
+            "02 — Create supervisorSpare",
+            "16 — Anonymous denied: POST /api/v1/authorized-staff/create/{campaignId}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Create supervisorA",
+            "02 — Create supervisorB",
+            "02 — Create supervisorSpare"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getAllStaff",
+      "method": "GET",
+      "paths": [
+        "/api/v1/authorized-staff/get-all"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/get-all",
+          "request_names": [
+            "02 — Admin lists authorized staff",
+            "16 — Anonymous denied: GET /api/v1/authorized-staff/get-all"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Admin lists authorized staff"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getStaffById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/authorized-staff/get/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/get/{id}",
+          "request_names": [
+            "02 — Admin reads supervisor A",
+            "02 — Supervisor lists employees",
+            "10 — Admin does not inherit campaign staff role",
+            "10 — Employee cannot use signed staff ID (GET)",
+            "10 — Employee cannot use encoded signed staff ID",
+            "10 — Normal staff ID also stays ADMIN-only",
+            "10 — Signed DELETE did not delete spare supervisor",
+            "16 — Anonymous denied: GET /api/v1/authorized-staff/get/{id}",
+            "16 — Anonymous denied: GET /api/v1/authorized-staff/get/employees"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Admin reads supervisor A",
+            "02 — Supervisor lists employees",
+            "10 — Signed DELETE did not delete spare supervisor"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "updateStaff",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/authorized-staff/update/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/update/{id}",
+          "request_names": [
+            "02 — Admin updates spare authorized staff",
+            "10 — Employee cannot use signed staff ID (PUT)",
+            "16 — Anonymous denied: PUT /api/v1/authorized-staff/update/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Admin updates spare authorized staff"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "deleteStaff",
+      "method": "DELETE",
+      "paths": [
+        "/api/v1/authorized-staff/delete/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/delete/{id}",
+          "request_names": [
+            "10 — Employee cannot use signed staff ID (DELETE)",
+            "14 — Delete spare supervisor",
+            "16 — Anonymous denied: DELETE /api/v1/authorized-staff/delete/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete spare supervisor"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getEmployees",
+      "method": "GET",
+      "paths": [
+        "/api/v1/authorized-staff/get/employees"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/get/employees",
+          "request_names": [
+            "02 — Supervisor lists employees",
+            "10 — Admin does not inherit campaign staff role",
+            "16 — Anonymous denied: GET /api/v1/authorized-staff/get/employees"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Supervisor lists employees"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "addEmployee",
+      "method": "POST",
+      "paths": [
+        "/api/v1/authorized-staff/add/employee"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/add/employee",
+          "request_names": [
+            "02 — supervisorA creates employeeA",
+            "02 — supervisorB creates employeeB",
+            "02 — supervisorA creates employeeSpare",
+            "16 — Anonymous denied: POST /api/v1/authorized-staff/add/employee"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — supervisorA creates employeeA",
+            "02 — supervisorB creates employeeB",
+            "02 — supervisorA creates employeeSpare"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "updateEmployee",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/authorized-staff/update/employee/{employeeId}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/update/employee/{employeeId}",
+          "request_names": [
+            "02 — Supervisor updates spare employee",
+            "16 — Anonymous denied: PUT /api/v1/authorized-staff/update/employee/{employeeId}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Supervisor updates spare employee"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "deleteEmployee",
+      "method": "DELETE",
+      "paths": [
+        "/api/v1/authorized-staff/delete/employee/{employeeId}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/delete/employee/{employeeId}",
+          "request_names": [
+            "14 — Delete spare employee",
+            "16 — Anonymous denied: DELETE /api/v1/authorized-staff/delete/employee/{employeeId}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete spare employee"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "acceptPilgrim",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/authorized-staff/pilgrims/{pilgrimId}/reports/{reportId}/accept"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/pilgrims/{pilgrimId}/reports/{reportId}/accept",
+          "request_names": [
+            "07 — Employee accepts own pilgrim report",
+            "16 — Anonymous denied: PUT /api/v1/authorized-staff/pilgrims/{pilgrimId}/reports/{reportId}/accept"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "07 — Employee accepts own pilgrim report"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "advanceReportStatus",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/authorized-staff/reports/{reportId}/advance-status"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/reports/{reportId}/advance-status",
+          "request_names": [
+            "07 — Advance ASSIGNED to IN_PROGRESS",
+            "07 — Advance IN_PROGRESS to RESOLVED",
+            "16 — Anonymous denied: PUT /api/v1/authorized-staff/reports/{reportId}/advance-status"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "07 — Advance ASSIGNED to IN_PROGRESS",
+            "07 — Advance IN_PROGRESS to RESOLVED"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getStaffReports",
+      "method": "GET",
+      "paths": [
+        "/api/v1/authorized-staff/staff"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/staff",
+          "request_names": [
+            "07 — Employee lists assigned reports",
+            "16 — Anonymous denied: GET /api/v1/authorized-staff/staff"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "07 — Employee lists assigned reports"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getStaffReportsByStatus",
+      "method": "GET",
+      "paths": [
+        "/api/v1/authorized-staff/staff/status/{status}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/staff/status/{status}",
+          "request_names": [
+            "07 — Employee filters ASSIGNED reports",
+            "16 — Anonymous denied: GET /api/v1/authorized-staff/staff/status/{status}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "07 — Employee filters ASSIGNED reports"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getNearbyReports",
+      "method": "GET",
+      "paths": [
+        "/api/v1/authorized-staff/nearby-reports"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/authorized-staff/nearby-reports",
+          "request_names": [
+            "06 — Nearby OPEN reports for employee A",
+            "16 — Anonymous denied: GET /api/v1/authorized-staff/nearby-reports"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "06 — Nearby OPEN reports for employee A"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "createCampaign",
+      "method": "POST",
+      "paths": [
+        "/api/v1/campaigns/register"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/campaigns/register",
+          "request_names": [
+            "01 — Register campaign A",
+            "01 — Register campaign B",
+            "10 — Registration ignores an injected existing campaign ID"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "01 — Register campaign A",
+            "01 — Register campaign B",
+            "10 — Registration ignores an injected existing campaign ID"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "getAllCampaigns",
+      "method": "GET",
+      "paths": [
+        "/api/v1/campaigns/get"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/campaigns/get",
+          "request_names": [
+            "09 — Admin lists campaigns",
+            "16 — Anonymous denied: GET /api/v1/campaigns/get"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Admin lists campaigns"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "getCampaignById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/campaigns/me"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/campaigns/me",
+          "request_names": [
+            "09 — Supervisor views own campaign",
+            "09 — Verify profile update kept unpaid campaign PLANNED",
+            "10 — Employee cannot use supervisor campaign endpoint",
+            "10 — Original campaign survived registration-ID probe",
+            "16 — Anonymous denied: GET /api/v1/campaigns/me"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Supervisor views own campaign",
+            "09 — Verify profile update kept unpaid campaign PLANNED",
+            "10 — Original campaign survived registration-ID probe"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "updateCampaign",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/campaigns/update"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/campaigns/update",
+          "request_names": [
+            "09 — Profile update cannot activate an unpaid campaign",
+            "16 — Anonymous denied: PUT /api/v1/campaigns/update"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Profile update cannot activate an unpaid campaign"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "deleteCampaign",
+      "method": "DELETE",
+      "paths": [
+        "/api/v1/campaigns/delete/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/campaigns/delete/{id}",
+          "request_names": [
+            "14 — Delete separate empty campaign",
+            "16 — Anonymous denied: DELETE /api/v1/campaigns/delete/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete separate empty campaign"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "getCampaignAnalytics",
+      "method": "GET",
+      "paths": [
+        "/api/v1/campaigns/analytics"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/campaigns/analytics",
+          "request_names": [
+            "09 — Supervisor gets campaign analytics",
+            "16 — Anonymous denied: GET /api/v1/campaigns/analytics"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Supervisor gets campaign analytics"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "sendCampaignAnalyticsEmail",
+      "method": "POST",
+      "paths": [
+        "/api/v1/campaigns/analytics/email"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/campaigns/analytics/email",
+          "request_names": [
+            "09 — Send campaign analytics email (SMTP)",
+            "16 — Anonymous denied: POST /api/v1/campaigns/analytics/email"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Send campaign analytics email (SMTP)"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "CampaignPaymentController",
+      "handler": "createPayment",
+      "method": "POST",
+      "paths": [
+        "/api/v1/payments/campaign/{campaignId}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/payments/campaign/{campaignId}",
+          "request_names": [
+            "01 — Retry/reuse payment A with matching session",
+            "01 — Retry/reuse payment B with matching session",
+            "01 — Session A cannot create payment for campaign B",
+            "01 — Payment creation without session is forbidden"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "01 — Retry/reuse payment A with matching session",
+            "01 — Retry/reuse payment B with matching session"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "CampaignPaymentController",
+      "handler": "verifyPayment",
+      "method": "POST",
+      "paths": [
+        "/api/v1/payments/campaign/{campaignId}/{paymentId}/verify"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/payments/campaign/{campaignId}/{paymentId}/verify",
+          "request_names": [
+            "01 — Verify UNPAID payment A stays pending",
+            "01 — Verify UNPAID payment B stays pending",
+            "01 — Session A cannot verify campaign B payment",
+            "01 — Verification without session is forbidden",
+            "15 — Verify manually PAID invoice and activate campaign",
+            "15 — Repeat verification preserves paidAt"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "01 — Verify UNPAID payment A stays pending",
+            "01 — Verify UNPAID payment B stays pending",
+            "15 — Verify manually PAID invoice and activate campaign",
+            "15 — Repeat verification preserves paidAt"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getSummary",
+      "method": "GET",
+      "paths": [
+        "/api/v1/dashboard/summary"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/dashboard/summary",
+          "request_names": [
+            "09 — Dashboard summary",
+            "10 — Employee cannot read global dashboard",
+            "16 — Anonymous denied: GET /api/v1/dashboard/summary"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Dashboard summary"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getReportsByStatus",
+      "method": "GET",
+      "paths": [
+        "/api/v1/dashboard/reports-by-status"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/dashboard/reports-by-status",
+          "request_names": [
+            "09 — Dashboard reports-by-status",
+            "16 — Anonymous denied: GET /api/v1/dashboard/reports-by-status"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Dashboard reports-by-status"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getReportsTrend",
+      "method": "GET",
+      "paths": [
+        "/api/v1/dashboard/reports-trend"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/dashboard/reports-trend",
+          "request_names": [
+            "09 — Dashboard reports-trend",
+            "16 — Anonymous denied: GET /api/v1/dashboard/reports-trend"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Dashboard reports-trend"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getResponseTime",
+      "method": "GET",
+      "paths": [
+        "/api/v1/dashboard/response-time"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/dashboard/response-time",
+          "request_names": [
+            "09 — Dashboard response-time",
+            "16 — Anonymous denied: GET /api/v1/dashboard/response-time"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Dashboard response-time"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getResolutionTime",
+      "method": "GET",
+      "paths": [
+        "/api/v1/dashboard/resolution-time"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/dashboard/resolution-time",
+          "request_names": [
+            "09 — Dashboard resolution-time",
+            "16 — Anonymous denied: GET /api/v1/dashboard/resolution-time"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Dashboard resolution-time"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "createStaff",
+      "method": "POST",
+      "paths": [
+        "/api/v1/field-staff/create"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/field-staff/create",
+          "request_names": [
+            "02 — Create fieldA",
+            "02 — Create fieldB",
+            "02 — Create fieldSpare",
+            "16 — Anonymous denied: POST /api/v1/field-staff/create"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Create fieldA",
+            "02 — Create fieldB",
+            "02 — Create fieldSpare"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "getAllStaff",
+      "method": "GET",
+      "paths": [
+        "/api/v1/field-staff/get-all"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/field-staff/get-all",
+          "request_names": [
+            "02 — Admin lists field staff",
+            "13 — Field-staff responses do not expose reports/passwords",
+            "16 — Anonymous denied: GET /api/v1/field-staff/get-all"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Admin lists field staff",
+            "13 — Field-staff responses do not expose reports/passwords"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "getStaffById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/field-staff/get/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/field-staff/get/{id}",
+          "request_names": [
+            "02 — Admin reads field A",
+            "16 — Anonymous denied: GET /api/v1/field-staff/get/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Admin reads field A"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "updateStaff",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/field-staff/update/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/field-staff/update/{id}",
+          "request_names": [
+            "02 — Admin updates spare field worker",
+            "16 — Anonymous denied: PUT /api/v1/field-staff/update/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Admin updates spare field worker"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "deleteStaff",
+      "method": "DELETE",
+      "paths": [
+        "/api/v1/field-staff/delete/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/field-staff/delete/{id}",
+          "request_names": [
+            "14 — Delete spare field worker",
+            "16 — Anonymous denied: DELETE /api/v1/field-staff/delete/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete spare field worker"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "getAvailableFieldStaff",
+      "method": "GET",
+      "paths": [
+        "/api/v1/field-staff/availability"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/field-staff/availability",
+          "request_names": [
+            "02 — Supervisor checks available field staff",
+            "08 — Busy field A is unavailable",
+            "16 — Anonymous denied: GET /api/v1/field-staff/availability"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "02 — Supervisor checks available field staff",
+            "08 — Busy field A is unavailable"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "scanQr",
+      "method": "POST",
+      "paths": [
+        "/api/v1/identification/qr/scan"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/identification/qr/scan",
+          "request_names": [
+            "05 — Public QR scan",
+            "05 — Create failed identification fixture"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "05 — Public QR scan",
+            "05 — Create failed identification fixture"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "validateIdentity",
+      "method": "POST",
+      "paths": [
+        "/api/v1/identification/validate"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/identification/validate",
+          "request_names": [
+            "05 — Public identity validation"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "05 — Public identity validation"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "getRequest",
+      "method": "GET",
+      "paths": [
+        "/api/v1/identification/requests/{requestId}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/identification/requests/{requestId}",
+          "request_names": [
+            "05 — Admin views completed identification",
+            "10 — Field staff cannot view identification request",
+            "16 — Anonymous denied: GET /api/v1/identification/requests/{requestId}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "05 — Admin views completed identification"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "retryRequest",
+      "method": "POST",
+      "paths": [
+        "/api/v1/identification/requests/{requestId}/retry"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/identification/requests/{requestId}/retry",
+          "request_names": [
+            "05 — Admin retries failed identification",
+            "16 — Anonymous denied: POST /api/v1/identification/requests/{requestId}/retry"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "05 — Admin retries failed identification"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "manualReview",
+      "method": "POST",
+      "paths": [
+        "/api/v1/identification/requests/{requestId}/manual-review"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/identification/requests/{requestId}/manual-review",
+          "request_names": [
+            "05 — Admin sends failed request to manual review",
+            "16 — Anonymous denied: POST /api/v1/identification/requests/{requestId}/manual-review"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "05 — Admin sends failed request to manual review"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "addKiosk",
+      "method": "POST",
+      "paths": [
+        "/api/v1/kiosks/add"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/add",
+          "request_names": [
+            "03 — Create kiosk A",
+            "03 — Create kiosk B",
+            "03 — Create kiosk Spare",
+            "16 — Anonymous denied: POST /api/v1/kiosks/add"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Create kiosk A",
+            "03 — Create kiosk B",
+            "03 — Create kiosk Spare"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getAllKiosks",
+      "method": "GET",
+      "paths": [
+        "/api/v1/kiosks/get"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/get",
+          "request_names": [
+            "03 — Capture kiosk IDs",
+            "16 — Anonymous denied: GET /api/v1/kiosks/get"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Capture kiosk IDs"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getKioskById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/kiosks/get/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/get/{id}",
+          "request_names": [
+            "03 — Employee reads kiosk",
+            "16 — Anonymous denied: GET /api/v1/kiosks/get/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Employee reads kiosk"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "updateKiosk",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/kiosks/update/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/update/{id}",
+          "request_names": [
+            "03 — Admin updates spare kiosk",
+            "16 — Anonymous denied: PUT /api/v1/kiosks/update/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Admin updates spare kiosk"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "deleteKiosk",
+      "method": "DELETE",
+      "paths": [
+        "/api/v1/kiosks/delete/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/delete/{id}",
+          "request_names": [
+            "14 — Delete spare kiosk",
+            "16 — Anonymous denied: DELETE /api/v1/kiosks/delete/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete spare kiosk"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "updateKioskStatus",
+      "method": "PATCH",
+      "paths": [
+        "/api/v1/kiosks/update-status/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/update-status/{id}",
+          "request_names": [
+            "03 — Admin changes spare kiosk status (plain text)",
+            "16 — Anonymous denied: PATCH /api/v1/kiosks/update-status/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Admin changes spare kiosk status (plain text)"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "updateLocation",
+      "method": "PATCH",
+      "paths": [
+        "/api/v1/kiosks/update-location/{kioskId}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/update-location/{kioskId}",
+          "request_names": [
+            "03 — Admin updates spare kiosk location",
+            "16 — Anonymous denied: PATCH /api/v1/kiosks/update-location/{kioskId}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Admin updates spare kiosk location"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "updateAllHeartbeats",
+      "method": "PATCH",
+      "paths": [
+        "/api/v1/kiosks/heartbeat/all"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/heartbeat/all",
+          "request_names": [
+            "03 — Public n8n-style heartbeat"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "03 — Public n8n-style heartbeat"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getAllReportsForKiosk",
+      "method": "GET",
+      "paths": [
+        "/api/v1/kiosks/{kioskId}/reports"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/{kioskId}/reports",
+          "request_names": [
+            "09 — Admin reads kiosk reports",
+            "16 — Anonymous denied: GET /api/v1/kiosks/{kioskId}/reports"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Admin reads kiosk reports"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getAllActivity",
+      "method": "GET",
+      "paths": [
+        "/api/v1/kiosks/activity"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/activity",
+          "request_names": [
+            "09 — Admin reads kiosk activity",
+            "16 — Anonymous denied: GET /api/v1/kiosks/activity"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Admin reads kiosk activity"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getKioskReport",
+      "method": "GET",
+      "paths": [
+        "/api/v1/kiosks/report/{adminId}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/kiosks/report/{adminId}",
+          "request_names": [
+            "09 — Send kiosk report email to administrator",
+            "16 — Anonymous denied: GET /api/v1/kiosks/report/{adminId}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Send kiosk report email to administrator"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "MapController",
+      "handler": "getMarkers",
+      "method": "GET",
+      "paths": [
+        "/api/v1/map/markers"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/map/markers",
+          "request_names": [
+            "09 — Employee gets map markers",
+            "16 — Anonymous denied: GET /api/v1/map/markers"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Employee gets map markers"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "MapController",
+      "handler": "getNearestKiosk",
+      "method": "GET",
+      "paths": [
+        "/api/v1/map/nearest-kiosk"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/map/nearest-kiosk",
+          "request_names": [
+            "09 — Employee finds nearest kiosk",
+            "16 — Anonymous denied: GET /api/v1/map/nearest-kiosk"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Employee finds nearest kiosk"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "MapController",
+      "handler": "getRoute",
+      "method": "POST",
+      "paths": [
+        "/api/v1/map/route"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/map/route",
+          "request_names": [
+            "09 — Walking route through Google",
+            "16 — Anonymous denied: POST /api/v1/map/route"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Walking route through Google"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "MapController",
+      "handler": "getNearestPlace",
+      "method": "GET",
+      "paths": [
+        "/api/v1/map/kiosks/{kioskId}/nearest-place"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/map/kiosks/{kioskId}/nearest-place",
+          "request_names": [
+            "09 — Public nearest GATE",
+            "09 — Public nearest BATHROOM"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Public nearest GATE",
+            "09 — Public nearest BATHROOM"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "createNotification",
+      "method": "POST",
+      "paths": [
+        "/notification/add"
+      ],
+      "mappings": [
+        {
+          "path": "/notification/add",
+          "request_names": [
+            "09 — Create notification record",
+            "16 — Anonymous denied: POST /notification/add"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Create notification record"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "getAllNotifications",
+      "method": "GET",
+      "paths": [
+        "/notification/get"
+      ],
+      "mappings": [
+        {
+          "path": "/notification/get",
+          "request_names": [
+            "09 — List notification records and save ID",
+            "10 — Field staff cannot manage notifications",
+            "16 — Anonymous denied: GET /notification/get"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — List notification records and save ID"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "getNotificationById",
+      "method": "GET",
+      "paths": [
+        "/notification/get/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/notification/get/{id}",
+          "request_names": [
+            "09 — Read notification record",
+            "16 — Anonymous denied: GET /notification/get/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Read notification record"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "updateNotification",
+      "method": "PUT",
+      "paths": [
+        "/notification/update/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/notification/update/{id}",
+          "request_names": [
+            "09 — Update notification record",
+            "16 — Anonymous denied: PUT /notification/update/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Update notification record"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "deleteNotification",
+      "method": "DELETE",
+      "paths": [
+        "/notification/delete/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/notification/delete/{id}",
+          "request_names": [
+            "14 — Delete notification test record",
+            "16 — Anonymous denied: DELETE /notification/delete/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete notification test record"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "createPilgrimCard",
+      "method": "POST",
+      "paths": [
+        "/api/v1/pilgrim-cards/add"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrim-cards/add",
+          "request_names": [
+            "04 — Create card A",
+            "04 — Create card B",
+            "04 — Create card Spare",
+            "16 — Anonymous denied: POST /api/v1/pilgrim-cards/add"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Create card A",
+            "04 — Create card B",
+            "04 — Create card Spare"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "getAllPilgrimCards",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrim-cards/get"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrim-cards/get",
+          "request_names": [
+            "04 — Admin lists cards",
+            "16 — Anonymous denied: GET /api/v1/pilgrim-cards/get"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Admin lists cards"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "getPilgrimCardById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrim-cards/me"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrim-cards/me",
+          "request_names": [
+            "04 — Employee reads own campaign card",
+            "10 — Employee A cannot read card B",
+            "16 — Anonymous denied: GET /api/v1/pilgrim-cards/me"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Employee reads own campaign card"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "updatePilgrimCard",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/pilgrim-cards/update"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrim-cards/update",
+          "request_names": [
+            "04 — Supervisor updates own card",
+            "10 — Employee cannot update a card",
+            "10 — Supervisor A cannot update card B",
+            "16 — Anonymous denied: PUT /api/v1/pilgrim-cards/update"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Supervisor updates own card"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "deletePilgrimCard",
+      "method": "DELETE",
+      "paths": [
+        "/api/v1/pilgrim-cards/delete"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrim-cards/delete",
+          "request_names": [
+            "10 — Supervisor A cannot delete card B",
+            "14 — Delete spare card",
+            "16 — Anonymous denied: DELETE /api/v1/pilgrim-cards/delete"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete spare card"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "createPilgrim",
+      "method": "POST",
+      "paths": [
+        "/api/v1/pilgrims/add"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/add",
+          "request_names": [
+            "04 — Create pilgrim A",
+            "04 — Create pilgrim B",
+            "04 — Create pilgrim Spare",
+            "16 — Anonymous denied: POST /api/v1/pilgrims/add"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Create pilgrim A",
+            "04 — Create pilgrim B",
+            "04 — Create pilgrim Spare"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getAllPilgrims",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrims/get"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/get",
+          "request_names": [
+            "04 — Admin lists pilgrims and captures IDs",
+            "16 — Anonymous denied: GET /api/v1/pilgrims/get"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Admin lists pilgrims and captures IDs"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrims/me"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/me",
+          "request_names": [
+            "04 — Employee uses legacy me lookup",
+            "16 — Anonymous denied: GET /api/v1/pilgrims/me"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Employee uses legacy me lookup"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "identifyPilgrim",
+      "method": "POST",
+      "paths": [
+        "/api/v1/pilgrims/identify"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/identify",
+          "request_names": [
+            "05 — Public identify pilgrim by card"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "05 — Public identify pilgrim by card"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimByRequiredId",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrims/{pilgrimId:\\d+}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/{pilgrimId:\\d+}",
+          "request_names": [
+            "04 — Employee reads pilgrim details",
+            "08 — Assigned field B reads pilgrim",
+            "10 — Employee A cannot read pilgrim B",
+            "10 — Unassigned field A cannot read pilgrim B",
+            "10 — Verify pilgrim B was not changed",
+            "16 — Anonymous denied: GET /api/v1/pilgrims/{pilgrimId:\\d+}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Employee reads pilgrim details",
+            "08 — Assigned field B reads pilgrim",
+            "10 — Verify pilgrim B was not changed"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimCampaign",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrims/{pilgrimId:\\d+}/campaign"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/{pilgrimId:\\d+}/campaign",
+          "request_names": [
+            "04 — Employee reads pilgrim /campaign",
+            "16 — Anonymous denied: GET /api/v1/pilgrims/{pilgrimId:\\d+}/campaign"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Employee reads pilgrim /campaign"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimAccommodation",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrims/{pilgrimId:\\d+}/accommodation"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/{pilgrimId:\\d+}/accommodation",
+          "request_names": [
+            "04 — Employee reads pilgrim /accommodation",
+            "16 — Anonymous denied: GET /api/v1/pilgrims/{pilgrimId:\\d+}/accommodation"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Employee reads pilgrim /accommodation"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimReports",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrims/{pilgrimId:\\d+}/reports"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/{pilgrimId:\\d+}/reports",
+          "request_names": [
+            "04 — Employee reads pilgrim /reports",
+            "08 — Assigned field B sees only own reports",
+            "16 — Anonymous denied: GET /api/v1/pilgrims/{pilgrimId:\\d+}/reports"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Employee reads pilgrim /reports",
+            "08 — Assigned field B sees only own reports"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "updatePilgrim",
+      "method": "PUT",
+      "paths": [
+        "/api/v1/pilgrims/update/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/update/{id}",
+          "request_names": [
+            "04 — Supervisor updates own pilgrim",
+            "10 — Supervisor A cannot update pilgrim B",
+            "10 — Supervisor cannot attach own pilgrim to accommodation B",
+            "16 — Anonymous denied: PUT /api/v1/pilgrims/update/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Supervisor updates own pilgrim"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "deletePilgrim",
+      "method": "DELETE",
+      "paths": [
+        "/api/v1/pilgrims/delete/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/delete/{id}",
+          "request_names": [
+            "10 — Supervisor A cannot delete pilgrim B",
+            "14 — Delete spare pilgrim",
+            "16 — Anonymous denied: DELETE /api/v1/pilgrims/delete/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "14 — Delete spare pilgrim"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "verifyPilgrimIdentity",
+      "method": "POST",
+      "paths": [
+        "/api/v1/pilgrims/verify"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/verify",
+          "request_names": [
+            "05 — Public verify pilgrim identity",
+            "05 — Wrong visa cannot verify identity"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "05 — Public verify pilgrim identity"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "searchPilgrim",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrims/search"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/search",
+          "request_names": [
+            "04 — Search own campaign by visa",
+            "04 — Search names does not leak campaign B",
+            "10 — Employee A cannot search visa B",
+            "16 — Anonymous denied: GET /api/v1/pilgrims/search"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Search own campaign by visa",
+            "04 — Search names does not leak campaign B"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "manualIdentification",
+      "method": "POST",
+      "paths": [
+        "/api/v1/pilgrims/manual-identification"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/manual-identification",
+          "request_names": [
+            "05 — Public manual identification"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "05 — Public manual identification"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimResponseById",
+      "method": "GET",
+      "paths": [
+        "/api/v1/pilgrims/etPilgrimResponse/{id}"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/pilgrims/etPilgrimResponse/{id}",
+          "request_names": [
+            "04 — Employee reads pilgrim response DTO",
+            "16 — Anonymous denied: GET /api/v1/pilgrims/etPilgrimResponse/{id}"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "04 — Employee reads pilgrim response DTO"
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "RouteController",
+      "handler": "getRoute",
+      "method": "GET",
+      "paths": [
+        "/api/v1/routes"
+      ],
+      "mappings": [
+        {
+          "path": "/api/v1/routes",
+          "request_names": [
+            "09 — Driving route through OSRM",
+            "16 — Anonymous denied: GET /api/v1/routes"
+          ],
+          "represented": true,
+          "positive_requests": [
+            "09 — Driving route through OSRM"
+          ]
+        }
+      ]
+    }
+  ],
+  "source_sha256": {
+    "src/main/java/org/example/ons/Controller/AccommodationController.java": "e8c98d8cce119284647bb292f54945a2bde172235f1ea370e911c791d0ecc184",
+    "src/main/java/org/example/ons/Controller/AssistanceReportController.java": "0dff4db0bddf4958b5abd9949d2f20bc0f21df4838e3db95207af8ef6a9676d5",
+    "src/main/java/org/example/ons/Controller/AuthController.java": "9212a3bf95c466e9b860d5e844b6b500e82a56570a12701acb26d8f51825d202",
+    "src/main/java/org/example/ons/Controller/AuthorizedStaffController.java": "65416b0fa9653b8db8666ae65e58c8348f9c0e1806a139497406795c27f5d930",
+    "src/main/java/org/example/ons/Controller/CampaignController.java": "a078e478725439ed14e1e1fe803b4d96413716591d21ccca5d2f7d10c61554b2",
+    "src/main/java/org/example/ons/Controller/CampaignPaymentController.java": "2b22ea76283b55dadead981b259b6b4182b8dad9f0d106da324babc9c44147da",
+    "src/main/java/org/example/ons/Controller/DashboardController.java": "3a372c67768dd14baa7a8463bc6fe99e8bdb2256f86ef669155f7a51ccb18929",
+    "src/main/java/org/example/ons/Controller/FieldStaffController.java": "4ce8472d96de23470e390a6b73f259a87ab8a58909e07d0902ebf7c24ccc3cd8",
+    "src/main/java/org/example/ons/Controller/IdentificationController.java": "1df0b34f6bd3dfa77ef0df018fdc09208df4565fad066503a8948746330bfbea",
+    "src/main/java/org/example/ons/Controller/KioskController.java": "d05432f2577de9806ef47ed48dd50c34db7971b0a997d0127191ca536c371129",
+    "src/main/java/org/example/ons/Controller/MapController.java": "047e73058bb4ef55e33f823e59aadd85b30b6605426e349ed538fc570cc0d7ea",
+    "src/main/java/org/example/ons/Controller/NotificationController.java": "7960fe91a9e0e19ae157d94ad94a04a65332724d62031052a62986dfa6e793c7",
+    "src/main/java/org/example/ons/Controller/PilgrimCardController.java": "77e57c5ed01c260d2d041bbe0548b5bd17f25859ae4c7299a34a816a85748e39",
+    "src/main/java/org/example/ons/Controller/PilgrimController.java": "6bb35bd16245d7f3e2b7cc1a222b2df016eb8032885409b644530046dcde22d7",
+    "src/main/java/org/example/ons/Controller/RouteController.java": "192f74aedc7eab8dd985fe016bf0f1e5af90bfb711ab4c4e8620f628eb2d4d42"
+  }
+}

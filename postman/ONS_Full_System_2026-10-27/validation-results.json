@@ -1,0 +1,21 @@
+{
+  "status": "offline_checks_passed",
+  "request_templates": 493,
+  "controllers": 16,
+  "controller_methods": 126,
+  "method_path_mappings": 155,
+  "scripts_syntax_checked": 993,
+  "json_request_bodies_parsed": 105,
+  "offline_setup_session_and_guard_checks": 7,
+  "unique_request_ids_and_names": true,
+  "upload_fixtures_exist": true,
+  "all_request_variables_declared": true,
+  "all_mappings_have_functional_requests": true,
+  "campaign_delete_opt_in": true,
+  "live_backend_executed": false,
+  "notes": [
+    "Postman runtime was not installed; all scripts compiled and selected scripts executed with a minimal offline pm harness.",
+    "No HTTP requests or integrations were executed.",
+    "Two deferred accommodation permission diagnostics expose existing gaps."
+  ]
+}

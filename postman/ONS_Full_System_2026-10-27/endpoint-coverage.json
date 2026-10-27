@@ -1,0 +1,2558 @@
+{
+  "controller_count": 16,
+  "controller_method_count": 126,
+  "path_method_mapping_count": 155,
+  "collection_request_count": 493,
+  "runtime_executed": false,
+  "missing_mappings": [],
+  "note": "Represented does not mean business success verified. See per-mapping functional vs auth-only requests. Every mapping has a functional request; campaign DELETE is opt-in, all other success paths are enabled by default. Both report aliases have functional lifecycle tests and anonymous tests. AI requires the Python service. Paid checkout is a separate manual prerequisite. Deferred accommodation diagnostics are expected to reveal existing gaps.",
+  "mappings": [
+    {
+      "controller": "AccommodationController",
+      "handler": "addAccommodation",
+      "method": "POST",
+      "path": "/api/v1/accommodations/add",
+      "request_names": [
+        "03 — Create accommodation A",
+        "03 — Create accommodation B",
+        "03 — Create accommodation Spare",
+        "10 — Employee cannot create accommodation",
+        "16 — Anonymous denied: POST /api/v1/accommodations/add"
+      ],
+      "functional_request_names": [
+        "03 — Create accommodation A",
+        "03 — Create accommodation B",
+        "03 — Create accommodation Spare"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAllAccommodations",
+      "method": "GET",
+      "path": "/api/v1/accommodations/get",
+      "request_names": [
+        "03 — Admin lists accommodations and captures IDs",
+        "16 — Anonymous denied: GET /api/v1/accommodations/get"
+      ],
+      "functional_request_names": [
+        "03 — Admin lists accommodations and captures IDs"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAccommodationById",
+      "method": "GET",
+      "path": "/api/v1/accommodations/{id}",
+      "request_names": [
+        "03 — Admin reads accommodation A",
+        "10 — Field staff cannot use signed accommodation ID",
+        "13B — Deferred: owner cannot read foreign accommodation",
+        "16 — Anonymous denied: GET /api/v1/accommodations/{id}"
+      ],
+      "functional_request_names": [
+        "03 — Admin reads accommodation A"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "updateAccommodation",
+      "method": "PUT",
+      "path": "/api/v1/accommodations/update/{id}",
+      "request_names": [
+        "03 — Supervisor updates own accommodation",
+        "10 — Supervisor A cannot update accommodation B",
+        "10B — Owner foreign mutation denied: PUT /api/v1/accommodations/update/{{accommodationBId}}",
+        "10B — Owner updates own accommodation",
+        "16 — Anonymous denied: PUT /api/v1/accommodations/update/{id}"
+      ],
+      "functional_request_names": [
+        "03 — Supervisor updates own accommodation",
+        "10B — Owner updates own accommodation"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "updateAccommodationStatus",
+      "method": "PATCH",
+      "path": "/api/v1/accommodations/{accommodationId}/status",
+      "request_names": [
+        "03 — Supervisor changes accommodation status",
+        "10B — Owner foreign mutation denied: PATCH /api/v1/accommodations/{{accommodationBId}}/status",
+        "10B — Owner changes own accommodation status",
+        "16 — Anonymous denied: PATCH /api/v1/accommodations/{accommodationId}/status"
+      ],
+      "functional_request_names": [
+        "03 — Supervisor changes accommodation status",
+        "10B — Owner changes own accommodation status"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAccommodationPilgrims",
+      "method": "GET",
+      "path": "/api/v1/accommodations/{accommodationId}/pilgrims",
+      "request_names": [
+        "04 — Admin reads accommodation pilgrims",
+        "16 — Anonymous denied: GET /api/v1/accommodations/{accommodationId}/pilgrims"
+      ],
+      "functional_request_names": [
+        "04 — Admin reads accommodation pilgrims"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAccommodationReports",
+      "method": "GET",
+      "path": "/api/v1/accommodations/{accommodationId}/reports",
+      "request_names": [
+        "04 — Admin reads accommodation reports",
+        "16 — Anonymous denied: GET /api/v1/accommodations/{accommodationId}/reports"
+      ],
+      "functional_request_names": [
+        "04 — Admin reads accommodation reports"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getCampaignAccommodationsWithPilgrimsAndReports",
+      "method": "GET",
+      "path": "/api/v1/accommodations/my-campaign",
+      "request_names": [
+        "03 — Employee views own campaign accommodations",
+        "11 — Disabled account cannot authenticate",
+        "11 — Reactivated account can authenticate",
+        "11 — New password authenticates",
+        "13B — Deferred: owner should read own accommodations",
+        "16 — Anonymous denied: GET /api/v1/accommodations/my-campaign"
+      ],
+      "functional_request_names": [
+        "03 — Employee views own campaign accommodations",
+        "11 — Reactivated account can authenticate",
+        "11 — New password authenticates",
+        "13B — Deferred: owner should read own accommodations"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "getAccommodationLocation",
+      "method": "GET",
+      "path": "/api/v1/accommodations/{accommodationId}/location",
+      "request_names": [
+        "03 — Admin reads accommodation location",
+        "16 — Anonymous denied: GET /api/v1/accommodations/{accommodationId}/location"
+      ],
+      "functional_request_names": [
+        "03 — Admin reads accommodation location"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AccommodationController",
+      "handler": "deleteAccommodation",
+      "method": "DELETE",
+      "path": "/api/v1/accommodations/delete/{id}",
+      "request_names": [
+        "10 — Supervisor A cannot delete accommodation B",
+        "10B — Owner foreign mutation denied: DELETE /api/v1/accommodations/delete/{{accommodationBId}}",
+        "14 — Delete spare accommodation",
+        "16 — Anonymous denied: DELETE /api/v1/accommodations/delete/{id}"
+      ],
+      "functional_request_names": [
+        "14 — Delete spare accommodation"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "createReport",
+      "method": "POST",
+      "path": "/api/v1/reports",
+      "request_names": [
+        "06 — Create FIELD report",
+        "06 — Create MERGE1 report",
+        "06 — Create MERGE2 report",
+        "06 — Create OWNER1 report",
+        "06 — Create OWNER2 report",
+        "16 — Anonymous denied: POST /api/v1/reports"
+      ],
+      "functional_request_names": [
+        "06 — Create FIELD report",
+        "06 — Create MERGE1 report",
+        "06 — Create MERGE2 report",
+        "06 — Create OWNER1 report",
+        "06 — Create OWNER2 report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "createReport",
+      "method": "POST",
+      "path": "/report",
+      "request_names": [
+        "11B — Alias create MAIN",
+        "16 — Anonymous denied: POST /report"
+      ],
+      "functional_request_names": [
+        "11B — Alias create MAIN"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getAllReports",
+      "method": "GET",
+      "path": "/api/v1/reports",
+      "request_names": [
+        "06 — List reports and capture fixture IDs",
+        "16 — Anonymous denied: GET /api/v1/reports"
+      ],
+      "functional_request_names": [
+        "06 — List reports and capture fixture IDs"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getAllReports",
+      "method": "GET",
+      "path": "/report",
+      "request_names": [
+        "11B — Alias list and capture IDs",
+        "16 — Anonymous denied: GET /report"
+      ],
+      "functional_request_names": [
+        "11B — Alias list and capture IDs"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportById",
+      "method": "GET",
+      "path": "/api/v1/reports/{reportId:\\d+}",
+      "request_names": [
+        "06 — Employee reads own campaign report",
+        "07 — Verify resolved employee report",
+        "08 — Former assignee field A cannot read report",
+        "08 — Verify RESOLVED report",
+        "10 — Employee A cannot read report B",
+        "10B — Owner assignment is stored",
+        "10B — Owner report own: /api/v1/reports",
+        "10B — Owner report foreign denied: /api/v1/reports",
+        "12 — Wait for reminder and overdue age",
+        "12 — Recheck reminder does not change report status",
+        "16 — Anonymous denied: GET /api/v1/reports/{reportId:\\d+}"
+      ],
+      "functional_request_names": [
+        "06 — Employee reads own campaign report",
+        "07 — Verify resolved employee report",
+        "08 — Verify RESOLVED report",
+        "10B — Owner assignment is stored",
+        "10B — Owner report own: /api/v1/reports",
+        "12 — Wait for reminder and overdue age",
+        "12 — Recheck reminder does not change report status"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportById",
+      "method": "GET",
+      "path": "/report/{reportId:\\d+}",
+      "request_names": [
+        "10B — Owner report own: /report",
+        "10B — Owner report foreign denied: /report",
+        "11B — Alias read canonical",
+        "11B — Verify alias ASSIGNED",
+        "11B — Verify alias IN_PROGRESS",
+        "11B — Verify alias RESOLVED",
+        "16 — Anonymous denied: GET /report/{reportId:\\d+}"
+      ],
+      "functional_request_names": [
+        "10B — Owner report own: /report",
+        "11B — Alias read canonical",
+        "11B — Verify alias ASSIGNED",
+        "11B — Verify alias IN_PROGRESS",
+        "11B — Verify alias RESOLVED"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "updateReport",
+      "method": "PUT",
+      "path": "/api/v1/reports/{reportId:\\d+}",
+      "request_names": [
+        "06 — Admin updates canonical report",
+        "16 — Anonymous denied: PUT /api/v1/reports/{reportId:\\d+}"
+      ],
+      "functional_request_names": [
+        "06 — Admin updates canonical report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "updateReport",
+      "method": "PUT",
+      "path": "/report/{reportId:\\d+}",
+      "request_names": [
+        "11B — Alias update canonical",
+        "16 — Anonymous denied: PUT /report/{reportId:\\d+}"
+      ],
+      "functional_request_names": [
+        "11B — Alias update canonical"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "updateReportStatus",
+      "method": "PATCH",
+      "path": "/api/v1/reports/{reportId:\\d+}/status",
+      "request_names": [
+        "08 — Admin patches OPEN to CANCELLED",
+        "10C — Invalid report status rejected",
+        "16 — Anonymous denied: PATCH /api/v1/reports/{reportId:\\d+}/status"
+      ],
+      "functional_request_names": [
+        "08 — Admin patches OPEN to CANCELLED"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "updateReportStatus",
+      "method": "PATCH",
+      "path": "/report/{reportId:\\d+}/status",
+      "request_names": [
+        "11B — Alias patch status",
+        "16 — Anonymous denied: PATCH /report/{reportId:\\d+}/status"
+      ],
+      "functional_request_names": [
+        "11B — Alias patch status"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "assignReport",
+      "method": "POST",
+      "path": "/api/v1/reports/{reportId:\\d+}/assign",
+      "request_names": [
+        "08 — Admin assigns report to field A",
+        "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/assign"
+      ],
+      "functional_request_names": [
+        "08 — Admin assigns report to field A"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "assignReport",
+      "method": "POST",
+      "path": "/report/{reportId:\\d+}/assign",
+      "request_names": [
+        "11B — Alias assign",
+        "16 — Anonymous denied: POST /report/{reportId:\\d+}/assign"
+      ],
+      "functional_request_names": [
+        "11B — Alias assign"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "reassignReport",
+      "method": "POST",
+      "path": "/api/v1/reports/{reportId:\\d+}/reassign",
+      "request_names": [
+        "08 — Admin reassigns to field B",
+        "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/reassign"
+      ],
+      "functional_request_names": [
+        "08 — Admin reassigns to field B"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "reassignReport",
+      "method": "POST",
+      "path": "/report/{reportId:\\d+}/reassign",
+      "request_names": [
+        "11B — Alias reassign",
+        "16 — Anonymous denied: POST /report/{reportId:\\d+}/reassign"
+      ],
+      "functional_request_names": [
+        "11B — Alias reassign"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "acceptReport",
+      "method": "POST",
+      "path": "/api/v1/reports/{reportId:\\d+}/accept",
+      "request_names": [
+        "08 — Field B accepts report",
+        "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/accept"
+      ],
+      "functional_request_names": [
+        "08 — Field B accepts report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "acceptReport",
+      "method": "POST",
+      "path": "/report/{reportId:\\d+}/accept",
+      "request_names": [
+        "11B — Alias accept",
+        "16 — Anonymous denied: POST /report/{reportId:\\d+}/accept"
+      ],
+      "functional_request_names": [
+        "11B — Alias accept"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "startReport",
+      "method": "POST",
+      "path": "/api/v1/reports/{reportId:\\d+}/start",
+      "request_names": [
+        "08 — Field B starts report",
+        "10 — Field A cannot start campaign B report",
+        "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/start"
+      ],
+      "functional_request_names": [
+        "08 — Field B starts report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "startReport",
+      "method": "POST",
+      "path": "/report/{reportId:\\d+}/start",
+      "request_names": [
+        "11B — Alias start",
+        "16 — Anonymous denied: POST /report/{reportId:\\d+}/start"
+      ],
+      "functional_request_names": [
+        "11B — Alias start"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "resolveReport",
+      "method": "POST",
+      "path": "/api/v1/reports/{reportId:\\d+}/resolve",
+      "request_names": [
+        "08 — Field B resolves report",
+        "10 — Field A cannot resolve campaign B report",
+        "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/resolve"
+      ],
+      "functional_request_names": [
+        "08 — Field B resolves report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "resolveReport",
+      "method": "POST",
+      "path": "/report/{reportId:\\d+}/resolve",
+      "request_names": [
+        "11B — Alias resolve",
+        "16 — Anonymous denied: POST /report/{reportId:\\d+}/resolve"
+      ],
+      "functional_request_names": [
+        "11B — Alias resolve"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "cancelReport",
+      "method": "POST",
+      "path": "/api/v1/reports/{reportId:\\d+}/cancel",
+      "request_names": [
+        "08 — Admin cancels OPEN report",
+        "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/cancel"
+      ],
+      "functional_request_names": [
+        "08 — Admin cancels OPEN report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "cancelReport",
+      "method": "POST",
+      "path": "/report/{reportId:\\d+}/cancel",
+      "request_names": [
+        "11B — Alias cancel 2",
+        "16 — Anonymous denied: POST /report/{reportId:\\d+}/cancel"
+      ],
+      "functional_request_names": [
+        "11B — Alias cancel 2"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "reopenReport",
+      "method": "POST",
+      "path": "/api/v1/reports/{reportId:\\d+}/reopen",
+      "request_names": [
+        "08 — Admin reopens resolved report",
+        "08 — Admin reopens cancelled report",
+        "16 — Anonymous denied: POST /api/v1/reports/{reportId:\\d+}/reopen"
+      ],
+      "functional_request_names": [
+        "08 — Admin reopens resolved report",
+        "08 — Admin reopens cancelled report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "reopenReport",
+      "method": "POST",
+      "path": "/report/{reportId:\\d+}/reopen",
+      "request_names": [
+        "11B — Alias reopen 1",
+        "11B — Alias reopen 3",
+        "16 — Anonymous denied: POST /report/{reportId:\\d+}/reopen"
+      ],
+      "functional_request_names": [
+        "11B — Alias reopen 1",
+        "11B — Alias reopen 3"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportHistory",
+      "method": "GET",
+      "path": "/api/v1/reports/{reportId:\\d+}/history",
+      "request_names": [
+        "08 — Read report history",
+        "10B — Owner report own: /api/v1/reports/history",
+        "10B — Owner report foreign denied: /api/v1/reports/history",
+        "16 — Anonymous denied: GET /api/v1/reports/{reportId:\\d+}/history"
+      ],
+      "functional_request_names": [
+        "08 — Read report history",
+        "10B — Owner report own: /api/v1/reports/history"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportHistory",
+      "method": "GET",
+      "path": "/report/{reportId:\\d+}/history",
+      "request_names": [
+        "10B — Owner report own: /report/history",
+        "10B — Owner report foreign denied: /report/history",
+        "11B — Alias details /history",
+        "16 — Anonymous denied: GET /report/{reportId:\\d+}/history"
+      ],
+      "functional_request_names": [
+        "10B — Owner report own: /report/history",
+        "11B — Alias details /history"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportAssignees",
+      "method": "GET",
+      "path": "/api/v1/reports/{reportId:\\d+}/assignees",
+      "request_names": [
+        "08 — Read report assignees",
+        "10B — Owner report own: /api/v1/reports/assignees",
+        "10B — Owner report foreign denied: /api/v1/reports/assignees",
+        "16 — Anonymous denied: GET /api/v1/reports/{reportId:\\d+}/assignees"
+      ],
+      "functional_request_names": [
+        "08 — Read report assignees",
+        "10B — Owner report own: /api/v1/reports/assignees"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportAssignees",
+      "method": "GET",
+      "path": "/report/{reportId:\\d+}/assignees",
+      "request_names": [
+        "10B — Owner report own: /report/assignees",
+        "10B — Owner report foreign denied: /report/assignees",
+        "11B — Alias details /assignees",
+        "16 — Anonymous denied: GET /report/{reportId:\\d+}/assignees"
+      ],
+      "functional_request_names": [
+        "10B — Owner report own: /report/assignees",
+        "11B — Alias details /assignees"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportNotifications",
+      "method": "GET",
+      "path": "/api/v1/reports/{reportId:\\d+}/notifications",
+      "request_names": [
+        "08 — Read report notifications",
+        "10B — Owner report own: /api/v1/reports/notifications",
+        "10B — Owner report foreign denied: /api/v1/reports/notifications",
+        "16 — Anonymous denied: GET /api/v1/reports/{reportId:\\d+}/notifications"
+      ],
+      "functional_request_names": [
+        "08 — Read report notifications",
+        "10B — Owner report own: /api/v1/reports/notifications"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportNotifications",
+      "method": "GET",
+      "path": "/report/{reportId:\\d+}/notifications",
+      "request_names": [
+        "10B — Owner report own: /report/notifications",
+        "10B — Owner report foreign denied: /report/notifications",
+        "11B — Alias details /notifications",
+        "16 — Anonymous denied: GET /report/{reportId:\\d+}/notifications"
+      ],
+      "functional_request_names": [
+        "10B — Owner report own: /report/notifications",
+        "11B — Alias details /notifications"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportsSummary",
+      "method": "GET",
+      "path": "/api/v1/reports/summary",
+      "request_names": [
+        "09 — Reports summary",
+        "16 — Anonymous denied: GET /api/v1/reports/summary"
+      ],
+      "functional_request_names": [
+        "09 — Reports summary"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportsSummary",
+      "method": "GET",
+      "path": "/report/summary",
+      "request_names": [
+        "11B — Alias metrics /summary",
+        "16 — Anonymous denied: GET /report/summary"
+      ],
+      "functional_request_names": [
+        "11B — Alias metrics /summary"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportsStatistics",
+      "method": "GET",
+      "path": "/api/v1/reports/statistics",
+      "request_names": [
+        "09 — Reports statistics",
+        "16 — Anonymous denied: GET /api/v1/reports/statistics"
+      ],
+      "functional_request_names": [
+        "09 — Reports statistics"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportsStatistics",
+      "method": "GET",
+      "path": "/report/statistics",
+      "request_names": [
+        "11B — Alias metrics /statistics",
+        "16 — Anonymous denied: GET /report/statistics"
+      ],
+      "functional_request_names": [
+        "11B — Alias metrics /statistics"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "exportReports",
+      "method": "GET",
+      "path": "/api/v1/reports/export",
+      "request_names": [
+        "09 — Export reports CSV",
+        "16 — Anonymous denied: GET /api/v1/reports/export"
+      ],
+      "functional_request_names": [
+        "09 — Export reports CSV"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "exportReports",
+      "method": "GET",
+      "path": "/report/export",
+      "request_names": [
+        "11B — Alias metrics /export",
+        "16 — Anonymous denied: GET /report/export"
+      ],
+      "functional_request_names": [
+        "11B — Alias metrics /export"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "createSelfServiceReport",
+      "method": "POST",
+      "path": "/api/v1/reports/self-service",
+      "request_names": [
+        "06 — Public self-service report for employee acceptance",
+        "06 — Public self-service report reserved for reminder"
+      ],
+      "functional_request_names": [
+        "06 — Public self-service report for employee acceptance",
+        "06 — Public self-service report reserved for reminder"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "createSelfServiceReport",
+      "method": "POST",
+      "path": "/report/self-service",
+      "request_names": [
+        "11B — Alias public self service"
+      ],
+      "functional_request_names": [
+        "11B — Alias public self service"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "createReportLegacy",
+      "method": "POST",
+      "path": "/api/v1/reports/add",
+      "request_names": [
+        "06 — Create B report",
+        "06 — Create TRASH report",
+        "16 — Anonymous denied: POST /api/v1/reports/add"
+      ],
+      "functional_request_names": [
+        "06 — Create B report",
+        "06 — Create TRASH report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "createReportLegacy",
+      "method": "POST",
+      "path": "/report/add",
+      "request_names": [
+        "11B — Alias create MERGE1",
+        "11B — Alias create MERGE2",
+        "11B — Alias create TRASH",
+        "16 — Anonymous denied: POST /report/add"
+      ],
+      "functional_request_names": [
+        "11B — Alias create MERGE1",
+        "11B — Alias create MERGE2",
+        "11B — Alias create TRASH"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getAllReportsLegacy",
+      "method": "GET",
+      "path": "/api/v1/reports/get",
+      "request_names": [
+        "06 — Legacy list route",
+        "16 — Anonymous denied: GET /api/v1/reports/get"
+      ],
+      "functional_request_names": [
+        "06 — Legacy list route"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getAllReportsLegacy",
+      "method": "GET",
+      "path": "/report/get",
+      "request_names": [
+        "11B — Alias legacy list",
+        "16 — Anonymous denied: GET /report/get"
+      ],
+      "functional_request_names": [
+        "11B — Alias legacy list"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportByIdLegacy",
+      "method": "GET",
+      "path": "/api/v1/reports/get/{id}",
+      "request_names": [
+        "06 — Legacy read route",
+        "16 — Anonymous denied: GET /api/v1/reports/get/{id}"
+      ],
+      "functional_request_names": [
+        "06 — Legacy read route"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getReportByIdLegacy",
+      "method": "GET",
+      "path": "/report/get/{id}",
+      "request_names": [
+        "10 — Employee A cannot read report B via legacy alias",
+        "11B — Alias read legacy",
+        "16 — Anonymous denied: GET /report/get/{id}"
+      ],
+      "functional_request_names": [
+        "11B — Alias read legacy"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "updateReportLegacy",
+      "method": "PUT",
+      "path": "/api/v1/reports/update/{id}",
+      "request_names": [
+        "06 — Admin updates legacy report",
+        "16 — Anonymous denied: PUT /api/v1/reports/update/{id}"
+      ],
+      "functional_request_names": [
+        "06 — Admin updates legacy report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "updateReportLegacy",
+      "method": "PUT",
+      "path": "/report/update/{id}",
+      "request_names": [
+        "11B — Alias update legacy",
+        "16 — Anonymous denied: PUT /report/update/{id}"
+      ],
+      "functional_request_names": [
+        "11B — Alias update legacy"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "deleteReportLegacy",
+      "method": "DELETE",
+      "path": "/api/v1/reports/delete/{id}",
+      "request_names": [
+        "14 — Delete unassigned legacy report",
+        "16 — Anonymous denied: DELETE /api/v1/reports/delete/{id}"
+      ],
+      "functional_request_names": [
+        "14 — Delete unassigned legacy report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "deleteReportLegacy",
+      "method": "DELETE",
+      "path": "/report/delete/{id}",
+      "request_names": [
+        "11B — Alias delete disposable report",
+        "16 — Anonymous denied: DELETE /report/delete/{id}"
+      ],
+      "functional_request_names": [
+        "11B — Alias delete disposable report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "countReportByStatus",
+      "method": "GET",
+      "path": "/api/v1/reports/count/status/{status}",
+      "request_names": [
+        "09 — Reports count/status/OPEN",
+        "16 — Anonymous denied: GET /api/v1/reports/count/status/{status}"
+      ],
+      "functional_request_names": [
+        "09 — Reports count/status/OPEN"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "countReportByStatus",
+      "method": "GET",
+      "path": "/report/count/status/{status}",
+      "request_names": [
+        "11B — Alias metrics /count/status/OPEN",
+        "16 — Anonymous denied: GET /report/count/status/{status}"
+      ],
+      "functional_request_names": [
+        "11B — Alias metrics /count/status/OPEN"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "countReportByStatusForCampaign",
+      "method": "GET",
+      "path": "/api/v1/reports/count/campaign/{campaignId}/status/{status}",
+      "request_names": [
+        "09 — Reports count/campaign/{{campaignAId}}/status/OPEN",
+        "10 — Employee A cannot count campaign B reports",
+        "10B — Owner campaign metrics own: /api/v1/reports/count/campaign/{{campaignAId}}/status/OPEN",
+        "10B — Owner campaign metrics foreign denied: /api/v1/reports/count/campaign/{{campaignAId}}/status/OPEN",
+        "16 — Anonymous denied: GET /api/v1/reports/count/campaign/{campaignId}/status/{status}"
+      ],
+      "functional_request_names": [
+        "09 — Reports count/campaign/{{campaignAId}}/status/OPEN",
+        "10B — Owner campaign metrics own: /api/v1/reports/count/campaign/{{campaignAId}}/status/OPEN"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "countReportByStatusForCampaign",
+      "method": "GET",
+      "path": "/report/count/campaign/{campaignId}/status/{status}",
+      "request_names": [
+        "10B — Owner campaign metrics own: /report/count/campaign/{{campaignAId}}/status/OPEN",
+        "10B — Owner campaign metrics foreign denied: /report/count/campaign/{{campaignAId}}/status/OPEN",
+        "11B — Alias metrics /count/campaign/{{campaignAId}}/status/OPEN",
+        "16 — Anonymous denied: GET /report/count/campaign/{campaignId}/status/{status}"
+      ],
+      "functional_request_names": [
+        "10B — Owner campaign metrics own: /report/count/campaign/{{campaignAId}}/status/OPEN",
+        "11B — Alias metrics /count/campaign/{{campaignAId}}/status/OPEN"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "mergeReports",
+      "method": "POST",
+      "path": "/api/v1/reports/{reportId}/merge",
+      "request_names": [
+        "07 — Supervisor batch-assigns two OPEN reports",
+        "10 — Employee cannot merge reports",
+        "10B — Owner cannot assign to employee in campaign B",
+        "10B — Owner assigns two OPEN reports to own employee",
+        "16 — Anonymous denied: POST /api/v1/reports/{reportId}/merge"
+      ],
+      "functional_request_names": [
+        "07 — Supervisor batch-assigns two OPEN reports",
+        "10B — Owner assigns two OPEN reports to own employee"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "mergeReports",
+      "method": "POST",
+      "path": "/report/{reportId}/merge",
+      "request_names": [
+        "11B — Alias owner merge",
+        "16 — Anonymous denied: POST /report/{reportId}/merge"
+      ],
+      "functional_request_names": [
+        "11B — Alias owner merge"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getOverdueReportsForCampaign",
+      "method": "GET",
+      "path": "/api/v1/reports/campaign/{campaignId}/overdue",
+      "request_names": [
+        "09 — Reports campaign/{{campaignAId}}/overdue",
+        "10 — Employee A cannot read campaign B overdue reports",
+        "10B — Owner campaign metrics own: /api/v1/reports/campaign/{{campaignAId}}/overdue",
+        "10B — Owner campaign metrics foreign denied: /api/v1/reports/campaign/{{campaignAId}}/overdue",
+        "12 — Old OPEN report appears overdue",
+        "16 — Anonymous denied: GET /api/v1/reports/campaign/{campaignId}/overdue"
+      ],
+      "functional_request_names": [
+        "09 — Reports campaign/{{campaignAId}}/overdue",
+        "10B — Owner campaign metrics own: /api/v1/reports/campaign/{{campaignAId}}/overdue",
+        "12 — Old OPEN report appears overdue"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getOverdueReportsForCampaign",
+      "method": "GET",
+      "path": "/report/campaign/{campaignId}/overdue",
+      "request_names": [
+        "10B — Owner campaign metrics own: /report/campaign/{{campaignAId}}/overdue",
+        "10B — Owner campaign metrics foreign denied: /report/campaign/{{campaignAId}}/overdue",
+        "11B — Alias metrics /campaign/{{campaignAId}}/overdue",
+        "16 — Anonymous denied: GET /report/campaign/{campaignId}/overdue"
+      ],
+      "functional_request_names": [
+        "10B — Owner campaign metrics own: /report/campaign/{{campaignAId}}/overdue",
+        "11B — Alias metrics /campaign/{{campaignAId}}/overdue"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getAllOverdueReports",
+      "method": "GET",
+      "path": "/api/v1/reports/overdue",
+      "request_names": [
+        "09 — Reports overdue",
+        "16 — Anonymous denied: GET /api/v1/reports/overdue"
+      ],
+      "functional_request_names": [
+        "09 — Reports overdue"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AssistanceReportController",
+      "handler": "getAllOverdueReports",
+      "method": "GET",
+      "path": "/report/overdue",
+      "request_names": [
+        "11B — Alias metrics /overdue",
+        "16 — Anonymous denied: GET /report/overdue"
+      ],
+      "functional_request_names": [
+        "11B — Alias metrics /overdue"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthController",
+      "handler": "getAllUsers",
+      "method": "GET",
+      "path": "/api/v1/auth/get/all",
+      "request_names": [
+        "00.01 — Admin login and initialize test run",
+        "02 — Capture supervisor and field-staff user IDs",
+        "02 — Capture employee IDs",
+        "02B — Capture owner-created staff IDs",
+        "10 — Employee cannot list all users",
+        "10B — Owner cannot use ADMIN endpoint: /api/v1/auth/get/all",
+        "16 — Anonymous denied: GET /api/v1/auth/get/all",
+        "17 — Run summary (see response Tests and Postman console)"
+      ],
+      "functional_request_names": [
+        "00.01 — Admin login and initialize test run",
+        "02 — Capture supervisor and field-staff user IDs",
+        "02 — Capture employee IDs",
+        "02B — Capture owner-created staff IDs",
+        "17 — Run summary (see response Tests and Postman console)"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthController",
+      "handler": "getUserById",
+      "method": "GET",
+      "path": "/api/v1/auth/get/{id}",
+      "request_names": [
+        "11 — Admin reads employee user account",
+        "13 — User JSON does not disclose password",
+        "16 — Anonymous denied: GET /api/v1/auth/get/{id}",
+        "17 — Final admin authentication check"
+      ],
+      "functional_request_names": [
+        "11 — Admin reads employee user account",
+        "13 — User JSON does not disclose password",
+        "17 — Final admin authentication check"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthController",
+      "handler": "activateUser",
+      "method": "PUT",
+      "path": "/api/v1/auth/activate/{id}",
+      "request_names": [
+        "01B — ADMIN enables test owner A for permission tests",
+        "01B — ADMIN enables test owner B for permission tests",
+        "10 — Employee cannot activate another account",
+        "11 — Admin reactivates spare employee",
+        "16 — Anonymous denied: PUT /api/v1/auth/activate/{id}"
+      ],
+      "functional_request_names": [
+        "01B — ADMIN enables test owner A for permission tests",
+        "01B — ADMIN enables test owner B for permission tests",
+        "11 — Admin reactivates spare employee"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthController",
+      "handler": "deactivateUser",
+      "method": "PUT",
+      "path": "/api/v1/auth/deactivate/{id}",
+      "request_names": [
+        "10 — Employee cannot deactivate another account",
+        "11 — Admin deactivates spare employee",
+        "16 — Anonymous denied: PUT /api/v1/auth/deactivate/{id}"
+      ],
+      "functional_request_names": [
+        "11 — Admin deactivates spare employee"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthController",
+      "handler": "changePassword",
+      "method": "POST",
+      "path": "/api/v1/auth/change-password/{id}",
+      "request_names": [
+        "10 — Employee cannot change another account password",
+        "11 — Wrong current password is rejected",
+        "11 — Change spare employee own password",
+        "16 — Anonymous denied: POST /api/v1/auth/change-password/{id}"
+      ],
+      "functional_request_names": [
+        "11 — Change spare employee own password"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "createStaff",
+      "method": "POST",
+      "path": "/api/v1/authorized-staff/create/{campaignId}",
+      "request_names": [
+        "02 — Create supervisorA",
+        "02 — Create supervisorB",
+        "02 — Create supervisorSpare",
+        "02B — Owner creates ownerSupervisor",
+        "10B — Owner foreign mutation denied: POST /api/v1/authorized-staff/create/{{campaignBId}}",
+        "10C — Supervisor cannot create supervisors",
+        "16 — Anonymous denied: POST /api/v1/authorized-staff/create/{campaignId}"
+      ],
+      "functional_request_names": [
+        "02 — Create supervisorA",
+        "02 — Create supervisorB",
+        "02 — Create supervisorSpare",
+        "02B — Owner creates ownerSupervisor"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getAllStaff",
+      "method": "GET",
+      "path": "/api/v1/authorized-staff/get-all",
+      "request_names": [
+        "02 — Admin lists authorized staff",
+        "02B — Owner lists only their campaign staff",
+        "16 — Anonymous denied: GET /api/v1/authorized-staff/get-all"
+      ],
+      "functional_request_names": [
+        "02 — Admin lists authorized staff",
+        "02B — Owner lists only their campaign staff"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getStaffById",
+      "method": "GET",
+      "path": "/api/v1/authorized-staff/get/{id}",
+      "request_names": [
+        "02 — Admin reads supervisor A",
+        "10 — Employee cannot use signed staff ID (GET)",
+        "10 — Employee cannot use encoded signed staff ID",
+        "10 — Normal staff ID also stays ADMIN-only",
+        "10 — Signed DELETE did not delete spare supervisor",
+        "10B — Owner cannot use ADMIN endpoint: /api/v1/authorized-staff/get/{{supervisorAId}}",
+        "16 — Anonymous denied: GET /api/v1/authorized-staff/get/{id}"
+      ],
+      "functional_request_names": [
+        "02 — Admin reads supervisor A",
+        "10 — Signed DELETE did not delete spare supervisor"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "updateStaff",
+      "method": "PUT",
+      "path": "/api/v1/authorized-staff/update/{id}",
+      "request_names": [
+        "02 — Admin updates spare authorized staff",
+        "02B — Owner updates ownerSupervisor",
+        "10 — Employee cannot use signed staff ID (PUT)",
+        "10B — Owner foreign mutation denied: PUT /api/v1/authorized-staff/update/{{supervisorBId}}",
+        "16 — Anonymous denied: PUT /api/v1/authorized-staff/update/{id}"
+      ],
+      "functional_request_names": [
+        "02 — Admin updates spare authorized staff",
+        "02B — Owner updates ownerSupervisor"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "deleteStaff",
+      "method": "DELETE",
+      "path": "/api/v1/authorized-staff/delete/{id}",
+      "request_names": [
+        "10 — Employee cannot use signed staff ID (DELETE)",
+        "10B — Owner foreign mutation denied: DELETE /api/v1/authorized-staff/delete/{{supervisorBId}}",
+        "14 — Delete spare supervisor",
+        "14 — Owner deletes disposable own supervisor",
+        "16 — Anonymous denied: DELETE /api/v1/authorized-staff/delete/{id}"
+      ],
+      "functional_request_names": [
+        "14 — Delete spare supervisor",
+        "14 — Owner deletes disposable own supervisor"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getEmployees",
+      "method": "GET",
+      "path": "/api/v1/authorized-staff/get/employees",
+      "request_names": [
+        "02 — Supervisor lists employees",
+        "10 — Admin does not inherit campaign staff role",
+        "16 — Anonymous denied: GET /api/v1/authorized-staff/get/employees"
+      ],
+      "functional_request_names": [
+        "02 — Supervisor lists employees"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "addEmployee",
+      "method": "POST",
+      "path": "/api/v1/authorized-staff/add/employee",
+      "request_names": [
+        "02 — supervisorA creates employeeA",
+        "02 — supervisorB creates employeeB",
+        "02 — supervisorA creates employeeSpare",
+        "02B — Owner creates ownerEmployee",
+        "10C — Regular employee cannot create employees",
+        "16 — Anonymous denied: POST /api/v1/authorized-staff/add/employee"
+      ],
+      "functional_request_names": [
+        "02 — supervisorA creates employeeA",
+        "02 — supervisorB creates employeeB",
+        "02 — supervisorA creates employeeSpare",
+        "02B — Owner creates ownerEmployee"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "updateEmployee",
+      "method": "PUT",
+      "path": "/api/v1/authorized-staff/update/employee/{employeeId}",
+      "request_names": [
+        "02 — Supervisor updates spare employee",
+        "02B — Owner updates ownerEmployee",
+        "10B — Owner foreign mutation denied: PUT /api/v1/authorized-staff/update/employee/{{employeeBId}}",
+        "16 — Anonymous denied: PUT /api/v1/authorized-staff/update/employee/{employeeId}"
+      ],
+      "functional_request_names": [
+        "02 — Supervisor updates spare employee",
+        "02B — Owner updates ownerEmployee"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "deleteEmployee",
+      "method": "DELETE",
+      "path": "/api/v1/authorized-staff/delete/employee/{employeeId}",
+      "request_names": [
+        "10B — Owner foreign mutation denied: DELETE /api/v1/authorized-staff/delete/employee/{{employeeBId}}",
+        "14 — Delete spare employee",
+        "16 — Anonymous denied: DELETE /api/v1/authorized-staff/delete/employee/{employeeId}"
+      ],
+      "functional_request_names": [
+        "14 — Delete spare employee"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "acceptPilgrim",
+      "method": "PUT",
+      "path": "/api/v1/authorized-staff/pilgrims/{pilgrimId}/reports/{reportId}/accept",
+      "request_names": [
+        "07 — Employee accepts own pilgrim report",
+        "16 — Anonymous denied: PUT /api/v1/authorized-staff/pilgrims/{pilgrimId}/reports/{reportId}/accept"
+      ],
+      "functional_request_names": [
+        "07 — Employee accepts own pilgrim report"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "advanceReportStatus",
+      "method": "PUT",
+      "path": "/api/v1/authorized-staff/reports/{reportId}/advance-status",
+      "request_names": [
+        "07 — Advance ASSIGNED to IN_PROGRESS",
+        "07 — Advance IN_PROGRESS to RESOLVED",
+        "16 — Anonymous denied: PUT /api/v1/authorized-staff/reports/{reportId}/advance-status"
+      ],
+      "functional_request_names": [
+        "07 — Advance ASSIGNED to IN_PROGRESS",
+        "07 — Advance IN_PROGRESS to RESOLVED"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getStaffReports",
+      "method": "GET",
+      "path": "/api/v1/authorized-staff/staff",
+      "request_names": [
+        "07 — Employee lists assigned reports",
+        "16 — Anonymous denied: GET /api/v1/authorized-staff/staff"
+      ],
+      "functional_request_names": [
+        "07 — Employee lists assigned reports"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getStaffReportsByStatus",
+      "method": "GET",
+      "path": "/api/v1/authorized-staff/staff/status/{status}",
+      "request_names": [
+        "07 — Employee filters ASSIGNED reports",
+        "16 — Anonymous denied: GET /api/v1/authorized-staff/staff/status/{status}"
+      ],
+      "functional_request_names": [
+        "07 — Employee filters ASSIGNED reports"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "AuthorizedStaffController",
+      "handler": "getNearbyReports",
+      "method": "GET",
+      "path": "/api/v1/authorized-staff/nearby-reports",
+      "request_names": [
+        "06 — Nearby OPEN reports for employee A",
+        "16 — Anonymous denied: GET /api/v1/authorized-staff/nearby-reports"
+      ],
+      "functional_request_names": [
+        "06 — Nearby OPEN reports for employee A"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "createCampaign",
+      "method": "POST",
+      "path": "/api/v1/campaigns/register",
+      "request_names": [
+        "01 — Register campaign A",
+        "01 — Register campaign B",
+        "10 — Registration ignores an injected existing campaign ID",
+        "10C — Existing owner email cannot register again"
+      ],
+      "functional_request_names": [
+        "01 — Register campaign A",
+        "01 — Register campaign B",
+        "10 — Registration ignores an injected existing campaign ID"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "getAllCampaigns",
+      "method": "GET",
+      "path": "/api/v1/campaigns/get",
+      "request_names": [
+        "09 — Admin lists campaigns",
+        "16 — Anonymous denied: GET /api/v1/campaigns/get"
+      ],
+      "functional_request_names": [
+        "09 — Admin lists campaigns"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "getCampaignById",
+      "method": "GET",
+      "path": "/api/v1/campaigns/me",
+      "request_names": [
+        "01B — Unpaid owner A cannot log in",
+        "01B — Owner A logs in and sees own campaign",
+        "01B — Unpaid owner B cannot log in",
+        "01B — Owner B logs in and sees own campaign",
+        "09 — Supervisor views own campaign",
+        "09 — Verify profile update kept unpaid campaign PLANNED",
+        "10 — Employee reads own campaign profile (current controller behaviour)",
+        "10 — Original campaign survived registration-ID probe",
+        "16 — Anonymous denied: GET /api/v1/campaigns/me",
+        "17 — Confirm campaign B survived ownership probes"
+      ],
+      "functional_request_names": [
+        "01B — Owner A logs in and sees own campaign",
+        "01B — Owner B logs in and sees own campaign",
+        "09 — Supervisor views own campaign",
+        "09 — Verify profile update kept unpaid campaign PLANNED",
+        "10 — Employee reads own campaign profile (current controller behaviour)",
+        "10 — Original campaign survived registration-ID probe",
+        "17 — Confirm campaign B survived ownership probes"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "updateCampaign",
+      "method": "PUT",
+      "path": "/api/v1/campaigns/update",
+      "request_names": [
+        "09 — Profile update cannot activate an unpaid campaign",
+        "10B — Supervisor cannot edit campaign profile",
+        "16 — Anonymous denied: PUT /api/v1/campaigns/update"
+      ],
+      "functional_request_names": [
+        "09 — Profile update cannot activate an unpaid campaign"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "deleteCampaign",
+      "method": "DELETE",
+      "path": "/api/v1/campaigns/delete/{id}",
+      "request_names": [
+        "14 — Delete separate empty campaign",
+        "16 — Anonymous denied: DELETE /api/v1/campaigns/delete/{id}"
+      ],
+      "functional_request_names": [],
+      "optional_functional_request_names": [
+        "14 — Delete separate empty campaign"
+      ]
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "getCampaignAnalytics",
+      "method": "GET",
+      "path": "/api/v1/campaigns/analytics",
+      "request_names": [
+        "09 — Supervisor gets campaign analytics",
+        "10B — campaignA reads campaign analytics",
+        "10B — supervisorA reads campaign analytics",
+        "16 — Anonymous denied: GET /api/v1/campaigns/analytics"
+      ],
+      "functional_request_names": [
+        "09 — Supervisor gets campaign analytics",
+        "10B — campaignA reads campaign analytics",
+        "10B — supervisorA reads campaign analytics"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "CampaignController",
+      "handler": "sendCampaignAnalyticsEmail",
+      "method": "POST",
+      "path": "/api/v1/campaigns/analytics/email",
+      "request_names": [
+        "09 — Send campaign analytics email (SMTP)",
+        "16 — Anonymous denied: POST /api/v1/campaigns/analytics/email"
+      ],
+      "functional_request_names": [
+        "09 — Send campaign analytics email (SMTP)"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "CampaignPaymentController",
+      "handler": "createPayment",
+      "method": "POST",
+      "path": "/api/v1/payments/campaign/{campaignId}",
+      "request_names": [
+        "01 — Retry/reuse payment A with matching session",
+        "01 — Retry/reuse payment B with matching session",
+        "01 — Session A cannot create payment for campaign B",
+        "01 — Payment creation without session is forbidden"
+      ],
+      "functional_request_names": [
+        "01 — Retry/reuse payment A with matching session",
+        "01 — Retry/reuse payment B with matching session"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "CampaignPaymentController",
+      "handler": "verifyPayment",
+      "method": "POST",
+      "path": "/api/v1/payments/campaign/{campaignId}/{paymentId}/verify",
+      "request_names": [
+        "01 — Verify UNPAID payment A stays pending",
+        "01 — Verify UNPAID payment B stays pending",
+        "01 — Session A cannot verify campaign B payment",
+        "01 — Verification without session is forbidden"
+      ],
+      "functional_request_names": [
+        "01 — Verify UNPAID payment A stays pending",
+        "01 — Verify UNPAID payment B stays pending"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getSummary",
+      "method": "GET",
+      "path": "/api/v1/dashboard/summary",
+      "request_names": [
+        "09 — Dashboard summary",
+        "10 — Employee cannot read global dashboard",
+        "10B — Owner cannot use ADMIN endpoint: /api/v1/dashboard/summary",
+        "16 — Anonymous denied: GET /api/v1/dashboard/summary"
+      ],
+      "functional_request_names": [
+        "09 — Dashboard summary"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getReportsByStatus",
+      "method": "GET",
+      "path": "/api/v1/dashboard/reports-by-status",
+      "request_names": [
+        "09 — Dashboard reports-by-status",
+        "16 — Anonymous denied: GET /api/v1/dashboard/reports-by-status"
+      ],
+      "functional_request_names": [
+        "09 — Dashboard reports-by-status"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getReportsTrend",
+      "method": "GET",
+      "path": "/api/v1/dashboard/reports-trend",
+      "request_names": [
+        "09 — Dashboard reports-trend",
+        "16 — Anonymous denied: GET /api/v1/dashboard/reports-trend"
+      ],
+      "functional_request_names": [
+        "09 — Dashboard reports-trend"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getResponseTime",
+      "method": "GET",
+      "path": "/api/v1/dashboard/response-time",
+      "request_names": [
+        "09 — Dashboard response-time",
+        "16 — Anonymous denied: GET /api/v1/dashboard/response-time"
+      ],
+      "functional_request_names": [
+        "09 — Dashboard response-time"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "DashboardController",
+      "handler": "getResolutionTime",
+      "method": "GET",
+      "path": "/api/v1/dashboard/resolution-time",
+      "request_names": [
+        "09 — Dashboard resolution-time",
+        "16 — Anonymous denied: GET /api/v1/dashboard/resolution-time"
+      ],
+      "functional_request_names": [
+        "09 — Dashboard resolution-time"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "createStaff",
+      "method": "POST",
+      "path": "/api/v1/field-staff/create",
+      "request_names": [
+        "02 — Create fieldA",
+        "02 — Create fieldB",
+        "02 — Create fieldSpare",
+        "16 — Anonymous denied: POST /api/v1/field-staff/create"
+      ],
+      "functional_request_names": [
+        "02 — Create fieldA",
+        "02 — Create fieldB",
+        "02 — Create fieldSpare"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "getAllStaff",
+      "method": "GET",
+      "path": "/api/v1/field-staff/get-all",
+      "request_names": [
+        "02 — Admin lists field staff",
+        "13 — Field-staff responses do not expose reports/passwords",
+        "16 — Anonymous denied: GET /api/v1/field-staff/get-all"
+      ],
+      "functional_request_names": [
+        "02 — Admin lists field staff",
+        "13 — Field-staff responses do not expose reports/passwords"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "getStaffById",
+      "method": "GET",
+      "path": "/api/v1/field-staff/get/{id}",
+      "request_names": [
+        "02 — Admin reads field A",
+        "16 — Anonymous denied: GET /api/v1/field-staff/get/{id}"
+      ],
+      "functional_request_names": [
+        "02 — Admin reads field A"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "updateStaff",
+      "method": "PUT",
+      "path": "/api/v1/field-staff/update/{id}",
+      "request_names": [
+        "02 — Admin updates spare field worker",
+        "16 — Anonymous denied: PUT /api/v1/field-staff/update/{id}"
+      ],
+      "functional_request_names": [
+        "02 — Admin updates spare field worker"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "deleteStaff",
+      "method": "DELETE",
+      "path": "/api/v1/field-staff/delete/{id}",
+      "request_names": [
+        "14 — Delete spare field worker",
+        "16 — Anonymous denied: DELETE /api/v1/field-staff/delete/{id}"
+      ],
+      "functional_request_names": [
+        "14 — Delete spare field worker"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "FieldStaffController",
+      "handler": "getAvailableFieldStaff",
+      "method": "GET",
+      "path": "/api/v1/field-staff/availability",
+      "request_names": [
+        "02 — Supervisor checks available field staff",
+        "08 — Busy field A is unavailable",
+        "16 — Anonymous denied: GET /api/v1/field-staff/availability"
+      ],
+      "functional_request_names": [
+        "02 — Supervisor checks available field staff",
+        "08 — Busy field A is unavailable"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "scanQr",
+      "method": "POST",
+      "path": "/api/v1/identification/qr/scan",
+      "request_names": [
+        "05 — Public QR scan",
+        "05 — Create failed identification fixture"
+      ],
+      "functional_request_names": [
+        "05 — Public QR scan",
+        "05 — Create failed identification fixture"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "validateIdentity",
+      "method": "POST",
+      "path": "/api/v1/identification/validate",
+      "request_names": [
+        "05 — Public identity validation",
+        "10C — Empty public identity input rejected"
+      ],
+      "functional_request_names": [
+        "05 — Public identity validation"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "getRequest",
+      "method": "GET",
+      "path": "/api/v1/identification/requests/{requestId}",
+      "request_names": [
+        "05 — Admin views completed identification",
+        "10 — Field staff cannot view identification request",
+        "16 — Anonymous denied: GET /api/v1/identification/requests/{requestId}"
+      ],
+      "functional_request_names": [
+        "05 — Admin views completed identification"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "retryRequest",
+      "method": "POST",
+      "path": "/api/v1/identification/requests/{requestId}/retry",
+      "request_names": [
+        "05 — Admin retries failed identification",
+        "16 — Anonymous denied: POST /api/v1/identification/requests/{requestId}/retry"
+      ],
+      "functional_request_names": [
+        "05 — Admin retries failed identification"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "manualReview",
+      "method": "POST",
+      "path": "/api/v1/identification/requests/{requestId}/manual-review",
+      "request_names": [
+        "05 — Admin sends failed request to manual review",
+        "16 — Anonymous denied: POST /api/v1/identification/requests/{requestId}/manual-review"
+      ],
+      "functional_request_names": [
+        "05 — Admin sends failed request to manual review"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "IdentificationController",
+      "handler": "scanCard",
+      "method": "POST",
+      "path": "/api/v1/identification/scan",
+      "request_names": [
+        "05B — Missing file rejected: /api/v1/identification/scan",
+        "05B — Image integration: /api/v1/identification/scan"
+      ],
+      "functional_request_names": [
+        "05B — Image integration: /api/v1/identification/scan"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "addKiosk",
+      "method": "POST",
+      "path": "/api/v1/kiosks/add",
+      "request_names": [
+        "03 — Create kiosk A",
+        "03 — Create kiosk B",
+        "03 — Create kiosk Spare",
+        "16 — Anonymous denied: POST /api/v1/kiosks/add"
+      ],
+      "functional_request_names": [
+        "03 — Create kiosk A",
+        "03 — Create kiosk B",
+        "03 — Create kiosk Spare"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getAllKiosks",
+      "method": "GET",
+      "path": "/api/v1/kiosks/get",
+      "request_names": [
+        "03 — Capture kiosk IDs",
+        "16 — Anonymous denied: GET /api/v1/kiosks/get"
+      ],
+      "functional_request_names": [
+        "03 — Capture kiosk IDs"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getKioskById",
+      "method": "GET",
+      "path": "/api/v1/kiosks/get/{id}",
+      "request_names": [
+        "03 — Employee reads kiosk",
+        "16 — Anonymous denied: GET /api/v1/kiosks/get/{id}"
+      ],
+      "functional_request_names": [
+        "03 — Employee reads kiosk"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "updateKiosk",
+      "method": "PUT",
+      "path": "/api/v1/kiosks/update/{id}",
+      "request_names": [
+        "03 — Admin updates spare kiosk",
+        "16 — Anonymous denied: PUT /api/v1/kiosks/update/{id}"
+      ],
+      "functional_request_names": [
+        "03 — Admin updates spare kiosk"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "deleteKiosk",
+      "method": "DELETE",
+      "path": "/api/v1/kiosks/delete/{id}",
+      "request_names": [
+        "14 — Delete spare kiosk",
+        "16 — Anonymous denied: DELETE /api/v1/kiosks/delete/{id}"
+      ],
+      "functional_request_names": [
+        "14 — Delete spare kiosk"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "updateKioskStatus",
+      "method": "PATCH",
+      "path": "/api/v1/kiosks/update-status/{id}",
+      "request_names": [
+        "03 — Admin changes spare kiosk status (plain text)",
+        "16 — Anonymous denied: PATCH /api/v1/kiosks/update-status/{id}"
+      ],
+      "functional_request_names": [
+        "03 — Admin changes spare kiosk status (plain text)"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "updateLocation",
+      "method": "PATCH",
+      "path": "/api/v1/kiosks/update-location/{kioskId}",
+      "request_names": [
+        "03 — Admin updates spare kiosk location",
+        "16 — Anonymous denied: PATCH /api/v1/kiosks/update-location/{kioskId}"
+      ],
+      "functional_request_names": [
+        "03 — Admin updates spare kiosk location"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "updateAllHeartbeats",
+      "method": "PATCH",
+      "path": "/api/v1/kiosks/heartbeat/all",
+      "request_names": [
+        "03 — Public n8n-style heartbeat"
+      ],
+      "functional_request_names": [
+        "03 — Public n8n-style heartbeat"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getAllReportsForKiosk",
+      "method": "GET",
+      "path": "/api/v1/kiosks/{kioskId}/reports",
+      "request_names": [
+        "09 — Admin reads kiosk reports",
+        "16 — Anonymous denied: GET /api/v1/kiosks/{kioskId}/reports"
+      ],
+      "functional_request_names": [
+        "09 — Admin reads kiosk reports"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getAllActivity",
+      "method": "GET",
+      "path": "/api/v1/kiosks/activity",
+      "request_names": [
+        "09 — Admin reads kiosk activity",
+        "16 — Anonymous denied: GET /api/v1/kiosks/activity"
+      ],
+      "functional_request_names": [
+        "09 — Admin reads kiosk activity"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "KioskController",
+      "handler": "getKioskReport",
+      "method": "GET",
+      "path": "/api/v1/kiosks/report/{adminId}",
+      "request_names": [
+        "09 — Send kiosk report email to administrator",
+        "16 — Anonymous denied: GET /api/v1/kiosks/report/{adminId}"
+      ],
+      "functional_request_names": [
+        "09 — Send kiosk report email to administrator"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "MapController",
+      "handler": "getMarkers",
+      "method": "GET",
+      "path": "/api/v1/map/markers",
+      "request_names": [
+        "09 — Employee gets map markers",
+        "16 — Anonymous denied: GET /api/v1/map/markers"
+      ],
+      "functional_request_names": [
+        "09 — Employee gets map markers"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "MapController",
+      "handler": "getNearestKiosk",
+      "method": "GET",
+      "path": "/api/v1/map/nearest-kiosk",
+      "request_names": [
+        "09 — Employee finds nearest kiosk",
+        "16 — Anonymous denied: GET /api/v1/map/nearest-kiosk"
+      ],
+      "functional_request_names": [
+        "09 — Employee finds nearest kiosk"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "MapController",
+      "handler": "getRoute",
+      "method": "POST",
+      "path": "/api/v1/map/route",
+      "request_names": [
+        "09 — Walking route through Google",
+        "10C — Invalid route coordinates rejected",
+        "16 — Anonymous denied: POST /api/v1/map/route"
+      ],
+      "functional_request_names": [
+        "09 — Walking route through Google"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "MapController",
+      "handler": "getNearestPlace",
+      "method": "GET",
+      "path": "/api/v1/map/kiosks/{kioskId}/nearest-place",
+      "request_names": [
+        "09 — Public nearest GATE",
+        "09 — Public nearest BATHROOM"
+      ],
+      "functional_request_names": [
+        "09 — Public nearest GATE",
+        "09 — Public nearest BATHROOM"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "createNotification",
+      "method": "POST",
+      "path": "/notification/add",
+      "request_names": [
+        "09 — Create notification record",
+        "16 — Anonymous denied: POST /notification/add"
+      ],
+      "functional_request_names": [
+        "09 — Create notification record"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "getAllNotifications",
+      "method": "GET",
+      "path": "/notification/get",
+      "request_names": [
+        "09 — List notification records and save ID",
+        "10 — Field staff cannot manage notifications",
+        "10B — Owner cannot use ADMIN endpoint: /notification/get",
+        "16 — Anonymous denied: GET /notification/get"
+      ],
+      "functional_request_names": [
+        "09 — List notification records and save ID"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "getNotificationById",
+      "method": "GET",
+      "path": "/notification/get/{id}",
+      "request_names": [
+        "09 — Read notification record",
+        "16 — Anonymous denied: GET /notification/get/{id}"
+      ],
+      "functional_request_names": [
+        "09 — Read notification record"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "updateNotification",
+      "method": "PUT",
+      "path": "/notification/update/{id}",
+      "request_names": [
+        "09 — Update notification record",
+        "16 — Anonymous denied: PUT /notification/update/{id}"
+      ],
+      "functional_request_names": [
+        "09 — Update notification record"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "NotificationController",
+      "handler": "deleteNotification",
+      "method": "DELETE",
+      "path": "/notification/delete/{id}",
+      "request_names": [
+        "14 — Delete notification test record",
+        "16 — Anonymous denied: DELETE /notification/delete/{id}"
+      ],
+      "functional_request_names": [
+        "14 — Delete notification test record"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "OnsAiTestController",
+      "handler": "testQr",
+      "method": "POST",
+      "path": "/api/ai-test/qr",
+      "request_names": [
+        "05B — Missing file rejected: /api/ai-test/qr",
+        "05B — Image integration: /api/ai-test/qr",
+        "05B — Employee cannot use AI debug: /api/ai-test/qr",
+        "16 — Anonymous denied: POST /api/ai-test/qr"
+      ],
+      "functional_request_names": [
+        "05B — Image integration: /api/ai-test/qr"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "OnsAiTestController",
+      "handler": "testOcr",
+      "method": "POST",
+      "path": "/api/ai-test/ocr",
+      "request_names": [
+        "05B — Missing file rejected: /api/ai-test/ocr",
+        "05B — Image integration: /api/ai-test/ocr",
+        "05B — Employee cannot use AI debug: /api/ai-test/ocr",
+        "16 — Anonymous denied: POST /api/ai-test/ocr"
+      ],
+      "functional_request_names": [
+        "05B — Image integration: /api/ai-test/ocr"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "createPilgrimCard",
+      "method": "POST",
+      "path": "/api/v1/pilgrim-cards/add",
+      "request_names": [
+        "04 — Create card A",
+        "04 — Create card B",
+        "04 — Create card Spare",
+        "16 — Anonymous denied: POST /api/v1/pilgrim-cards/add"
+      ],
+      "functional_request_names": [
+        "04 — Create card A",
+        "04 — Create card B",
+        "04 — Create card Spare"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "getAllPilgrimCards",
+      "method": "GET",
+      "path": "/api/v1/pilgrim-cards/get",
+      "request_names": [
+        "04 — Admin lists cards",
+        "10B — Owner cannot use ADMIN endpoint: /api/v1/pilgrim-cards/get",
+        "16 — Anonymous denied: GET /api/v1/pilgrim-cards/get"
+      ],
+      "functional_request_names": [
+        "04 — Admin lists cards"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "getPilgrimCardById",
+      "method": "GET",
+      "path": "/api/v1/pilgrim-cards/me",
+      "request_names": [
+        "04 — Employee reads own campaign card",
+        "10 — Employee A cannot read card B",
+        "10B — Owner own read: /api/v1/pilgrim-cards/me?cardId={{cardIdA}}",
+        "10B — Owner foreign read denied: /api/v1/pilgrim-cards/me?cardId={{cardIdB}}",
+        "16 — Anonymous denied: GET /api/v1/pilgrim-cards/me"
+      ],
+      "functional_request_names": [
+        "04 — Employee reads own campaign card",
+        "10B — Owner own read: /api/v1/pilgrim-cards/me?cardId={{cardIdA}}"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "updatePilgrimCard",
+      "method": "PUT",
+      "path": "/api/v1/pilgrim-cards/update",
+      "request_names": [
+        "04 — Supervisor updates own card",
+        "10 — Employee cannot update a card",
+        "10 — Supervisor A cannot update card B",
+        "10B — Owner foreign mutation denied: PUT /api/v1/pilgrim-cards/update?cardId={{cardIdB}}",
+        "10B — Owner updates own card",
+        "16 — Anonymous denied: PUT /api/v1/pilgrim-cards/update"
+      ],
+      "functional_request_names": [
+        "04 — Supervisor updates own card",
+        "10B — Owner updates own card"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimCardController",
+      "handler": "deletePilgrimCard",
+      "method": "DELETE",
+      "path": "/api/v1/pilgrim-cards/delete",
+      "request_names": [
+        "10 — Supervisor A cannot delete card B",
+        "10B — Owner foreign mutation denied: DELETE /api/v1/pilgrim-cards/delete?cardId={{cardIdB}}",
+        "14 — Delete spare card",
+        "16 — Anonymous denied: DELETE /api/v1/pilgrim-cards/delete"
+      ],
+      "functional_request_names": [
+        "14 — Delete spare card"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "createPilgrim",
+      "method": "POST",
+      "path": "/api/v1/pilgrims/add",
+      "request_names": [
+        "04 — Create pilgrim A",
+        "04 — Create pilgrim B",
+        "04 — Create pilgrim Spare",
+        "16 — Anonymous denied: POST /api/v1/pilgrims/add"
+      ],
+      "functional_request_names": [
+        "04 — Create pilgrim A",
+        "04 — Create pilgrim B",
+        "04 — Create pilgrim Spare"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getAllPilgrims",
+      "method": "GET",
+      "path": "/api/v1/pilgrims/get",
+      "request_names": [
+        "04 — Admin lists pilgrims and captures IDs",
+        "10B — Owner cannot use ADMIN endpoint: /api/v1/pilgrims/get",
+        "16 — Anonymous denied: GET /api/v1/pilgrims/get"
+      ],
+      "functional_request_names": [
+        "04 — Admin lists pilgrims and captures IDs"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimById",
+      "method": "GET",
+      "path": "/api/v1/pilgrims/me",
+      "request_names": [
+        "04 — Employee uses legacy me lookup",
+        "10B — Owner own read: /api/v1/pilgrims/me?pilgrimId={{pilgrimAId}}",
+        "10B — Owner foreign read denied: /api/v1/pilgrims/me?pilgrimId={{pilgrimBId}}",
+        "16 — Anonymous denied: GET /api/v1/pilgrims/me"
+      ],
+      "functional_request_names": [
+        "04 — Employee uses legacy me lookup",
+        "10B — Owner own read: /api/v1/pilgrims/me?pilgrimId={{pilgrimAId}}"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "identifyPilgrim",
+      "method": "POST",
+      "path": "/api/v1/pilgrims/identify",
+      "request_names": [
+        "05 — Public identify pilgrim by card"
+      ],
+      "functional_request_names": [
+        "05 — Public identify pilgrim by card"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimByRequiredId",
+      "method": "GET",
+      "path": "/api/v1/pilgrims/{pilgrimId:\\d+}",
+      "request_names": [
+        "04 — Employee reads pilgrim details",
+        "08 — Assigned field B reads pilgrim",
+        "10 — Employee A cannot read pilgrim B",
+        "10 — Unassigned field A cannot read pilgrim B",
+        "10 — Verify pilgrim B was not changed",
+        "10B — Owner own read: /api/v1/pilgrims/{{pilgrimAId}}",
+        "10B — Owner foreign read denied: /api/v1/pilgrims/{{pilgrimBId}}",
+        "16 — Anonymous denied: GET /api/v1/pilgrims/{pilgrimId:\\d+}"
+      ],
+      "functional_request_names": [
+        "04 — Employee reads pilgrim details",
+        "08 — Assigned field B reads pilgrim",
+        "10 — Verify pilgrim B was not changed",
+        "10B — Owner own read: /api/v1/pilgrims/{{pilgrimAId}}"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimCampaign",
+      "method": "GET",
+      "path": "/api/v1/pilgrims/{pilgrimId:\\d+}/campaign",
+      "request_names": [
+        "04 — Employee reads pilgrim /campaign",
+        "10B — Owner own read: /api/v1/pilgrims/{{pilgrimAId}}/campaign",
+        "10B — Owner foreign read denied: /api/v1/pilgrims/{{pilgrimBId}}/campaign",
+        "16 — Anonymous denied: GET /api/v1/pilgrims/{pilgrimId:\\d+}/campaign"
+      ],
+      "functional_request_names": [
+        "04 — Employee reads pilgrim /campaign",
+        "10B — Owner own read: /api/v1/pilgrims/{{pilgrimAId}}/campaign"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimAccommodation",
+      "method": "GET",
+      "path": "/api/v1/pilgrims/{pilgrimId:\\d+}/accommodation",
+      "request_names": [
+        "04 — Employee reads pilgrim /accommodation",
+        "10B — Owner own read: /api/v1/pilgrims/{{pilgrimAId}}/accommodation",
+        "10B — Owner foreign read denied: /api/v1/pilgrims/{{pilgrimBId}}/accommodation",
+        "16 — Anonymous denied: GET /api/v1/pilgrims/{pilgrimId:\\d+}/accommodation"
+      ],
+      "functional_request_names": [
+        "04 — Employee reads pilgrim /accommodation",
+        "10B — Owner own read: /api/v1/pilgrims/{{pilgrimAId}}/accommodation"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimReports",
+      "method": "GET",
+      "path": "/api/v1/pilgrims/{pilgrimId:\\d+}/reports",
+      "request_names": [
+        "04 — Employee reads pilgrim /reports",
+        "08 — Assigned field B sees only own reports",
+        "10B — Owner own read: /api/v1/pilgrims/{{pilgrimAId}}/reports",
+        "10B — Owner foreign read denied: /api/v1/pilgrims/{{pilgrimBId}}/reports",
+        "10B — Owner pilgrim reports have own campaign only",
+        "16 — Anonymous denied: GET /api/v1/pilgrims/{pilgrimId:\\d+}/reports"
+      ],
+      "functional_request_names": [
+        "04 — Employee reads pilgrim /reports",
+        "08 — Assigned field B sees only own reports",
+        "10B — Owner own read: /api/v1/pilgrims/{{pilgrimAId}}/reports",
+        "10B — Owner pilgrim reports have own campaign only"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "updatePilgrim",
+      "method": "PUT",
+      "path": "/api/v1/pilgrims/update/{id}",
+      "request_names": [
+        "04 — Supervisor updates own pilgrim",
+        "10 — Supervisor A cannot update pilgrim B",
+        "10 — Supervisor cannot attach own pilgrim to accommodation B",
+        "10B — Owner foreign mutation denied: PUT /api/v1/pilgrims/update/{{pilgrimBId}}",
+        "10B — Owner updates own pilgrim",
+        "16 — Anonymous denied: PUT /api/v1/pilgrims/update/{id}"
+      ],
+      "functional_request_names": [
+        "04 — Supervisor updates own pilgrim",
+        "10B — Owner updates own pilgrim"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "deletePilgrim",
+      "method": "DELETE",
+      "path": "/api/v1/pilgrims/delete/{id}",
+      "request_names": [
+        "10 — Supervisor A cannot delete pilgrim B",
+        "10B — Owner foreign mutation denied: DELETE /api/v1/pilgrims/delete/{{pilgrimBId}}",
+        "14 — Delete spare pilgrim",
+        "16 — Anonymous denied: DELETE /api/v1/pilgrims/delete/{id}"
+      ],
+      "functional_request_names": [
+        "14 — Delete spare pilgrim"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "verifyPilgrimIdentity",
+      "method": "POST",
+      "path": "/api/v1/pilgrims/verify",
+      "request_names": [
+        "05 — Public verify pilgrim identity",
+        "05 — Wrong visa cannot verify identity"
+      ],
+      "functional_request_names": [
+        "05 — Public verify pilgrim identity"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "searchPilgrim",
+      "method": "GET",
+      "path": "/api/v1/pilgrims/search",
+      "request_names": [
+        "04 — Search own campaign by visa",
+        "04 — Search names does not leak campaign B",
+        "10 — Employee A cannot search visa B",
+        "10B — Owner own read: /api/v1/pilgrims/search?visaNumber={{visaA}}",
+        "10B — Owner foreign read denied: /api/v1/pilgrims/search?visaNumber={{visaB}}",
+        "10B — Owner name search includes A and excludes B",
+        "16 — Anonymous denied: GET /api/v1/pilgrims/search"
+      ],
+      "functional_request_names": [
+        "04 — Search own campaign by visa",
+        "04 — Search names does not leak campaign B",
+        "10B — Owner own read: /api/v1/pilgrims/search?visaNumber={{visaA}}",
+        "10B — Owner name search includes A and excludes B"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "manualIdentification",
+      "method": "POST",
+      "path": "/api/v1/pilgrims/manual-identification",
+      "request_names": [
+        "05 — Public manual identification"
+      ],
+      "functional_request_names": [
+        "05 — Public manual identification"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "PilgrimController",
+      "handler": "getPilgrimResponseById",
+      "method": "GET",
+      "path": "/api/v1/pilgrims/etPilgrimResponse/{id}",
+      "request_names": [
+        "04 — Employee reads pilgrim response DTO",
+        "10B — Owner own read: /api/v1/pilgrims/etPilgrimResponse/{{pilgrimAId}}",
+        "10B — Owner foreign read denied: /api/v1/pilgrims/etPilgrimResponse/{{pilgrimBId}}",
+        "16 — Anonymous denied: GET /api/v1/pilgrims/etPilgrimResponse/{id}"
+      ],
+      "functional_request_names": [
+        "04 — Employee reads pilgrim response DTO",
+        "10B — Owner own read: /api/v1/pilgrims/etPilgrimResponse/{{pilgrimAId}}"
+      ],
+      "optional_functional_request_names": []
+    },
+    {
+      "controller": "RouteController",
+      "handler": "getRoute",
+      "method": "GET",
+      "path": "/api/v1/routes",
+      "request_names": [
+        "09 — Driving route through OSRM",
+        "16 — Anonymous denied: GET /api/v1/routes"
+      ],
+      "functional_request_names": [
+        "09 — Driving route through OSRM"
+      ],
+      "optional_functional_request_names": []
+    }
+  ],
+  "source_sha256": {
+    "src/main/java/org/example/ons/Advice/ControllerAdvice.java": "bd608ca0c65e867cc749805dfd3ca6394444f03f53dae454879ace51a3aeec97",
+    "src/main/java/org/example/ons/Api/ApiException.java": "e83f16e407621a6f6469f6041079c2707531e40dceb65210c367a9c47a7357d2",
+    "src/main/java/org/example/ons/Api/ApiResponse.java": "bbfef2c4850f06bd7a6b8c64fa7a5d256a27d7bfc05a702b8ac1857cea9cf7d0",
+    "src/main/java/org/example/ons/Config/Configuration.java": "ae7c04450bf3404f1aa26477894127f006b07ff328d0830dece9b6508a5a7bed",
+    "src/main/java/org/example/ons/Controller/AccommodationController.java": "095e7ab4b5331bc14a4acbc46751f5fdeb3af131cc2921a45162e2f181d62a66",
+    "src/main/java/org/example/ons/Controller/AssistanceReportController.java": "b272730cc10dc095833a82b8e2e99de3d8c6e13880b704239651755cad93d8bf",
+    "src/main/java/org/example/ons/Controller/AuthController.java": "9212a3bf95c466e9b860d5e844b6b500e82a56570a12701acb26d8f51825d202",
+    "src/main/java/org/example/ons/Controller/AuthorizedStaffController.java": "45f243030139888833a9a91ebc8ee6267ba5598d12aff155f77891a7b4593eff",
+    "src/main/java/org/example/ons/Controller/CampaignController.java": "3ce2ee2482e4c70a5231044cfd5219d77af48746dfc9601bf4f6cd85678386a0",
+    "src/main/java/org/example/ons/Controller/CampaignPaymentController.java": "2b22ea76283b55dadead981b259b6b4182b8dad9f0d106da324babc9c44147da",
+    "src/main/java/org/example/ons/Controller/DashboardController.java": "3a372c67768dd14baa7a8463bc6fe99e8bdb2256f86ef669155f7a51ccb18929",
+    "src/main/java/org/example/ons/Controller/FieldStaffController.java": "4ce8472d96de23470e390a6b73f259a87ab8a58909e07d0902ebf7c24ccc3cd8",
+    "src/main/java/org/example/ons/Controller/IdentificationController.java": "706aa989a90322718dc533da355208d29b3f0cc3191b1d327bf1d0d9b7925297",
+    "src/main/java/org/example/ons/Controller/KioskController.java": "d05432f2577de9806ef47ed48dd50c34db7971b0a997d0127191ca536c371129",
+    "src/main/java/org/example/ons/Controller/MapController.java": "047e73058bb4ef55e33f823e59aadd85b30b6605426e349ed538fc570cc0d7ea",
+    "src/main/java/org/example/ons/Controller/NotificationController.java": "7960fe91a9e0e19ae157d94ad94a04a65332724d62031052a62986dfa6e793c7",
+    "src/main/java/org/example/ons/Controller/OnsAiTestController.java": "3426c4d333b2af4a30dfa387d93c0ddcb106ea493a8ccc29968f3eec99d1729f",
+    "src/main/java/org/example/ons/Controller/PilgrimCardController.java": "77e57c5ed01c260d2d041bbe0548b5bd17f25859ae4c7299a34a816a85748e39",
+    "src/main/java/org/example/ons/Controller/PilgrimController.java": "6bb35bd16245d7f3e2b7cc1a222b2df016eb8032885409b644530046dcde22d7",
+    "src/main/java/org/example/ons/Controller/RouteController.java": "192f74aedc7eab8dd985fe016bf0f1e5af90bfb711ab4c4e8620f628eb2d4d42",
+    "src/main/java/org/example/ons/DTO/AuthorizedStaffDTO.java": "54a5e93619da93a6a7bdb01257f417a821e4649fe84ffaac4302c3bd742ddecc",
+    "src/main/java/org/example/ons/DTO/CampaignAnalyticsDTO.java": "ed99e71a78455154144555f58065c413a410becdf907ff6e464a190c873e6efa",
+    "src/main/java/org/example/ons/DTO/ChangePasswordDTO.java": "259d35935bf26d3537bd96d71b2d8ba7c14e453fb404157750b3967a71eb5fa0",
+    "src/main/java/org/example/ons/DTO/EmployeeUpdateDTO.java": "f5d54bc2177c1a5625629c7c1d33e70db94c57f9e2b533c9105a71cc041ed15c",
+    "src/main/java/org/example/ons/DTO/FiledStaffDTO.java": "3f453025db4b49cc684ceb9104663a6f89cb37e41f113277ba384e553438ee22",
+    "src/main/java/org/example/ons/DTO/GooglePlacesDTO.java": "524933918117279229d4ea442e3cb898b578789742f2aa4fc8ea508f5e1e3912",
+    "src/main/java/org/example/ons/DTO/GoogleRoutesDTO.java": "e86777c54d33b1d04ba0fc67a86cb1d708d5ab61ec0ac2e400ac2beed93366db",
+    "src/main/java/org/example/ons/DTO/KioskActivityDTO.java": "b6e83477e6d40ecbc5865d699b2d46bf2012232bdb400b551754f9f33ca65b28",
+    "src/main/java/org/example/ons/DTO/KioskReportDTO.java": "1a9d25051b10d045783d18565eda6d28fcbcfbfd98d21677f4666d351100822c",
+    "src/main/java/org/example/ons/DTO/KioskUsageDTO.java": "d6870302e8b0b9a16d4bd4bbc71bb771fba61ad8d23dc586ff717ed0581e9449",
+    "src/main/java/org/example/ons/DTO/MapMarkerDTO.java": "fd57fd0d97fbaa7f41843b9acc5b428aa27f52dff3445ee189d778ed2a2086f8",
+    "src/main/java/org/example/ons/DTO/MergeReportsDTO.java": "508f52aa48789c3d4b700d932d0d3beae832bac6cc1a96eddd0b45a23273f6e7",
+    "src/main/java/org/example/ons/DTO/MoyasarInvoiceDTO.java": "c5044ed6152862885bc539048052897a3ecfd36d50366c051d17c53f9b376654",
+    "src/main/java/org/example/ons/DTO/NearestKioskDTO.java": "802a4dded80b090fcf991e41e712ce435e8cf479ebe6fd65e87ae471edcee855",
+    "src/main/java/org/example/ons/DTO/NearestPlaceDTO.java": "bcf90b7b7565f1eb3d40101f031a5266bc499292b6436d79054dadc35fe06d5d",
+    "src/main/java/org/example/ons/DTO/PilgrimResponseDTO.java": "8b9ef1d5a30864c34ed0dc8cf0d7169f65b32f25a8ab66dd516f6bc01c707aed",
+    "src/main/java/org/example/ons/DTO/RouteRequestDTO.java": "27ca0583bc2a0a0c73c08ebd366d4b01102e07d4eeb5fe471bdcdf1032f61913",
+    "src/main/java/org/example/ons/DTO/SelfServiceReportDTO.java": "92c2074fb2d48fa8305f924c5ad670282c0cdb3f0ba8f06ac8fd7ba2cbe9a680",
+    "src/main/java/org/example/ons/DTO/VerifyPilgrimDTO.java": "3e2e2d3eb201b155db0aeb72ca24ebe06274920a9f2caeb7b59fcae8f6ae3c0b",
+    "src/main/java/org/example/ons/Enum/AuthorizedStaffRole.java": "20f84391746c67f43c0c41e0af3271e5737e3bbd66efe4a73ce9e43ab78aa8fe",
+    "src/main/java/org/example/ons/Enum/CampaignPaymentStatus.java": "d4c80d192f9edb08768e9184907dbb56381972fe087b88eeb0bf00d5f6bc6c21",
+    "src/main/java/org/example/ons/Enum/IdentificationStatus.java": "0e548683c1fb8fb4dd2c5075378f774d7990aeecb85ee7643094673d3cf1d444",
+    "src/main/java/org/example/ons/Enum/NotificationStatus.java": "88008f6610731132b0285e9dd7755b9b86ffccb9351830c558f1c173ea68ea0f",
+    "src/main/java/org/example/ons/Enum/ReportStatus.java": "a40857289744f134776ca0f738562c520fdf15659fe446aac321291972e212d3",
+    "src/main/java/org/example/ons/Model/Accommodation.java": "af861308d21070f7b3c3b4b0bf44b5abbcf4db8decd0904db40958fd1ef4d1e4",
+    "src/main/java/org/example/ons/Model/AssistanceReport.java": "e45b0613ac20d76f7cf739febc68afa48c23ac2b5419aa4e765901ee1689cb77",
+    "src/main/java/org/example/ons/Model/AuthorizedStaff.java": "3105bb5df782dc689ce7652481939364ad37da88fe07d951c926aa620a18d0ab",
+    "src/main/java/org/example/ons/Model/Campaign.java": "32b91baa7ef5aa445533e9f3c30ef5a32dcd027faae389ce59e0c6cd5de2099a",
+    "src/main/java/org/example/ons/Model/CampaignPayment.java": "3201cff85252acc7f22f2634fd1461d8997dfd697b02da35d02b6c6246d136fb",
+    "src/main/java/org/example/ons/Model/FieldStaff.java": "136bda2179b7e90d53f23572a5aa02ab86a2266e7ac229371fff5952ffbb21d2",
+    "src/main/java/org/example/ons/Model/IdentificationRequest.java": "81b1e4bde5349813b8e6fc5c7ad22c2a06a481d95a8dbfd083ee2af3a122a0cf",
+    "src/main/java/org/example/ons/Model/Kiosk.java": "da288db1dccf997e881616a922c7d540515fcc19110526236ed976e4f21f48e0",
+    "src/main/java/org/example/ons/Model/Notification.java": "d3f5c6551536049934d602ecbec5327bcda9d781857b06593d13aec5a8892a73",
+    "src/main/java/org/example/ons/Model/Pilgrim.java": "acf2949a25e20acd714196f003c65f33769683225f6a0ef9c790fa2adf6bbfc9",
+    "src/main/java/org/example/ons/Model/PilgrimCard.java": "7a7684223f479bfa7061ec9d81e3c0821cb55cc5372a44d7d9b8f74dba46ea73",
+    "src/main/java/org/example/ons/Model/ReportStatusHistory.java": "910db4ca463a9b721212976ac3e7566f12eeca42776d24633fded3f142c099de",
+    "src/main/java/org/example/ons/Model/User.java": "de9c389aad0f2576081195838fc4236ce5c36d2868b6e7d90e1f8f118f9b2348",
+    "src/main/java/org/example/ons/OnsApplication.java": "04e4ad0c16f2bb932a08e121a9072da2e55d8c6747901230c3600f10072cd2ed",
+    "src/main/java/org/example/ons/Repository/AccommodationRepository.java": "664df85b80d26cc156f9f0f3535c4ac902caf8a55d1e223f069dc0818bd5ae3c",
+    "src/main/java/org/example/ons/Repository/AssistanceReportRepository.java": "37bead7718a17a3fa3141826749f689ebd59a5539bdf87e9b1043053da1a6e5b",
+    "src/main/java/org/example/ons/Repository/AuthRepository.java": "22cfd5e8d40ed04686b76234e9642a5da6a4827709219343e991a4f9469e9cb8",
+    "src/main/java/org/example/ons/Repository/AuthorizedStaffRepository.java": "1088ce1744ee0d858975af825d1803ede46ddfc56176f2456ae97d7adf059c47",
+    "src/main/java/org/example/ons/Repository/CampaignPaymentRepository.java": "a46c8e12879af07fc04cfea43d167a90617a15d1a1a34ac4572d1db6ddf8b2e1",
+    "src/main/java/org/example/ons/Repository/CampaignRepository.java": "7894369100b2acc9e4e07a9567f05c3bb426a8b8d27abf5333b66d55b0312ecd",
+    "src/main/java/org/example/ons/Repository/FieldStaffRepository.java": "5b66f270a8f59addf4d41fbebfc4ed911e4ec1f6d0071525052d0887d778ec2a",
+    "src/main/java/org/example/ons/Repository/IdentificationRequestRepository.java": "5e14db7aa77e5babaa1cfb5dc56732d58031cfb3118900bee090e38b08eaf269",
+    "src/main/java/org/example/ons/Repository/KioskRepository.java": "8c468b098966c8a864f1828d513a29c073675f4d77be52af0ad7fc3e4931cc00",
+    "src/main/java/org/example/ons/Repository/NotificationRepository.java": "0bb1205053804628844e19544e62f7b6d14f8a82fd0b28938c98b320a4b89caf",
+    "src/main/java/org/example/ons/Repository/PilgrimCardRepository.java": "a03e57be85889af8e30eb81920a3a4cd7810c3c79723bb0d470b465dad21e559",
+    "src/main/java/org/example/ons/Repository/PilgrimRepository.java": "f33b1e0dc4f39ac4788379ebb70da510032e5e21eddacc64b06b5c05c7427ada",
+    "src/main/java/org/example/ons/Repository/ReportStatusHistoryRepository.java": "2b4ec24be959e1af277a2b1f37f6f64f4ad0a138ae94304842308d5d447963ed",
+    "src/main/java/org/example/ons/Repository/UserRepository.java": "cb2eed23fc5f708e1d867b58013d7fb6ac3d5e58a67310cd93f0dc4e8bd3a4a6",
+    "src/main/java/org/example/ons/Service/AccommodationService.java": "3c08a107603b7a1acf8c48b66d35966d44235cc7d0ae6962107ee103b1ea596c",
+    "src/main/java/org/example/ons/Service/AdminService.java": "b59a2b09ba24a47ab35f2a4a5c1732596710e618351b325560849e845c444699",
+    "src/main/java/org/example/ons/Service/AssistanceReportService.java": "ec2b21ed841986d1ffce771eb4a3b545eddca64771b537e10823b158b8b88e07",
+    "src/main/java/org/example/ons/Service/AuthService.java": "8da50a3b2a35b81663f6521192b4ac34b529719afb569b54252840a4bc323ff9",
+    "src/main/java/org/example/ons/Service/AuthorizedStaffService.java": "2254e9897dbaabef01a75a70bad67c92f903f81e3227fa3aee9b33f32c48fae7",
+    "src/main/java/org/example/ons/Service/CampaignPaymentService.java": "2e1de471654c31726c5292fe0d134801d0bb39f7aa23e4ed49ea62a283cfeff4",
+    "src/main/java/org/example/ons/Service/CampaignService.java": "c3c7c3124fbafab3d3fb6141155fb90d8e6dbcb024fa6a52ce694c6f1a82f236",
+    "src/main/java/org/example/ons/Service/DashboardService.java": "f89c17bc6765bcc5b684008252b69d95d0dbe17cbc9ff2b9aae0ed683dd4ec79",
+    "src/main/java/org/example/ons/Service/EmailService.java": "02e48c66d48e5cf1c96d8d6ceb15cd5613448f9a4bea6319caeb8397bd5fb819",
+    "src/main/java/org/example/ons/Service/FiledStaffService.java": "13ce9f8f456d0c5e427486e8f8c035b34fca4987f52e45d1c752770b94fd51f2",
+    "src/main/java/org/example/ons/Service/IdentificationRequestService.java": "f5c4730d8c8e0fa60429e27517f9eb8429311bef31f5293bd1e97289a13e34dc",
+    "src/main/java/org/example/ons/Service/IdentificationService.java": "bf68463a773980c99a84fdcc4a5821fce2126fd955cad42ea43f753446385a9e",
+    "src/main/java/org/example/ons/Service/KioskService.java": "0fa3ad1b322090cb1a75ee3730274c4cdd5add5fb192e07631bff01dba6cc30d",
+    "src/main/java/org/example/ons/Service/MapService.java": "1b90b79c10023cbc186b8a76bc87e607b2b3096b4570f1d544a1046313d33a5d",
+    "src/main/java/org/example/ons/Service/MoyasarService.java": "eb9df159c991bca99c4b29267f72575dd6f38da0c354b3e30e63052c86005fa1",
+    "src/main/java/org/example/ons/Service/MyUserDetailsService.java": "3e220cb9eb960519d0110aa8a2097e50d2b5385e6ca26072bd23cc96664fe7e7",
+    "src/main/java/org/example/ons/Service/NotificationService.java": "5e5ae799ed67ed586a2983f24117349a71042bd2923c029b13dad40e44ed0e8c",
+    "src/main/java/org/example/ons/Service/PilgrimCardService.java": "94d7d64fa591f429b221cb44b2c79e757ec875cd8cd1ee4a188b0d1309a2ff9f",
+    "src/main/java/org/example/ons/Service/PilgrimService.java": "cdd359791fc3c8a45b2c373a3b27d02ece0270d244700c12b7f1bebe8b0ddcad",
+    "src/main/java/org/example/ons/Service/RouteService.java": "1f042884057b9026c7d0aaf4fcbac6258b77d508d7509eb26cb3d566ab2bbbec",
+    "src/main/java/org/example/ons/integration/OnsAiClient.java": "089707a067e31333c22acb94852441e4995017787abb89ccdb7035d0ff78e6b1",
+    "src/main/java/org/example/ons/integration/OnsAiConfig.java": "ef3fd183fb0df05da728218a3c71cf4f9343e6e01b418e55893a4242c02f22aa"
+  }
+}

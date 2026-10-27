@@ -1,0 +1,150 @@
+{
+  "info": {
+    "_postman_id": "d4c5cf7d-b861-4b40-a1a2-ac958d10a9a5",
+    "name": "ONS — Paid checkout verification ONLY (after main run)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Run after completing the saved TEST invoice checkout from the main collection. Copy the main collection paymentUrlA to a browser. Export/import main collection Variables as instructed in START_HERE, or set paymentCampaignId, paymentId and registrationCookie below from the main collection. No re-registration or setup here. Session expires after 30 minutes. No real card data is included."
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "paymentCampaignId",
+      "value": ""
+    },
+    {
+      "key": "paymentId",
+      "value": ""
+    },
+    {
+      "key": "registrationCookie",
+      "value": ""
+    },
+    {
+      "key": "firstPaidAt",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "for(const k of ['baseUrl','paymentCampaignId','paymentId','registrationCookie']){if(!pm.collectionVariables.get(k)){pm.execution.skipRequest();pm.execution.setNextRequest(null);throw new Error('Fill paid-verification collection variable: '+k);}}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "15 — Optional PAID invoice verification after checkout",
+      "description": "Hosted Moyasar card entry/3DS is not automated. Open environment paymentUrlA in your browser and complete a TEST payment first. Then set runPaidVerification=true and run this folder. Registration session must still be valid (30 minutes of inactivity); a session check failure is 403. Do not rerun the entire collection to verify an old invoice because step 00 creates a new run. First successful paid verification sends the invoice email; repeat verification should not resend it.",
+      "item": [
+        {
+          "name": "15 — Verify manually PAID invoice and activate campaign",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{registrationCookie}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/payments/campaign/{{paymentCampaignId}}/{{paymentId}}/verify",
+            "description": "Run in collection order. Expected HTTP 200."
+          },
+          "response": [],
+          "protocolProfileBehavior": {
+            "disableCookies": true,
+            "followRedirects": false
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.expect(pm.response.code).to.be.oneOf([200]); });",
+                  "if (pm.response.code >= 200 && pm.response.code < 300) {",
+                  "const j=pm.response.json();pm.test(\"Paid invoice activates campaign\",()=>{pm.expect(j.status).to.eql(\"PAID\");pm.expect(j.paidAt).to.be.a(\"string\");pm.expect(j.campaign.status).to.eql(\"ACTIVE\");});pm.collectionVariables.set(\"firstPaidAt\",j.paidAt || \"\");",
+                  "}",
+                  "if(pm.response.code===200){pm.test('Paid owner is active',()=>pm.expect(pm.response.json().campaign.user.active).to.eql(true));}"
+                ]
+              }
+            }
+          ],
+          "id": "f1583dc9-aa7e-4aff-84c8-c417cfc0efb4"
+        },
+        {
+          "name": "15 — Repeat verification preserves paidAt",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{registrationCookie}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/payments/campaign/{{paymentCampaignId}}/{{paymentId}}/verify",
+            "description": "Run in collection order. Expected HTTP 200."
+          },
+          "response": [],
+          "protocolProfileBehavior": {
+            "disableCookies": true,
+            "followRedirects": false
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.expect(pm.response.code).to.be.oneOf([200]); });",
+                  "if (pm.response.code >= 200 && pm.response.code < 300) {",
+                  "const j=pm.response.json();pm.test(\"Idempotent paid verification\",()=>{pm.expect(j.status).to.eql(\"PAID\");pm.expect(j.paidAt).to.eql(pm.collectionVariables.get(\"firstPaidAt\"));});",
+                  "}",
+                  "if(pm.response.code===200){pm.test('Paid owner is active',()=>pm.expect(pm.response.json().campaign.user.active).to.eql(true));}"
+                ]
+              }
+            }
+          ],
+          "id": "4537e172-b11a-427e-8899-52f9bbdb0f7d"
+        }
+      ]
+    }
+  ]
+}

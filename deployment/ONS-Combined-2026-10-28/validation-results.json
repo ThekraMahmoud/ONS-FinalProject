@@ -1,0 +1,30 @@
+{
+  "frontend_repository": "https://github.com/ThekraMahmoud/ONS-Frontend",
+  "frontend_revision": "54c856e160d99229780dc6bbd785f6db914ba952",
+  "backend_revision": "d9a1bf9066ceb44dd5ab08834e166916bc39c9ea",
+  "frontend_build": "passed",
+  "frontend_existing_tests": {
+    "passed": 22,
+    "failed": 0,
+    "type": "Node unit/contract tests with mocked APIs"
+  },
+  "java_deployment_tests": {
+    "passed": 7,
+    "failed": 0,
+    "type": "Spring MVC/security tests with mocked services; no RDS/provider calls"
+  },
+  "jar_static_files": 16,
+  "existing_java_files_changed_in_build_copy": [
+    "src/main/java/org/example/ons/Config/Configuration.java"
+  ],
+  "new_java_controller": "src/main/java/org/example/ons/Controller/FrontendController.java",
+  "original_java_checkout_modified": false,
+  "cloud_deployment_performed": false,
+  "known_compatibility_issues": [
+    "Missing GET /api/v1/pilgrim-cards/pilgrim/{id}",
+    "Frontend pilgrim list uses ADMIN-only /get for campaign flows",
+    "Anonymous kiosk selector calls protected kiosk list",
+    "Python service not included"
+  ],
+  "cloud_url": "https://d3ujyxwecja6r4.cloudfront.net"
+}

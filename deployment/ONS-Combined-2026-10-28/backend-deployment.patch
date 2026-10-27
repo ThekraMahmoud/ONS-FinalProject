@@ -1,0 +1,58 @@
+--- a/src/main/java/org/example/ons/Config/Configuration.java
++++ b/src/main/java/org/example/ons/Config/Configuration.java
+@@ -27,6 +27,27 @@
+                         sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                 )
+                 .authorizeHttpRequests(auth -> auth
++
++                        .requestMatchers(
++                                HttpMethod.GET,
++                                "/",
++                                "/index.html",
++                                "/assets/**",
++                                "/favicon.svg",
++                                "/icons.svg",
++                                "/ons-logo.png",
++                                "/flags/**",
++                                "/login",
++                                "/register",
++                                "/payment",
++                                "/set-password",
++                                "/dashboard",
++                                "/campaign-dashboard",
++                                "/supervisor-dashboard",
++                                "/representative-dashboard",
++                                "/pilgrim-kiosk",
++                                "/pilgrim-kiosk/setup"
++                        ).permitAll()
+ 
+                         .requestMatchers(
+                                 HttpMethod.PATCH,
+--- /dev/null
++++ b/src/main/java/org/example/ons/Controller/FrontendController.java
+@@ -0,0 +1,25 @@
++package org.example.ons.Controller;
++
++import org.springframework.stereotype.Controller;
++import org.springframework.web.bind.annotation.GetMapping;
++
++@Controller
++public class FrontendController {
++
++    @GetMapping({
++            "/",
++            "/login",
++            "/register",
++            "/payment",
++            "/set-password",
++            "/dashboard",
++            "/campaign-dashboard",
++            "/supervisor-dashboard",
++            "/representative-dashboard",
++            "/pilgrim-kiosk",
++            "/pilgrim-kiosk/setup"
++    })
++    public String frontend() {
++        return "forward:/index.html";
++    }
++}

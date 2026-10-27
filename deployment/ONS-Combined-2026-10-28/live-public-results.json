@@ -1,0 +1,276 @@
+{
+  "base_url": "https://d3ujyxwecja6r4.cloudfront.net",
+  "checked_at": "2026-10-27T23:34:47.183511+00:00",
+  "scope": "Public pages, their entry assets, anonymous API guards, invalid registration and payment ownership. No authenticated account, record changes, paid checkout, email, n8n, Python or Google calls.",
+  "passed": 28,
+  "failed": 0,
+  "results": [
+    {
+      "method": "GET",
+      "path": "/",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/login",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/register",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/payment",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/set-password",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/campaign-dashboard",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/supervisor-dashboard",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/representative-dashboard",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/pilgrim-kiosk",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/pilgrim-kiosk/setup",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "bytes": 554,
+      "passed": true,
+      "react_shell": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/get/all",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/dashboard/summary",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaigns/get",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaigns/me",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/pilgrims/get",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/pilgrims/me",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/pilgrim-cards/get",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/kiosks/get",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/notification/get",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/report/get",
+      "expected": 401,
+      "status": 401,
+      "content_type": "",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/campaigns/register",
+      "expected": 400,
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 39,
+      "passed": true,
+      "message": "Campaign name is required"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/payments/campaign/99999999",
+      "expected": 403,
+      "status": 403,
+      "content_type": "application/json",
+      "bytes": 62,
+      "passed": true,
+      "message": "Register this campaign in the same session first"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/payments/campaign/99999999/99999999/verify",
+      "expected": 403,
+      "status": 403,
+      "content_type": "application/json",
+      "bytes": 62,
+      "passed": true,
+      "message": "Register this campaign in the same session first"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/map/kiosks/99999999/nearest-place?type=GATE",
+      "expected": 400,
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 29,
+      "passed": true,
+      "message": "Kiosk not found"
+    },
+    {
+      "method": "GET",
+      "path": "/assets/index-DRCrTnmC.css",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/css",
+      "bytes": 386092,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/assets/index-DheyG1-t.js",
+      "expected": 200,
+      "status": 200,
+      "content_type": "text/javascript",
+      "bytes": 699439,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/ons-logo.png",
+      "expected": 200,
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 872799,
+      "passed": true
+    }
+  ]
+}
