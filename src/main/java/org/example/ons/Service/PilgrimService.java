@@ -322,18 +322,37 @@ public class PilgrimService {
 
     private Campaign getSupervisorCampaign(User user) {
 
+        requireActiveUser(user);
+
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            Campaign campaign = campaignRepository
+                    .findCampaignById(user.getId());
+
+            if (campaign == null
+                    || campaign.getUser() == null
+                    || !user.getId().equals(
+                    campaign.getUser().getId())) {
+                throw new AccessDeniedException(
+                        "You are not linked to a campaign"
+                );
+            }
+
+            return campaign;
+        }
+
         AuthorizedStaff staff = getCampaignStaff(user);
 
-        if (staff.getStaffRole() != AuthorizedStaffRole.SUPERVISOR) {
+        if (staff.getStaffRole()
+                != AuthorizedStaffRole.SUPERVISOR) {
             throw new AccessDeniedException(
                     "Only supervisors can manage pilgrims"
             );
         }
 
-        Integer campaignId = staff.getCampaign().getId();
-
-        Campaign campaign =
-                campaignRepository.findCampaignById(campaignId);
+        Campaign campaign = campaignRepository.findCampaignById(
+                staff.getCampaign().getId()
+        );
 
         if (campaign == null) {
             throw new ApiException("Campaign not found");

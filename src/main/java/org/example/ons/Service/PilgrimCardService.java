@@ -244,6 +244,21 @@ public class PilgrimCardService {
             boolean writing) {
 
         requireActiveUser(user);
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            if (user.getId() == null
+                    || pilgrim == null
+                    || pilgrim.getCampaign() == null
+                    || pilgrim.getCampaign().getUser() == null
+                    || !user.getId().equals(
+                    pilgrim.getCampaign().getUser().getId())) {
+                throw new AccessDeniedException(
+                        "This pilgrim does not belong to your campaign"
+                );
+            }
+
+            return;
+        }
 
         if (!writing && "ADMIN".equals(user.getRole())) {
             return;

@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.ons.Api.ApiResponse;
-import org.example.ons.Enum.AuthorizedStaffRole;
 import org.example.ons.Model.Accommodation;
 import org.example.ons.Model.AuthorizedStaff;
 import org.example.ons.Model.User;
@@ -34,14 +33,7 @@ public class AccommodationController {
             @AuthenticationPrincipal User user,
             @Valid @RequestBody Accommodation accommodation) {
 
-        Integer campaignId = getSupervisorCampaignId(user);
-
-        accommodation.setId(null);
-
-        accommodationService.createAccommodation(
-                campaignId,
-                accommodation
-        );
+        accommodationService.createAccommodation(user, accommodation);
 
         return ResponseEntity.status(200).body(
                 new ApiResponse("Accommodation added successfully")
@@ -72,15 +64,7 @@ public class AccommodationController {
             @PathVariable Integer id,
             @Valid @RequestBody Accommodation accommodation) {
 
-        Integer campaignId = getSupervisorCampaignId(user);
-
-        requireAccommodationOwnership(campaignId, id);
-
-        accommodationService.updateAccommodation(
-                campaignId,
-                id,
-                accommodation
-        );
+        accommodationService.updateAccommodation(user, id, accommodation);
 
         return ResponseEntity.status(200).body(
                 new ApiResponse("Accommodation updated successfully")
@@ -93,20 +77,14 @@ public class AccommodationController {
             @PathVariable Integer accommodationId,
             @Valid @RequestBody AccommodationStatusRequest request) {
 
-        Integer campaignId = getSupervisorCampaignId(user);
-
-        requireAccommodationOwnership(campaignId, accommodationId);
-
         accommodationService.updateAccommodationStatus(
-                campaignId,
+                user,
                 accommodationId,
                 request.getStatus()
         );
 
         return ResponseEntity.status(200).body(
-                new ApiResponse(
-                        "Accommodation status updated successfully"
-                )
+                new ApiResponse("Accommodation status updated successfully")
         );
     }
 
@@ -162,65 +140,13 @@ public class AccommodationController {
             @AuthenticationPrincipal User user,
             @PathVariable Integer id) {
 
-        Integer campaignId = getSupervisorCampaignId(user);
-
-        requireAccommodationOwnership(campaignId, id);
-
-        accommodationService.deleteAccommodation(
-                campaignId,
-                id
-        );
+        accommodationService.deleteAccommodation(user, id);
 
         return ResponseEntity.status(200).body(
                 new ApiResponse("Accommodation deleted successfully")
         );
     }
 
-    private Integer getSupervisorCampaignId(User user) {
-
-        if (user == null
-                || !user.isActive()
-                || !"AuthorizedStaff".equals(user.getRole())) {
-
-            throw new AccessDeniedException(
-                    "Only campaign supervisors can access this endpoint"
-            );
-        }
-
-        AuthorizedStaff staff =
-                authorizedStaffService.getStaffById(user.getId());
-
-        if (staff.getStaffRole() != AuthorizedStaffRole.SUPERVISOR
-                || staff.getCampaign() == null) {
-
-            throw new AccessDeniedException(
-                    "You must be a supervisor linked to a campaign"
-            );
-        }
-
-        return staff.getCampaign().getId();
-    }
-
-    private void requireAccommodationOwnership(
-            Integer campaignId,
-            Integer accommodationId) {
-
-        Accommodation accommodation =
-                accommodationService.getAccommodationById(
-                        accommodationId
-                );
-
-        if (accommodation.getCampaign() == null
-                || !campaignId.equals(
-                accommodation.getCampaign().getId()
-        )) {
-
-            throw new AccessDeniedException(
-                    "This accommodation does not belong to your campaign"
-            );
-        }
-
-    }
 
     private Integer getStaffCampaignId(User user) {
 

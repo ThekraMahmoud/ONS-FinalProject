@@ -50,27 +50,27 @@ public class AuthorizedStaffController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateStaff(
+            @AuthenticationPrincipal User user,
             @PathVariable Integer id,
             @Valid @RequestBody EmployeeUpdateDTO dto) {
 
-        authorizedStaffService.updateStaff(id, dto);
+        authorizedStaffService.updateStaff(user, id, dto);
 
-        return ResponseEntity.status(200)
-                .body(new ApiResponse(
-                        "Authorized staff updated successfully"
-                ));
+        return ResponseEntity.status(200).body(
+                new ApiResponse("Authorized staff updated successfully")
+        );
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteStaff(
+            @AuthenticationPrincipal User user,
             @PathVariable Integer id) {
 
-        authorizedStaffService.deleteStaff(id);
+        authorizedStaffService.deleteStaff(user, id);
 
-        return ResponseEntity.status(200)
-                .body(new ApiResponse(
-                        "Authorized staff deleted successfully"
-                ));
+        return ResponseEntity.status(200).body(
+                new ApiResponse("Authorized staff deleted successfully")
+        );
     }
 
     @GetMapping("/get/employees")
@@ -86,9 +86,9 @@ public class AuthorizedStaffController {
     @PostMapping("/add/employee")
     public ResponseEntity<?> addEmployee(
             @AuthenticationPrincipal User user,
-            @RequestBody @Valid AuthorizedStaffDTO dto) {
+            @Valid @RequestBody AuthorizedStaffDTO dto) {
 
-        authorizedStaffService.addEmployee(user.getId(), dto);
+        authorizedStaffService.addEmployee(user, dto);
 
         return ResponseEntity.status(200)
                 .body(new ApiResponse("Employee added successfully"));
@@ -98,10 +98,10 @@ public class AuthorizedStaffController {
     public ResponseEntity<?> updateEmployee(
             @AuthenticationPrincipal User user,
             @PathVariable Integer employeeId,
-            @RequestBody @Valid EmployeeUpdateDTO dto) {
+            @Valid @RequestBody EmployeeUpdateDTO dto) {
 
         authorizedStaffService.updateEmployee(
-                user.getId(),
+                user,
                 employeeId,
                 dto
         );
@@ -116,7 +116,7 @@ public class AuthorizedStaffController {
             @PathVariable Integer employeeId) {
 
         authorizedStaffService.deleteEmployee(
-                user.getId(),
+                user,
                 employeeId
         );
 

@@ -2,8 +2,10 @@ package org.example.ons.Service;
 
 import lombok.AllArgsConstructor;
 import org.example.ons.Api.ApiException;
+import org.example.ons.Enum.AuthorizedStaffRole;
 import org.example.ons.Model.*;
 import org.example.ons.Repository.*;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +23,15 @@ public class AccommodationService {
     private final AssistanceReportRepository assistanceReportRepository;
     private final CampaignRepository campaignRepository;
     private final UserRepository userRepository;
+    private final AuthorizedStaffRepository authorizedStaffRepository;
 
     // Create Accommodation
-    public void createAccommodation(Integer campaignId, Accommodation accommodation) {
+    @Transactional
+    public void createAccommodation(
+            User user,
+            Accommodation accommodation) {
+
+        Integer campaignId = getSupervisorCampaignId(user);
 
         Campaign campaign = campaignRepository.findCampaignById(campaignId);
 
@@ -31,6 +39,7 @@ public class AccommodationService {
             throw new ApiException("Campaign not found");
         }
 
+        accommodation.setId(null);
         accommodation.setCampaign(campaign);
 
         if (accommodation.getStatus() == null) {
@@ -61,23 +70,22 @@ public class AccommodationService {
     }
 
     // Update Accommodation
+    @Transactional
     public void updateAccommodation(
-            Integer campaignId,
+            User user,
             Integer id,
             Accommodation updatedAccommodation) {
 
-        Campaign campaign = campaignRepository.findCampaignById(campaignId);
-
-        if (campaign == null) {
-            throw new ApiException("Campaign not found");
-        }
+        Integer campaignId = getSupervisorCampaignId(user);
 
         Accommodation existingAccommodation = getRequiredAccommodation(id);
 
-        // تأكد أن المبنى تابع للحملة المسجّلة دخولها
         if (existingAccommodation.getCampaign() == null
-                || !existingAccommodation.getCampaign().getId().equals(campaignId)) {
-            throw new ApiException("You are not authorized to update this accommodation");
+                || !campaignId.equals(
+                existingAccommodation.getCampaign().getId())) {
+            throw new AccessDeniedException(
+                    "This accommodation does not belong to your campaign"
+            );
         }
 
         existingAccommodation.setName(updatedAccommodation.getName());
@@ -86,47 +94,41 @@ public class AccommodationService {
         existingAccommodation.setLatitude(updatedAccommodation.getLatitude());
         existingAccommodation.setLongitude(updatedAccommodation.getLongitude());
 
-        // لا نغيّر الحملة المرتبطة بالمبنى من بيانات الطلب
         accommodationRepository.save(existingAccommodation);
     }
 
     // Delete Accommodation - preserve existing functionality
-    public void deleteAccommodation(Integer campaignId, Integer id) {
+    @Transactional
+    public void deleteAccommodation(User user, Integer id) {
 
-        Campaign campaign = campaignRepository.findCampaignById(campaignId);
-
-        if (campaign == null) {
-            throw new ApiException("Campaign not found");
-        }
+        Integer campaignId = getSupervisorCampaignId(user);
 
         Accommodation accommodation = getRequiredAccommodation(id);
 
         if (accommodation.getCampaign() == null
-                || !accommodation.getCampaign().getId().equals(campaignId)) {
-            throw new ApiException("You are not authorized to delete this accommodation");
+                || !campaignId.equals(accommodation.getCampaign().getId())) {
+            throw new AccessDeniedException(
+                    "This accommodation does not belong to your campaign"
+            );
         }
 
         accommodationRepository.delete(accommodation);
     }
-
     // Update Accommodation Status
+    @Transactional
     public void updateAccommodationStatus(
-            Integer campaignId,
+            User user,
             Integer id,
             String status) {
 
-        Campaign campaign = campaignRepository.findCampaignById(campaignId);
-
-        if (campaign == null) {
-            throw new ApiException("Campaign not found");
-        }
+        Integer campaignId = getSupervisorCampaignId(user);
 
         Accommodation accommodation = getRequiredAccommodation(id);
 
         if (accommodation.getCampaign() == null
-                || !accommodation.getCampaign().getId().equals(campaignId)) {
-            throw new ApiException(
-                    "You are not authorized to update this accommodation"
+                || !campaignId.equals(accommodation.getCampaign().getId())) {
+            throw new AccessDeniedException(
+                    "This accommodation does not belong to your campaign"
             );
         }
 
@@ -137,6 +139,7 @@ public class AccommodationService {
         }
 
         accommodation.setStatus(status);
+
         accommodationRepository.save(accommodation);
     }
 
@@ -257,5 +260,50 @@ public class AccommodationService {
     }
 
 
+    private Integer getSupervisorCampaignId(User user) {
+
+        if (user == null
+                || user.getId() == null
+                || !user.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+
+            Campaign campaign = campaignRepository
+                    .findCampaignById(user.getId());
+
+            if (campaign == null
+                    || campaign.getUser() == null
+                    || !user.getId().equals(campaign.getUser().getId())) {
+                throw new AccessDeniedException(
+                        "You are not linked to a campaign"
+                );
+            }
+
+            return campaign.getId();
+        }
+
+        if (!"AuthorizedStaff".equals(user.getRole())) {
+            throw new AccessDeniedException(
+                    "Only campaign owners and supervisors can manage accommodations"
+            );
+        }
+
+        AuthorizedStaff staff = authorizedStaffRepository
+                .findAuthorizedStaffById(user.getId());
+
+        if (staff == null
+                || staff.getStaffRole() != AuthorizedStaffRole.SUPERVISOR
+                || staff.getCampaign() == null) {
+            throw new AccessDeniedException(
+                    "You must be a supervisor linked to a campaign"
+            );
+        }
+
+        return staff.getCampaign().getId();
+    }
 
 }

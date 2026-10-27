@@ -147,24 +147,30 @@ public class CampaignService {
     }
 
     // Remove authorized staff from a campaign
-    public void removeStaffFromCampaign(Integer campaignId, Integer userId) {
+    public void removeStaffFromCampaign(
+            User actor,
+            Integer campaignId,
+            Integer userId) {
+
         getRequiredCampaign(campaignId);
 
         AuthorizedStaff staff =
                 authorizedStaffRepository.findAuthorizedStaffById(userId);
 
         if (staff == null) {
-            throw new ApiException("Authorized staff not found with ID: " + userId);
+            throw new ApiException(
+                    "Authorized staff not found with ID: " + userId
+            );
         }
 
-        if (staff.getCampaign() == null ||
-                !campaignId.equals(staff.getCampaign().getId())) {
+        if (staff.getCampaign() == null
+                || !campaignId.equals(staff.getCampaign().getId())) {
             throw new ApiException(
                     "The authorized staff member does not belong to this campaign"
             );
         }
 
-        authorizedStaffService.deleteStaff(userId);
+        authorizedStaffService.deleteStaff(actor, userId);
     }
 
     // Get campaign statistics
