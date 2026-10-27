@@ -134,10 +134,16 @@ public class CampaignService {
         return authorizedStaffRepository.findByCampaign_Id(campaignId);
     }
 
-    // Add a supervisor to a campaign
-    public void addStaffToCampaign(Integer campaignId, AuthorizedStaffDTO staffDTO) {
-        getRequiredCampaign(campaignId);
-        authorizedStaffService.createStaff(staffDTO, campaignId);
+    public void addStaffToCampaign(
+            User actor,
+            Integer campaignId,
+            AuthorizedStaffDTO staffDTO) {
+
+        authorizedStaffService.createStaff(
+                actor,
+                staffDTO,
+                campaignId
+        );
     }
 
     // Remove authorized staff from a campaign

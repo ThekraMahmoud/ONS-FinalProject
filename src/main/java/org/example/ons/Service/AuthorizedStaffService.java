@@ -11,7 +11,9 @@ import org.example.ons.Model.*;
 import org.example.ons.Repository.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -26,42 +28,107 @@ public class AuthorizedStaffService {
     private final MapService mapService;
     private final NotificationService notificationService;
 
-    public void createStaff(AuthorizedStaffDTO dto,Integer campaignId) {
+    @Transactional
+    public void createStaff(
+            User actor,
+            AuthorizedStaffDTO dto,
+            Integer campaignId) {
 
-        AuthorizedStaff staff = new AuthorizedStaff();
+        if (actor == null
+                || actor.getId() == null
+                || !actor.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
 
-        String hash = new BCryptPasswordEncoder().encode(dto.getPassword());
+        if (!"ADMIN".equals(actor.getRole())
+                && !"CAMPAIGN_OWNER".equals(actor.getRole())) {
+            throw new AccessDeniedException(
+                    "Only admins and campaign owners can create supervisors"
+            );
+        }
+
+        Campaign campaign =
+                campaignRepository.findCampaignById(campaignId);
+
+        if (campaign == null) {
+            throw new ApiException("campaign not found");
+        }
+
+        if ("CAMPAIGN_OWNER".equals(actor.getRole())
+                && (campaign.getUser() == null
+                || !actor.getId().equals(
+                campaign.getUser().getId()
+        ))) {
+            throw new AccessDeniedException(
+                    "You can only create supervisors for your own campaign"
+            );
+        }
 
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(hash);
+        user.setPassword(
+                new BCryptPasswordEncoder().encode(dto.getPassword())
+        );
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setRole("AuthorizedStaff");
         user.setActive(dto.isActive());
 
+        User savedUser = authRepository.save(user);
 
-            Campaign campaign = campaignRepository.findCampaignById(campaignId);
+        AuthorizedStaff staff = new AuthorizedStaff();
+        staff.setStaffRole(AuthorizedStaffRole.SUPERVISOR);
+        staff.setCampaign(campaign);
+        staff.setUser(savedUser);
 
-            if (campaign == null) {
-                throw new ApiException("campaign not found");
-            }
-
-            staff.setStaffRole(AuthorizedStaffRole.SUPERVISOR);
-            staff.setCampaign(campaign);
-
-
-        authRepository.save(user);
-        staff.setUser(user);
         authorizedStaffRepository.save(staff);
     }
 
-    public List<AuthorizedStaff> getAllStaff() {
+    @Transactional(readOnly = true)
+    public List<AuthorizedStaff> getAllStaff(User actor) {
 
-        List<AuthorizedStaff> staffList = authorizedStaffRepository.findAll();
+        if (actor == null
+                || actor.getId() == null
+                || !actor.isActive()) {
+            throw new AccessDeniedException(
+                    "An active authenticated account is required"
+            );
+        }
+
+        List<AuthorizedStaff> staffList;
+
+        if ("ADMIN".equals(actor.getRole())) {
+
+            staffList = authorizedStaffRepository.findAll();
+
+        } else if ("CAMPAIGN_OWNER".equals(actor.getRole())) {
+
+            Campaign campaign =
+                    campaignRepository.findCampaignById(actor.getId());
+
+            if (campaign == null
+                    || campaign.getUser() == null
+                    || !actor.getId().equals(
+                    campaign.getUser().getId()
+            )) {
+                throw new AccessDeniedException(
+                        "You are not linked to a campaign"
+                );
+            }
+
+            staffList = authorizedStaffRepository
+                    .findByCampaign_Id(campaign.getId());
+
+        } else {
+            throw new AccessDeniedException(
+                    "Only admins and campaign owners can access this endpoint"
+            );
+        }
 
         if (staffList.isEmpty()) {
-            throw new ApiException("there is no staff in the system");
+            throw new ApiException("there is no staff in the campaign or system");
         }
 
         return staffList;

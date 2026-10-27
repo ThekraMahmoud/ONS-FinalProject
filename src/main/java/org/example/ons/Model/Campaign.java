@@ -24,10 +24,10 @@ public class Campaign {
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer Id;
 
-//    @NotBlank(message = "Campaign name is required")
-//    @Size(max = 100, message = "Campaign name must not exceed 100 characters")
-//    @Column(nullable = false, length = 100)
-//    private String campaignName;
+    @NotBlank(message = "Campaign name is required")
+    @Size(max = 100, message = "Campaign name must not exceed 100 characters")
+    @Column(nullable = false, length = 100)
+    private String campaignName;
 //
 //    @Pattern(
 //            regexp = "^\\+?[0-9]{8,15}$",

@@ -21,10 +21,11 @@ public class AuthorizedStaffController {
 
     @PostMapping("/create/{campaignId}")
     public ResponseEntity<?> createStaff(
+            @AuthenticationPrincipal User user,
             @PathVariable Integer campaignId,
             @Valid @RequestBody AuthorizedStaffDTO dto) {
 
-        authorizedStaffService.createStaff(dto, campaignId);
+        authorizedStaffService.createStaff(user, dto, campaignId);
 
         return ResponseEntity.status(200)
                 .body(new ApiResponse(
@@ -33,12 +34,12 @@ public class AuthorizedStaffController {
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<?> getAllStaff() {
+    public ResponseEntity<?> getAllStaff(
+            @AuthenticationPrincipal User user) {
 
         return ResponseEntity.status(200)
-                .body(authorizedStaffService.getAllStaff());
+                .body(authorizedStaffService.getAllStaff(user));
     }
-
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getStaffById(
             @PathVariable Integer id) {
