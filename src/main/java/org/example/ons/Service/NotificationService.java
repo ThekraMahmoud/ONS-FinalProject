@@ -183,7 +183,7 @@ public class NotificationService {
 
                 يرجى متابعة البلاغ وتكليف أحد موظفي الحملة بالتعامل معه.
                 """.formatted(
-                report.getCampaign().getCampaignName(),
+                report.getCampaign().getUser().getName(),
                 report.getCaseNumber(),
                 report.getPilgrim().getFullName(),
                 report.getKiosk().getLocationName(),
@@ -199,7 +199,7 @@ public class NotificationService {
             String email) {
 
         String subject = "تم تسجيل الحملة — "
-                + campaign.getCampaignName();
+                + campaign.getUser().getName();
 
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -213,7 +213,7 @@ public class NotificationService {
 
                 نسعد بخدمتكم ورعاية حجاج حملتكم.
                 """.formatted(
-                campaign.getCampaignName(),
+                campaign.getUser().getName(),
                 campaign.getStartDate().format(formatter),
                 campaign.getEndDate().format(formatter)
         );
@@ -308,7 +308,7 @@ public class NotificationService {
 
                 يرجى تكليف أحد موظفي الحملة بمتابعة البلاغ.
                 """.formatted(
-                report.getCampaign().getCampaignName(),
+                report.getCampaign().getUser().getName(),
                 report.getCaseNumber(),
                 report.getPilgrim().getFullName(),
                 report.getKiosk().getLocationName()
@@ -341,7 +341,7 @@ public class NotificationService {
 
             شكرًا لانضمامكم إلى نظام أُنس.
             """.formatted(
-                payment.getCampaign().getCampaignName(),
+                payment.getCampaign().getUser().getName(),
                 payment.getInvoiceId(),
                 amount,
                 payment.getCurrency(),
@@ -350,7 +350,7 @@ public class NotificationService {
         );
 
         sendEmail(
-                payment.getCampaign().getEmail(),
+                payment.getCampaign().getUser().getEmail(),
                 subject,
                 message
         );

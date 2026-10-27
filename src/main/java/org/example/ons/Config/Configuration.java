@@ -1,6 +1,5 @@
 package org.example.ons.Config;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,39 +19,24 @@ public class Configuration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http) throws Exception {
-
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-
-
-
-
                 .cors(cors -> {})
-
-
-
-
-
-
                 .csrf(csrf -> csrf.disable())
-
                 .sessionManagement(sm ->
-                        sm.sessionCreationPolicy(
-                                SessionCreationPolicy.IF_REQUIRED
-                        )
+                        sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
-
                 .authorizeHttpRequests(auth -> auth
 
-                                .requestMatchers(
-                                        HttpMethod.PATCH,
-                                        "/api/v1/kiosks/heartbeat/all"
-                                ).permitAll()
-                                .requestMatchers(
-                                        HttpMethod.GET,
-                                        "/api/v1/map/kiosks/{kioskId}/nearest-place"
-                                ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/v1/kiosks/heartbeat/all"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/map/kiosks/{kioskId}/nearest-place"
+                        ).permitAll()
 
                         .requestMatchers(
                                 HttpMethod.POST,
@@ -68,24 +52,40 @@ public class Configuration {
                                 "/api/v1/pilgrims/manual-identification",
                                 "/api/v1/identification/scan"
                         ).permitAll()
-                                .requestMatchers(
-                                        HttpMethod.GET,
-                                        "/api/v1/authorized-staff/get/employees",
-                                        "/api/v1/accommodations/my-campaign"
-                                ).hasAuthority("AuthorizedStaff")
 
-                                .requestMatchers(
-                                        HttpMethod.POST,
-                                        "/api/v1/accommodations/add"
-                                ).hasAuthority("AuthorizedStaff")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/authorized-staff/get/employees",
+                                "/api/v1/accommodations/my-campaign"
+                        ).hasAnyAuthority("AuthorizedStaff", "CAMPAIGN_OWNER")
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/accommodations/add"
+                        ).hasAnyAuthority("AuthorizedStaff", "CAMPAIGN_OWNER")
 
                         .requestMatchers(
                                 "/api/v1/authorized-staff/create/{campaignId}",
                                 "/api/v1/authorized-staff/get-all",
                                 "/api/v1/authorized-staff/get/{id}",
                                 "/api/v1/authorized-staff/update/{id}",
-                                "/api/v1/authorized-staff/delete/{id}",
+                                "/api/v1/authorized-staff/delete/{id}"
+                        ).hasAnyAuthority("ADMIN", "CAMPAIGN_OWNER")
+
+                        .requestMatchers(
                                 "/api/v1/accommodations/{id}",
+                                "/api/v1/accommodations/update/{id}",
+                                "/api/v1/accommodations/{accommodationId}/status",
+                                "/api/v1/accommodations/delete/{id}",
+                                "/api/v1/pilgrims/add",
+                                "/api/v1/pilgrims/update/{id}",
+                                "/api/v1/pilgrims/delete/{id}",
+                                "/api/v1/pilgrim-cards/add",
+                                "/api/v1/pilgrim-cards/update",
+                                "/api/v1/pilgrim-cards/delete"
+                        ).hasAnyAuthority("AuthorizedStaff", "CAMPAIGN_OWNER")
+
+                        .requestMatchers(
                                 "/notification/add",
                                 "/notification/get",
                                 "/notification/get/{id}",
@@ -127,46 +127,36 @@ public class Configuration {
                         ).hasAuthority("ADMIN")
 
                         .requestMatchers(
-                                "/api/v1/authorized-staff/**",
                                 "/api/v1/campaigns/me",
                                 "/api/v1/campaigns/update",
                                 "/api/v1/campaigns/analytics",
                                 "/api/v1/campaigns/analytics/email",
-                                "/api/v1/accommodations/update/{id}",
-                                "/api/v1/accommodations/{accommodationId}/status",
-                                "/api/v1/accommodations/delete/{id}",
+                                "/api/v1/authorized-staff/**",
+                                "/api/v1/accommodations/**",
                                 "/api/v1/pilgrims/add",
                                 "/api/v1/pilgrims/update/{id}",
                                 "/api/v1/pilgrims/delete/{id}",
                                 "/api/v1/pilgrim-cards/add",
                                 "/api/v1/pilgrim-cards/update",
                                 "/api/v1/pilgrim-cards/delete"
-                        ).hasAuthority("AuthorizedStaff")
+                        ).hasAnyAuthority("AuthorizedStaff", "CAMPAIGN_OWNER")
 
-//                        .requestMatchers("").hasAuthority("FIELDـSTAFF")
-//
-                        .requestMatchers(HttpMethod.GET,
+                        .requestMatchers(
+                                HttpMethod.GET,
                                 "/api/v1/field-staff/availability",
                                 "/api/v1/pilgrims/search",
                                 "/api/v1/pilgrim-cards/me"
-                        ).hasAnyAuthority(
-                                "ADMIN", "AuthorizedStaff"
-                        )
-//
-//                        .requestMatchers("").hasAnyAuthority(
-//                                "ADMIN", "FIELDـSTAFF"
-//                        )
-//
-                        .requestMatchers("/api/v1/routes"
-                        ).hasAnyAuthority(
-                                "ADMIN", "AuthorizedStaff", "FIELDـSTAFF"
-                        )
+                        ).hasAnyAuthority("ADMIN", "AuthorizedStaff", "CAMPAIGN_OWNER")
+
+                        .requestMatchers("/api/v1/routes")
+                        .hasAnyAuthority("ADMIN", "AuthorizedStaff", "FIELDـSTAFF")
 
                         .requestMatchers(
                                 "/api/v1/reports",
                                 "/api/v1/reports/**",
                                 "/report",
-                                "/report/**","/api/v1/map/markers",
+                                "/report/**",
+                                "/api/v1/map/markers",
                                 "/api/v1/map/nearest-kiosk",
                                 "/api/v1/map/route",
                                 "/api/v1/kiosks/get",
@@ -179,30 +169,16 @@ public class Configuration {
                                 "/api/v1/pilgrims/{pilgrimId:\\d+}/reports",
                                 "/api/v1/pilgrims/etPilgrimResponse/{id}"
                         ).hasAnyAuthority(
-                                "ADMIN",
-                                "AuthorizedStaff",
-                                "FIELDـSTAFF"
+                                "ADMIN", "AuthorizedStaff", "FIELDـSTAFF", "CAMPAIGN_OWNER"
                         )
 
                         .anyRequest().authenticated()
                 )
-
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/auth/logout")
                         .invalidateHttpSession(true)
                 )
-
                 .httpBasic(basic -> {})
-
                 .build();
     }
-
-
-
-
-
-
-
-
 }
-

@@ -92,12 +92,26 @@ public class CampaignController {
     public ResponseEntity<?> getCampaignById(
             @AuthenticationPrincipal User user) {
 
-        Integer campaignId = getSupervisorCampaignId(user);
+        Campaign campaign;
 
-        return ResponseEntity.ok(
-                campaignService.getCampaignById(campaignId)
-        );
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
+            campaign = user.getCampaign();
+
+        } else if ("AuthorizedStaff".equals(user.getRole())) {
+            AuthorizedStaff staff =
+                    authorizedStaffService.getStaffById(user.getId());
+            campaign = staff.getCampaign();
+        } else {
+            throw new AccessDeniedException("No campaign access");
+        }
+
+        if (campaign == null) {
+            throw new AccessDeniedException("User has no campaign");
+        }
+
+        return ResponseEntity.ok(campaign);
     }
+
 
     @PutMapping("/update")
     public ResponseEntity<?> updateCampaign(
@@ -161,26 +175,70 @@ public class CampaignController {
 
     private Integer getSupervisorCampaignId(User user) {
 
-        if (user == null
-                || !user.isActive()
-                || !"AuthorizedStaff".equals(user.getRole())) {
-
+        if (user == null || !user.isActive()) {
             throw new AccessDeniedException(
-                    "Only campaign supervisors can access this endpoint"
+                    "User is not authenticated or account is inactive"
             );
         }
 
-        AuthorizedStaff staff =
-                authorizedStaffService.getStaffById(user.getId());
+        // Campaign owner
+        if ("CAMPAIGN_OWNER".equals(user.getRole())) {
 
-        if (staff.getStaffRole() != AuthorizedStaffRole.SUPERVISOR
-                || staff.getCampaign() == null) {
+            Campaign campaign = user.getCampaign();
 
-            throw new AccessDeniedException(
-                    "You must be a supervisor linked to a campaign"
-            );
+            if (campaign == null) {
+                throw new AccessDeniedException(
+                        "User has no campaign"
+                );
+            }
+
+            return campaign.getId();
         }
 
-        return staff.getCampaign().getId();
+        // Campaign supervisor
+        if ("AuthorizedStaff".equals(user.getRole())) {
+
+            AuthorizedStaff staff =
+                    authorizedStaffService.getStaffById(user.getId());
+
+            if (staff == null
+                    || staff.getStaffRole() != AuthorizedStaffRole.SUPERVISOR
+                    || staff.getCampaign() == null) {
+
+                throw new AccessDeniedException(
+                        "You must be a supervisor linked to a campaign"
+                );
+            }
+
+            return staff.getCampaign().getId();
+        }
+
+        throw new AccessDeniedException(
+                "Only the campaign owner or supervisor can access this endpoint"
+        );
     }
+//    private Integer getSupervisorCampaignId(User user) {
+//
+//        if (user == null
+//                || !user.isActive()
+//                || !"AuthorizedStaff".equals(user.getRole())) {
+//
+//            throw new AccessDeniedException(
+//                    "Only campaign supervisors can access this endpoint"
+//            );
+//        }
+//
+//        AuthorizedStaff staff =
+//                authorizedStaffService.getStaffById(user.getId());
+//
+//        if (staff.getStaffRole() != AuthorizedStaffRole.SUPERVISOR
+//                || staff.getCampaign() == null) {
+//
+//            throw new AccessDeniedException(
+//                    "You must be a supervisor linked to a campaign"
+//            );
+//        }
+//
+//        return staff.getCampaign().getId();
+//    }
 }

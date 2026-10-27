@@ -16,7 +16,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, Integer> {
     @Query(value = """
         SELECT *
         FROM campaign
-        WHERE id = :campaignId
+        WHERE user_id = :campaignId
         FOR UPDATE
         """, nativeQuery = true)
     Optional<Campaign> findCampaignForPayment(

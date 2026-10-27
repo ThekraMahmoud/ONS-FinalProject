@@ -5,16 +5,9 @@ import org.example.ons.Api.ApiException;
 import org.example.ons.DTO.AuthorizedStaffDTO;
 import org.example.ons.DTO.CampaignAnalyticsDTO;
 import org.example.ons.Enum.ReportStatus;
-import org.example.ons.Model.Accommodation;
-import org.example.ons.Model.AssistanceReport;
-import org.example.ons.Model.AuthorizedStaff;
-import org.example.ons.Model.Campaign;
-import org.example.ons.Model.Pilgrim;
-import org.example.ons.Repository.AccommodationRepository;
-import org.example.ons.Repository.AssistanceReportRepository;
-import org.example.ons.Repository.AuthorizedStaffRepository;
-import org.example.ons.Repository.CampaignRepository;
-import org.example.ons.Repository.PilgrimRepository;
+import org.example.ons.Model.*;
+import org.example.ons.Repository.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,18 +31,39 @@ public class CampaignService {
     private final AccommodationRepository accommodationRepository;
     private final AuthorizedStaffRepository authorizedStaffRepository;
     private final AuthorizedStaffService authorizedStaffService;
+    private final AuthRepository authRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // Create Campaign
     public Campaign createCampaign(Campaign campaign) {
         campaign.setId(null);
         campaign.setStatus("PLANNED");
 
+        User owner = campaign.getUser();
+        if (owner == null) {
+            throw new ApiException("Campaign owner is required");
+        }
+
+        if (authRepository.findUserByEmail(owner.getEmail()) != null) {
+            throw new ApiException("Email is already registered");
+        }
+
+        owner.setId(null);
+        owner.setRole("CAMPAIGN_OWNER"); // يحدده الخادم، لا الواجهة
+        owner.setActive(false);          // يبقى غير نشط حتى تأكيد الدفع
+        owner.setPassword(passwordEncoder.encode(owner.getPassword()));
+
+
+        User savedOwner = authRepository.save(owner);
+        campaign.setUser(savedOwner);
+
         Campaign savedCampaign = campaignRepository.save(campaign);
 
         notificationService.notifyCampaignAdded(
                 savedCampaign,
-                savedCampaign.getEmail()
+                savedOwner.getEmail()
         );
+
 
         return savedCampaign;
     }
@@ -68,12 +82,12 @@ public class CampaignService {
     public void updateCampaign(Integer id, Campaign updatedCampaign) {
         Campaign existingCampaign = getRequiredCampaign(id);
 
-        existingCampaign.setCampaignName(updatedCampaign.getCampaignName());
-        existingCampaign.setContactNumber(updatedCampaign.getContactNumber());
+        existingCampaign.getUser().setName(updatedCampaign.getUser().getName());
+        existingCampaign.getUser().setPhoneNumber(updatedCampaign.getUser().getPhoneNumber());
         existingCampaign.setStartDate(updatedCampaign.getStartDate());
         existingCampaign.setEndDate(updatedCampaign.getEndDate());
         existingCampaign.setStatus(updatedCampaign.getStatus());
-        existingCampaign.setEmail(updatedCampaign.getEmail());
+        existingCampaign.getUser().setEmail(updatedCampaign.getUser().getEmail());
 
         campaignRepository.save(existingCampaign);
     }
@@ -279,7 +293,7 @@ public class CampaignService {
 
         return new CampaignAnalyticsDTO(
                 campaign.getId(),
-                campaign.getCampaignName(),
+                campaign.getUser().getName(),
                 totalPilgrims,
                 pilgrimsWithReports,
                 Math.round(reportRate * 100.0) / 100.0,
@@ -298,7 +312,7 @@ public class CampaignService {
     public void sendCampaignAnalyticsEmail(Integer campaignId) throws Exception {
         Campaign campaign = getRequiredCampaign(campaignId);
 
-        String email = campaign.getEmail();
+        String email = campaign.getUser().getEmail();
         if (email == null || email.isBlank()) {
             throw new ApiException("Campaign email not found");
         }

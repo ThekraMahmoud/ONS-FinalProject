@@ -7,6 +7,8 @@ import org.example.ons.DTO.MoyasarInvoiceDTO;
 import org.example.ons.Enum.CampaignPaymentStatus;
 import org.example.ons.Model.Campaign;
 import org.example.ons.Model.CampaignPayment;
+import org.example.ons.Model.User;
+import org.example.ons.Repository.AuthRepository;
 import org.example.ons.Repository.CampaignPaymentRepository;
 import org.example.ons.Repository.CampaignRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +29,7 @@ public class CampaignPaymentService {
     private final CampaignPaymentRepository campaignPaymentRepository;
     private final MoyasarService moyasarService;
     private final NotificationService notificationService;
+    private final AuthRepository authRepository;
 
     @Value("${moyasar.registration-fee-halalas}")
     private Long registrationFee;
@@ -200,6 +203,13 @@ public class CampaignPaymentService {
                 campaign.setStatus("ACTIVE");
                 campaignRepository.save(campaign);
             }
+            User owner = campaign.getUser();
+            if (owner == null) {
+                throw new ApiException("Campaign owner not found");
+            }
+
+            owner.setActive(true);
+            authRepository.save(owner);
         }
 
         CampaignPayment savedPayment =

@@ -264,7 +264,7 @@ public class PilgrimService {
                 pilgrim.getPhoneNumber(),
                 pilgrim.getVisaNumber(),
                 campaign.getId(),
-                campaign.getCampaignName()
+                campaign.getUser().getName()
         );
     }
 

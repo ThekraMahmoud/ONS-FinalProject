@@ -53,7 +53,7 @@ public class User implements UserDetails {
     private String phoneNumber;
 
    @NotBlank(message = "Role is required")
-    @Pattern(regexp = "ADMIN|AuthorizedStaff|FIELDـSTAFF",
+    @Pattern(regexp = "ADMIN|AuthorizedStaff|FIELDـSTAFF|CAMPAIGN_OWNER",
             message = "Role must be ADMIN, AuthorizedStaff, or FIELDـSTAFF")
     @Column(nullable = false)
     private String role;
@@ -71,6 +71,10 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user")
     @JsonIgnore
     private AuthorizedStaff authorizedStaff;
+
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private Campaign campaign;
 
     @PrePersist
     protected void onCreate() {
