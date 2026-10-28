@@ -1,4 +1,4 @@
-[README1.md](https://github.com/user-attachments/files/34053214/README1.md)
+[README1.md](https://github.com/user-attachments/files/34053312/README1.md)
 <div align="center">
   <img src="src/main/resources/images/img.png" alt="ONS logo" width="220" />
   <h1>ONS — Lost Pilgrims Assistance System</h1>
@@ -25,6 +25,168 @@ This repository contains the Spring Boot backend. The frontend is maintained sep
 - Send notifications through configured email and automation integrations.
 - View campaign dashboards and analytics, and access kiosk and map-related services.
 - Support campaign registration and payment workflows through Moyasar.
+
+## System diagrams
+
+### Use case diagram
+
+```mermaid
+flowchart LR
+    Pilgrim["Pilgrim"]
+    Staff["Campaign Staff"]
+    Admin["System Administrator"]
+
+    subgraph ONS["Smart Lost Pilgrim Assistance System"]
+        Language([Select Language])
+        Translate([Translate Instructions])
+        Request([Request Assistance])
+        CreateReport([Create Assistance Report])
+        Scan([Scan Pilgrim Card])
+        Identify([Identify Pilgrim])
+        Find([Find Campaign and Accommodation])
+        Receive([Receive Notification])
+        Send([Send Notification])
+        Details([View Report Details])
+        Status([Update Report Status])
+        Pickup([Confirm Pilgrim Pickup])
+        Users([Manage Authorized Users])
+        Reports([Monitor All Reports])
+        Kiosks([Manage Kiosks])
+    end
+
+    Pilgrim --- Language
+    Pilgrim --- Request
+    Pilgrim --- Scan
+    Pilgrim --- Receive
+    Staff --- Receive
+    Staff --- Details
+    Staff --- Status
+    Staff --- Pickup
+    Admin --- Users
+    Admin --- Reports
+    Admin --- Kiosks
+
+    Language -. "«include»" .-> Translate
+    Request -. "«include»" .-> CreateReport
+    Request -. "«include»" .-> Identify
+    Request -. "«include»" .-> Send
+    Identify -. "«include»" .-> Find
+    Receive -. "«include»" .-> Send
+```
+
+### Class diagram
+
+```mermaid
+classDiagram
+    direction LR
+
+    class Campaign {
+        +Long campaignId
+        +String campaignName
+        +String contactNumber
+        +String status
+    }
+    class Pilgrim {
+        +Long pilgrimId
+        +String fullName
+        +String nationality
+        +String preferredLanguage
+        +String phoneNumber
+    }
+    class Accommodation {
+        +Long accommodationId
+        +String name
+        +String address
+        +String city
+    }
+    class PilgrimCard {
+        +Long cardId
+        +String cardNumber
+        +String cardType
+        +String status
+        +String imageReference
+    }
+    class AuthorizedStaff {
+        +Long staffId
+        +String fullName
+        +String role
+        +String phoneNumber
+        +String status
+    }
+    class Kiosk {
+        +Long kioskId
+        +String kioskCode
+        +String locationName
+        +double latitude
+        +double longitude
+        +String status
+    }
+    class AssistanceReport {
+        +Long reportId
+        +LocalDateTime createdAt
+        +String caseNumber
+        +ReportStatus status
+        +LocalDateTime pickupTime
+        +createReport()
+        +updateStatus()
+        +confirmPickup()
+    }
+    class Notification {
+        +Long notificationId
+        +String message
+        +LocalDateTime sentAt
+        +NotificationStatus status
+        +send()
+        +markAsRead()
+    }
+    class TranslationService {
+        +translateMessage()
+        +getLocalizedInstructions()
+    }
+    class CardRecognitionService {
+        +scanCard()
+        +extractCardData()
+        +validateCardData()
+    }
+    class AssistanceService {
+        +findPilgrim()
+        +createReport()
+        +notifyCampaign()
+        +confirmPickup()
+    }
+    class ReportStatus {
+        <<enumeration>>
+        OPEN
+        ASSIGNED
+        IN_PROGRESS
+        RESOLVED
+        CANCELLED
+    }
+    class NotificationStatus {
+        <<enumeration>>
+        PENDING
+        SENT
+        FAILED
+        READ
+    }
+
+    Campaign "1" o-- "0..*" Pilgrim : manages
+    Campaign "1" o-- "1..*" Accommodation : operates
+    Campaign "1" --> "0..*" AuthorizedStaff : employs
+    Pilgrim "0..*" --> "1" Accommodation : stays at
+    Pilgrim "1" --> "1" PilgrimCard : has
+    Pilgrim "1" --> "0..*" AssistanceReport : has cases
+    AuthorizedStaff "0..1" --> "0..*" AssistanceReport : handles
+    Kiosk "1" --> "0..*" AssistanceReport : creates
+    AssistanceReport "1" --> "0..*" Notification : generates
+    AssistanceReport ..> ReportStatus : uses
+    Notification ..> NotificationStatus : uses
+    TranslationService ..> Kiosk : supports multilingual UI
+    CardRecognitionService ..> PilgrimCard : reads
+    AssistanceService ..> Pilgrim : finds
+    AssistanceService ..> AssistanceReport : creates and updates
+    AssistanceService ..> Notification : sends
+```
 
 ## Technologies and integrations
 
@@ -56,7 +218,7 @@ The API uses the `/api/v1` prefix for most resources. For the Postman collection
 
 ## Faisal's contribution
 
-My contribution included API documentation for account management, notifications, maps and navigation, roles and permissions, background jobs, and advanced assistance-report workflows.
+My contribution included API documentation for account management, notifications, maps and navigation, roles and permissions, background jobs, and advanced assistance-report workflows. 
 
 ### Account management
 
