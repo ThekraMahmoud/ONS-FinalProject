@@ -1,3 +1,4 @@
+
 <div align="center">
   <img src="https://raw.githubusercontent.com/faisalbageis/ONS-FinalProject/main/src/main/resources/images/img.png" alt="ONS logo" width="220" />
   <h1>ONS — Lost Pilgrims Assistance System</h1>
@@ -8,24 +9,21 @@
 
 [Open the deployed ONS application](https://d3ujyxwecja6r4.cloudfront.net/)
 
-The ONS application is deployed on AWS. The frontend is maintained in a separate repository from the Spring Boot backend.
-
-- **Frontend repository:** [ONS-Frontend](https://github.com/ThekraMahmoud/ONS-Frontend)
-- **Backend / main project repository:** [ONS-FinalProject](https://github.com/faisalbageis/ONS-FinalProject)
+The application is deployed on AWS, where the React web interface and Spring Boot backend are served together. It provides screens for pilgrim assistance and campaign operations, including reports, kiosks, accommodations, and analytics. Some workflows are still being validated against the backend.
 
 ## Overview
 
 ONS brings pilgrim identification and assistance workflows together for campaign teams. A pilgrim can request help through an interactive kiosk; the system records the request and kiosk location so the relevant team can coordinate a response.
 
-This README documents the ONS frontend and the frontend-related work, alongside the system overview and diagrams from the main project README.
+This repository contains the ONS frontend developed with React and Vite. The backend is maintained separately.
 
 ## Frontend capabilities
 
-- Provide user-facing interfaces for ONS pilgrim assistance and campaign operations.
-- Integrate kiosk information, device status, and device location into the frontend.
-- Display Haramain location information through an interactive map built with Leaflet and React Leaflet.
-- Connect frontend views to backend APIs for kiosk information, activity, reports, and campaign analytics.
-- Support clear, consistent screens and responsive layouts for operational workflows.
+- Build user-facing interfaces for ONS pilgrim assistance and campaign operations.
+- Integrate kiosk information, device status, and device location into frontend views.
+- Display Haramain location information through an interactive map using Leaflet and React Leaflet.
+- Connect frontend screens with backend APIs for kiosk information, activity, reports, and campaign analytics.
+- Support clear, consistent screens and user-friendly operational workflows.
 
 ## System diagrams
 
@@ -191,18 +189,11 @@ classDiagram
 
 ## Technologies and integrations
 
-### Frontend
-
-- React
-- Vite
+- React and Vite for the frontend
 - JavaScript
-- Leaflet and React Leaflet for interactive mapping
-- Axios for backend API integration
-- Backend API prefix: `/api/v1`
-
-### System technologies
-
-- Java 17 and Spring Boot
+- Leaflet and React Leaflet for interactive maps
+- Axios for API integration
+- Java 17 and Spring Boot backend
 - Spring Web MVC, Spring Data JPA, Spring Security, and Bean Validation
 - MySQL and Maven
 - AWS deployment
@@ -210,20 +201,21 @@ classDiagram
 
 ## Running locally
 
-1. Clone the frontend repository:
+1. Install Node.js and npm.
+2. Clone the frontend repository:
 
    ```bash
    git clone https://github.com/ThekraMahmoud/ONS-Frontend.git
    cd ONS-Frontend
    ```
 
-2. Install dependencies:
+3. Install dependencies:
 
    ```bash
    npm install
    ```
 
-3. Start the development server:
+4. Start the development server:
 
    ```bash
    npm run dev
@@ -239,9 +231,9 @@ Configure the backend API connection and any environment variables according to 
 - **Thekra Mahmoud** — [@ThekraMahmoud](https://github.com/ThekraMahmoud)
 - **Faisal Bageis** — [@faisalbageis](https://github.com/faisalbageis)
 
-## Thekra Mahmoud's contribution
+## Thekra's contribution
 
-My contribution focuses on frontend development and the kiosk and campaign workflows I worked on within ONS.
+My contribution focused on frontend development and the kiosk and campaign workflows I worked on within ONS.
 
 ### Frontend development and interactive map
 
@@ -249,9 +241,9 @@ My contribution focuses on frontend development and the kiosk and campaign workf
 - Worked on the Haramain interactive map using Leaflet and React Leaflet.
 - Integrated kiosk data into the frontend, including device locations and statuses.
 - Connected frontend screens with backend APIs for kiosk information, activity, reports, and campaign analytics.
-- Worked on a consistent user interface and UI/UX direction inspired by Islamic art and architecture, including geometric motifs, architectural arches, and a coordinated emerald-green, ivory, and gold palette.
+- Worked on a consistent UI/UX direction inspired by Islamic art and architecture, including geometric motifs, architectural arches, and a coordinated emerald-green, ivory, and gold palette.
 
-### Kiosk management and monitoring endpoints
+### Kiosk management and monitoring
 
 - `PATCH /api/v1/kiosks/update-status/{id}` — Update kiosk status.
 - `PATCH /api/v1/kiosks/update-location/{kioskId}` — Update kiosk location.
@@ -260,7 +252,7 @@ My contribution focuses on frontend development and the kiosk and campaign workf
 - `GET /api/v1/kiosks/activity` — Retrieve kiosk activity data.
 - `GET /api/v1/kiosks/report/{adminId}` — Retrieve the kiosk report associated with an admin ID.
 
-### Campaign analytics endpoints
+### Campaign analytics
 
 - `GET /api/v1/campaigns/analytics` — Retrieve campaign analytics.
 - `POST /api/v1/campaigns/analytics/email` — Send a campaign analytics report by email.
@@ -272,4 +264,4 @@ My contribution focuses on frontend development and the kiosk and campaign workf
 - Campaign announcements and campaign/device usage analytics.
 - Administrative service automation and assistance with report-status workflows.
 
-See my [GitHub profile](https://github.com/ThekraMahmoud).
+
